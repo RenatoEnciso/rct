@@ -1,0 +1,744 @@
+{{-- resources/views/campana/lineamientos.blade.php --}}
+@extends('layouts.app')
+
+@section('title', 'Lineamientos · Campaña Sin Atrasos')
+
+@section('content')
+
+{{-- PAGE HEAD --}}
+<div class="page-head">
+    <div class="page-head-text">
+        <h2>📋 Lineamientos de Campaña</h2>
+        <p>Sin Atrasos, Que Atrasan · Resumen maestro operativo · Departamento Recuperaciones</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span class="badge badge-info" style="font-size:12px;padding:7px 14px;">
+            📅 01 Sep 2026 – 28 Feb 2027
+        </span>
+        @php
+            $fin = \Carbon\Carbon::parse('2027-02-28');
+            $dias = (int) now()->diffInDays($fin, false);
+        @endphp
+        <span class="badge {{ $dias <= 30 ? 'badge-danger' : 'badge-ok' }}" style="font-size:12px;padding:7px 14px;">
+            ⏳ {{ $dias > 0 ? $dias . ' días restantes' : 'Campaña vencida' }}
+        </span>
+    </div>
+</div>
+
+
+{{-- ══════════════════════════════════════════════════════
+     BLOQUE 1 — BANNER DE CAMPAÑA
+════════════════════════════════════════════════════════ --}}
+<div style="background:linear-gradient(135deg,var(--rojo-dark) 0%,var(--rojo) 100%);border-radius:var(--radius-lg);padding:28px 32px;margin-bottom:20px;box-shadow:var(--shadow-md);">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:20px;">
+        <div>
+            <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.6);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;">Campaña Activa · Departamento Recuperaciones</div>
+            <h3 style="color:#fff;font-size:24px;font-weight:900;margin:0 0 6px;letter-spacing:-0.5px;">"Sin Atrasos, Que Atrasan"</h3>
+            <div style="color:rgba(255,255,255,0.75);font-size:13px;">Vigencia: 01 de septiembre de 2026 al 28 de febrero de 2027</div>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <div style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:10px;padding:12px 16px;min-width:140px;">
+                <div style="font-size:10px;color:rgba(255,255,255,0.6);font-weight:700;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Departamento</div>
+                <div style="font-size:13px;font-weight:700;color:#fff;">Recuperaciones</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:10px;padding:12px 16px;min-width:140px;">
+                <div style="font-size:10px;color:rgba(255,255,255,0.6);font-weight:700;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Norma supletoria</div>
+                <div style="font-size:13px;font-weight:700;color:#fff;">Manual Gestión Recuperaciones</div>
+            </div>
+        </div>
+    </div>
+
+    <div style="border-top:1px solid rgba(255,255,255,0.15);margin-top:20px;padding-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+            <div style="font-size:20px;flex-shrink:0;">🎯</div>
+            <div>
+                <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Objetivo 1</div>
+                <div style="font-size:13px;color:rgba(255,255,255,0.9);line-height:1.5;">Disminuir el gasto de provisiones reduciendo la cartera en mora, otorgando beneficios a clientes de cartera vencida, refinanciada, extrajudicial y judicial en situación coyuntural complicada.</div>
+            </div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+            <div style="font-size:20px;flex-shrink:0;">💰</div>
+            <div>
+                <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Objetivo 2</div>
+                <div style="font-size:13px;color:rgba(255,255,255,0.9);line-height:1.5;">Incrementar los ingresos financieros percibidos mediante la recuperación de créditos en morosidad, cartera castigada y cartera FOCMAC.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{{-- ══════════════════════════════════════════════════════
+     BLOQUE 2 — ELEGIBILIDAD
+════════════════════════════════════════════════════════ --}}
+<div class="card">
+    <div class="card-title">✅ ¿Quién puede acceder?</div>
+    <div class="grid2" style="margin-bottom:16px;">
+
+        <div class="card-plain" style="border-left:4px solid var(--verde);">
+            <div style="font-size:12px;font-weight:700;color:var(--verde);margin-bottom:8px;">📋 Inclusión en base</div>
+            <div style="font-size:13px;color:#444;line-height:1.6;">El cliente debe estar en la base remitida mensualmente por el Departamento de Recuperaciones a todas las tiendas. Inclusiones fuera de base requieren autorización expresa de la Jefatura de Recuperaciones, previa evaluación del sustento.</div>
+        </div>
+
+        <div class="card-plain" style="border-left:4px solid var(--rojo);">
+            <div style="font-size:12px;font-weight:700;color:var(--rojo);margin-bottom:8px;">🔁 Límite de uso</div>
+            <div style="font-size:13px;color:#444;line-height:1.6;">Máximo <span class="badge badge-danger" style="font-size:12px;">4 veces / 12 meses</span> contabilizando cualquier campaña de descuento anterior. Aplica para calificación Normal, CPP, Deficiente, Dudoso y Pérdida por igual. Si supera el límite, se requiere aprobación de excepción.</div>
+        </div>
+
+        <div class="card-plain" style="border-left:4px solid var(--mostaza);">
+            <div style="font-size:12px;font-weight:700;color:#7a5f00;margin-bottom:8px;">🏷️ Calificaciones que aplican</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
+                <span class="badge badge-ok">NORMAL</span>
+                <span class="badge badge-info">CPP</span>
+                <span class="badge badge-pending">DEFICIENTE</span>
+                <span class="badge badge-danger">DUDOSO</span>
+                <span class="badge badge-danger">PÉRDIDA</span>
+            </div>
+            <div style="font-size:12px;color:#666;margin-top:10px;">Según calificación regulatoria al inicio del mes (último RCC).</div>
+        </div>
+
+        <div class="card-plain" style="border-left:4px solid #1a56a0;">
+            <div style="font-size:12px;font-weight:700;color:#1a56a0;margin-bottom:8px;">⚠️ Múltiples créditos en mora</div>
+            <div style="font-size:13px;color:#444;line-height:1.6;">Si el cliente tiene más de un crédito en situación de morosidad, se debe procurar negociar <strong>todos los créditos</strong> que afecten la mora contable. No se puede negociar uno de forma aislada.</div>
+        </div>
+
+    </div>
+
+    <div class="notice">
+        <strong>⚡ Excepción al límite de 4 veces:</strong>
+        Calificación CPP y DEFICIENTE → aprueba <strong>Jefatura de Recuperaciones</strong>.
+        Calificación DUDOSO y PÉRDIDA → aprueba <strong>Coordinador Zonal de Recuperaciones</strong> por correo con copia al Jefe de Recuperaciones, previa evaluación del comportamiento de pago en el Sistema Financiero.
+    </div>
+</div>
+
+
+{{-- ══════════════════════════════════════════════════════
+     BLOQUE 3 — CALCULADORA DE BENEFICIO
+════════════════════════════════════════════════════════ --}}
+<div class="card">
+    <div class="card-title">🧮 Calculadora de beneficio máximo</div>
+    <p style="font-size:13px;color:var(--gris);margin-bottom:18px;">Selecciona los parámetros del crédito y obtén el porcentaje máximo de exoneración permitido según los Anexos de la campaña.</p>
+
+    <div class="grid3" style="margin-bottom:14px;">
+        <div class="field">
+            <label>Tipo de cartera</label>
+            <select id="calc_cartera" onchange="calcularBeneficio()">
+                <option value="">— Selecciona —</option>
+                <option value="vigente_vencida">Vigente / Vencida / Reprogramada</option>
+                <option value="refinanciada">Refinanciada</option>
+                <option value="judicial">Judicial / Extrajudicial</option>
+                <option value="castigada">Castigada</option>
+                <option value="focmac">FOCMAC</option>
+            </select>
+        </div>
+        <div class="field">
+            <label>Calificación RCC</label>
+            <select id="calc_calificacion" onchange="calcularBeneficio()">
+                <option value="">— Selecciona —</option>
+                <option value="normal">Normal</option>
+                <option value="cpp">CPP</option>
+                <option value="deficiente">Deficiente</option>
+                <option value="dudoso">Dudoso</option>
+                <option value="perdida">Pérdida</option>
+            </select>
+        </div>
+        <div class="field">
+            <label>Tipo de crédito</label>
+            <select id="calc_tipo_credito" onchange="calcularBeneficio()">
+                <option value="">— Selecciona —</option>
+                <option value="general">Todos (exc. Pequeña Empresa)</option>
+                <option value="pequena_empresa">Pequeña Empresa</option>
+                <option value="hipotecario">Hipotecario</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="grid3" style="margin-bottom:18px;">
+        <div class="field">
+            <label>Días de atraso</label>
+            <input type="number" id="calc_dias" placeholder="Ej: 45" min="0" oninput="calcularBeneficio()">
+        </div>
+        <div class="field">
+            <label>N° cuotas a pagar</label>
+            <input type="number" id="calc_cuotas" placeholder="Ej: 2" min="1" oninput="calcularBeneficio()">
+        </div>
+        <div class="field">
+            <label>Condición de pago</label>
+            <select id="calc_condicion" onchange="calcularBeneficio()">
+                <option value="">— Selecciona —</option>
+                <option value="cuotas">Pago de cuotas</option>
+                <option value="cancelacion">Cancelación total</option>
+            </select>
+        </div>
+    </div>
+
+    {{-- RESULTADO --}}
+    <div id="calc_resultado" style="display:none;">
+        <div style="background:var(--rojo-soft);border:1.5px solid #f0c0c8;border-radius:var(--radius-lg);padding:20px 24px;">
+            <div style="font-size:11px;font-weight:700;color:var(--rojo);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:14px;">📊 Resultado del cálculo</div>
+            <div class="grid3">
+                <div>
+                    <div class="detail-label">% Máx. intereses a exonerar</div>
+                    <div class="kpi-value" style="font-size:28px;" id="res_intereses">—</div>
+                </div>
+                <div>
+                    <div class="detail-label">% Máx. saldo capital</div>
+                    <div class="kpi-value" style="font-size:28px;" id="res_capital">—</div>
+                </div>
+                <div>
+                    <div class="detail-label">Interés moratorio</div>
+                    <div class="kpi-value" style="font-size:28px;color:var(--verde);">100%</div>
+                </div>
+            </div>
+            <div style="margin-top:14px;padding-top:14px;border-top:1px solid #f0c0c8;display:flex;align-items:center;gap:10px;">
+                <div style="font-size:12px;color:#666;">Funcionario que autoriza:</div>
+                <span class="badge badge-info" id="res_funcionario" style="font-size:12px;">—</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="calc_vacio" style="background:#f8f9fa;border:1.5px dashed var(--borde);border-radius:var(--radius-lg);padding:24px;text-align:center;color:#aab;font-size:13px;">
+        Completa los parámetros para ver el beneficio máximo aplicable.
+    </div>
+
+    <div style="margin-top:12px;" class="notice">
+        <strong>Nota:</strong> Intereses = Interés corriente + Interés compensatorio. <strong>No incluye</strong> interés de gracia ni exoneración de seguros en ninguna modalidad. El % máximo de cuotas a conciliar no debe superar el 50% del valor de la(s) cuota(s) pactada(s), salvo autorización de Jefatura.
+    </div>
+</div>
+
+
+{{-- ══════════════════════════════════════════════════════
+     BLOQUE 4 — NIVELES DE AUTONOMÍA
+════════════════════════════════════════════════════════ --}}
+<div class="card">
+    <div class="card-title">🔑 ¿Quién autoriza qué?</div>
+    <div class="rct-table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Caso</th>
+                    <th>Tipo / Rango</th>
+                    <th>Funcionario que autoriza</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Pago de cuotas — tramo temprano y contención</td>
+                    <td><span class="badge badge-gray">Cualquier calificación</span></td>
+                    <td><span class="badge badge-info">Coordinador Zonal de Recuperaciones</span></td>
+                </tr>
+                <tr>
+                    <td>Cancelación total · CPP</td>
+                    <td><span class="badge badge-gray">Todos los tipos</span></td>
+                    <td><span class="badge badge-mostaza">Jefe Zonal de Tiendas</span></td>
+                </tr>
+                <tr>
+                    <td>Cancelación total · Deficiente / Dudoso / Pérdida</td>
+                    <td><span class="badge badge-gray">SK &lt; 3 UIT</span></td>
+                    <td><span class="badge badge-info">Coordinador Zonal de Recuperaciones</span></td>
+                </tr>
+                <tr>
+                    <td>Cancelación total · Deficiente / Dudoso / Pérdida</td>
+                    <td><span class="badge badge-danger">SK &gt; 3 UIT</span></td>
+                    <td><span class="badge badge-danger">Jefe de Recuperaciones</span></td>
+                </tr>
+                <tr>
+                    <td>Cartera Judicial / Extrajudicial</td>
+                    <td><span class="badge badge-gray">SK &lt; 3 UIT</span></td>
+                    <td><span class="badge badge-info">Coordinador Zonal de Recuperaciones</span></td>
+                </tr>
+                <tr>
+                    <td>Cartera Judicial / Extrajudicial</td>
+                    <td><span class="badge badge-danger">SK &gt; 3 UIT</span></td>
+                    <td><span class="badge badge-danger">Jefe de Recuperaciones</span></td>
+                </tr>
+                <tr>
+                    <td>Cartera Castigada (hasta 3 años)</td>
+                    <td><span class="badge badge-gray">Cancelación total</span></td>
+                    <td><span class="badge badge-info">Coordinador de Normalización de Cartera</span></td>
+                </tr>
+                <tr>
+                    <td>Cartera Castigada (más de 3 años)</td>
+                    <td><span class="badge badge-gray">Cancelación total</span></td>
+                    <td><span class="badge badge-info">Coordinador de Normalización de Cartera</span></td>
+                </tr>
+                <tr>
+                    <td>Cartera FOCMAC</td>
+                    <td><span class="badge badge-gray">Cancelación total</span></td>
+                    <td><span class="badge badge-info">Coordinador de Normalización de Cartera</span></td>
+                </tr>
+                <tr>
+                    <td>Excepción al límite de 4 veces · CPP / Deficiente</td>
+                    <td><span class="badge badge-pending">Excepción</span></td>
+                    <td><span class="badge badge-danger">Jefatura de Recuperaciones</span></td>
+                </tr>
+                <tr>
+                    <td>Excepción al límite de 4 veces · Dudoso / Pérdida</td>
+                    <td><span class="badge badge-pending">Excepción</span></td>
+                    <td><span class="badge badge-info">CZR por correo + copia Jefe Recuperaciones</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+{{-- ══════════════════════════════════════════════════════
+     BLOQUE 5 — DOCUMENTOS REQUERIDOS
+════════════════════════════════════════════════════════ --}}
+<div class="card">
+    <div class="card-title">📄 Documentos requeridos por tipo de negociación</div>
+    <div class="grid2">
+
+        @php
+        $tipos_doc = [
+            [
+                'titulo'    => '💳 Pago de Cuotas',
+                'color'     => 'var(--verde)',
+                'docs'      => [
+                    ['nombre' => 'Acuerdo de Pago',              'aplica' => true],
+                    ['nombre' => 'Nota de Abono',                'aplica' => true],
+                    ['nombre' => 'FUD (Formato exoneración)',     'aplica' => true],
+                    ['nombre' => 'Informe-Propuesta Negociación', 'aplica' => false],
+                ],
+                'nota' => 'No aplica para créditos castigados.',
+            ],
+            [
+                'titulo'    => '✅ Cancelación Total (SK ≤ 3 UIT)',
+                'color'     => '#1a56a0',
+                'docs'      => [
+                    ['nombre' => 'Acuerdo de Pago',              'aplica' => true],
+                    ['nombre' => 'Nota de Abono',                'aplica' => true],
+                    ['nombre' => 'FUD (Formato exoneración)',     'aplica' => true],
+                    ['nombre' => 'Informe-Propuesta Negociación', 'aplica' => false],
+                ],
+                'nota' => null,
+            ],
+            [
+                'titulo'    => '🏦 Cancelación Total (SK > 3 UIT)',
+                'color'     => 'var(--rojo)',
+                'docs'      => [
+                    ['nombre' => 'Acuerdo de Pago',              'aplica' => true],
+                    ['nombre' => 'Nota de Abono',                'aplica' => true],
+                    ['nombre' => 'FUD (Formato exoneración)',     'aplica' => true],
+                    ['nombre' => 'Informe-Propuesta Negociación', 'aplica' => true],
+                ],
+                'nota' => 'Requiere búsquedas registrales SUNARP (antigüedad ≤ 6 meses).',
+            ],
+            [
+                'titulo'    => '⚖️ Cartera Castigada / FOCMAC',
+                'color'     => 'var(--mostaza)',
+                'docs'      => [
+                    ['nombre' => 'Acuerdo de Pago',              'aplica' => false],
+                    ['nombre' => 'Nota de Abono',                'aplica' => true],
+                    ['nombre' => 'FUD (Formato exoneración)',     'aplica' => true],
+                    ['nombre' => 'Informe-Propuesta Negociación', 'aplica' => false],
+                ],
+                'nota' => 'Acuerdo de Pago NO aplica para negociaciones de créditos castigados.',
+            ],
+        ];
+        @endphp
+
+        @foreach($tipos_doc as $td)
+        <div class="card-plain" style="border-left:4px solid {{ $td['color'] }};">
+            <div style="font-size:13px;font-weight:700;color:{{ $td['color'] }};margin-bottom:12px;">{{ $td['titulo'] }}</div>
+            @foreach($td['docs'] as $doc)
+            <div class="indicator-row">
+                <span style="font-size:13px;color:#444;">{{ $doc['nombre'] }}</span>
+                @if($doc['aplica'])
+                    <span class="badge badge-ok">✓ Requerido</span>
+                @else
+                    <span class="badge badge-gray">✗ No aplica</span>
+                @endif
+            </div>
+            @endforeach
+            @if($td['nota'])
+            <div style="font-size:11px;color:#888;margin-top:10px;padding-top:8px;border-top:1px solid #f2f3f5;">⚠️ {{ $td['nota'] }}</div>
+            @endif
+        </div>
+        @endforeach
+
+    </div>
+    <div class="notice" style="margin-top:4px;">
+        Todos los documentos deben estar <strong>firmados por el cliente o participantes del crédito</strong>. Pueden remitirse por WhatsApp, correo electrónico u otros medios digitales o virtuales.
+    </div>
+</div>
+
+
+{{-- ══════════════════════════════════════════════════════
+     BLOQUE 6 — EXCLUSIONES
+════════════════════════════════════════════════════════ --}}
+<div class="card">
+    <div class="card-title">🚫 Créditos excluidos de la campaña</div>
+    <div class="grid2">
+        @php
+        $exclusiones = [
+            ['nombre' => 'Créditos pignoraticios',                  'detalle' => null],
+            ['nombre' => 'Leasing',                                  'detalle' => null],
+            ['nombre' => 'Créditos con garantía de depósito en efectivo', 'detalle' => null],
+            ['nombre' => 'Cartera Multigas',                        'detalle' => null],
+            ['nombre' => 'Créditos administrativos',                 'detalle' => 'Ex trabajadores de Caja Trujillo: requieren revisión previa de Jefatura de Recuperaciones antes de negociar.'],
+            ['nombre' => 'Carteras adquiridas',                     'detalle' => null],
+            ['nombre' => 'Créditos registrados como fraude',         'detalle' => 'Excepción: aquellos no reportados o rechazados por la Cía. de Seguros.'],
+            ['nombre' => 'Créditos en proceso de venta de cartera',  'detalle' => null],
+            ['nombre' => 'Créditos con respaldo de programas de Gobierno', 'detalle' => 'Excepción: créditos rechazados para cobertura de garantía o con pérdida de eficacia de la garantía. Recuperaciones remite el listado identificado.'],
+        ];
+        @endphp
+
+        @foreach($exclusiones as $ex)
+        <div class="exclusion-item">
+            <strong>✗ {{ $ex['nombre'] }}</strong>
+            @if($ex['detalle'])
+                <div style="font-size:12px;color:#888;margin-top:4px;">{{ $ex['detalle'] }}</div>
+            @endif
+        </div>
+        @endforeach
+    </div>
+</div>
+
+
+{{-- ══════════════════════════════════════════════════════
+     BLOQUE 7 — REGLAS CRÍTICAS
+════════════════════════════════════════════════════════ --}}
+<div class="card" style="border-top-color:var(--mostaza);background:var(--mostaza-soft);">
+    <div class="card-title" style="color:#7a5f00;border-bottom-color:var(--mostaza);">⚡ Reglas críticas que no se pueden pasar por alto</div>
+
+    @php
+    $alertas = [
+        ['icono' => '🧮', 'texto' => '<strong>Base de cálculo de intereses:</strong> La conciliación se calcula sobre <strong>Interés corriente + Interés compensatorio</strong>. El interés de gracia <strong>NO</strong> está incluido.'],
+        ['icono' => '🛡️', 'texto' => '<strong>Seguros:</strong> La conciliación <strong>NO exonera seguros</strong> en ninguna de sus modalidades (desgravamen, desempleo, multirriesgo, etc.).'],
+        ['icono' => '📅', 'texto' => '<strong>Cierre de mes:</strong> En descuento de cuota, se debe verificar que el cliente no cierre el mes en situación <strong>vencido por otro crédito</strong> de la entidad. Excepción solo con mérito del Jefe de Recuperaciones.'],
+        ['icono' => '🏛️', 'texto' => '<strong>SUNARP obligatorio:</strong> Para cancelación total con SK > 3 UIT, se requieren búsquedas registrales con <strong>antigüedad no mayor a 6 meses</strong>. Si son positivas, se adjunta informe sustentado.'],
+        ['icono' => '⚖️', 'texto' => '<strong>Cartera judicial con garantías:</strong> Si las búsquedas registrales son positivas, el informe debe sustentarse en al menos uno de los 4 supuestos del documento (bien en 2do rango, bien insuficiente para cubrir deuda, defecto de forma/fondo, o recuperación judicial más onerosa).'],
+        ['icono' => '⚖️', 'texto' => '<strong>Proporcionalidad:</strong> Todo descuento debe guardar proporcionalidad con la real situación económica y financiera del cliente <strong>y su garante</strong>, de ser el caso. Debe estar debidamente sustentado.'],
+        ['icono' => '⏱️', 'texto' => '<strong>Plazo de fraccionamiento:</strong> El pago fraccionado en cancelación total tiene un plazo máximo de <strong>90 días</strong> contados desde la primera amortización efectuada durante la vigencia de la campaña.'],
+        ['icono' => '💳', 'texto' => '<strong>Límite de conciliación en cuotas:</strong> El monto a conciliar de cuotas atrasadas no debe superar el <strong>50% del valor de la(s) cuota(s) pactada(s)</strong>. Para 2 o más cuotas que regularizan el atraso, puede superarse con autorización de Jefatura.'],
+    ];
+    @endphp
+
+    <div style="display:flex;flex-direction:column;gap:10px;">
+        @foreach($alertas as $alerta)
+        <div class="notice" style="margin-bottom:0;display:flex;gap:12px;align-items:flex-start;">
+            <span style="font-size:18px;flex-shrink:0;line-height:1.4;">{{ $alerta['icono'] }}</span>
+            <span style="font-size:13px;">{!! $alerta['texto'] !!}</span>
+        </div>
+        @endforeach
+    </div>
+</div>
+
+
+{{-- ══════════════════════════════════════════════════════
+     BLOQUE 8 — FLUJO COMPLETO
+════════════════════════════════════════════════════════ --}}
+<div class="card">
+    <div class="card-title">🔄 Flujo completo de la operación</div>
+
+    {{-- Steps macro --}}
+    <div class="steps" style="margin-bottom:24px;">
+        <div class="step done">1. Contacto</div>
+        <div class="step done">2. Verificación</div>
+        <div class="step active">3. Propuesta</div>
+        <div class="step">4. Aprobación</div>
+        <div class="step">5. Ejecución</div>
+        <div class="step">6. Cierre</div>
+    </div>
+
+    @php
+    $pasos = [
+        [
+            'n'           => 1,
+            'responsable' => 'Asesor de Negocios / Gestor de Cobranza / Ejecutivo de Cobranza',
+            'fase'        => 'Contacto',
+            'decision'    => false,
+            'actividad'   => 'Contacta a los clientes a través de visitas de cobranza domiciliaria y/o gestiones telefónicas.',
+        ],
+        [
+            'n'           => 2,
+            'responsable' => 'Administrador de Tienda / Gestor de Cobranza / Asesor de Negocios / Ejecutivo de Cobranza',
+            'fase'        => 'Contacto',
+            'decision'    => false,
+            'actividad'   => 'Atiende al cliente e informa el estado del crédito, situación de morosidad y el detalle de las cuotas a pagar.',
+        ],
+        [
+            'n'           => 3,
+            'responsable' => 'Administrador de Tienda / Gestor de Cobranza / Asesor de Negocios / Ejecutivo de Cobranza',
+            'fase'        => 'Verificación',
+            'decision'    => false,
+            'actividad'   => 'Verifica si el cliente califica para descuento según data de campaña. Debe tener en consideración los lineamientos establecidos en la campaña vigente.',
+        ],
+        [
+            'n'           => 4,
+            'responsable' => 'Administrador de Tienda / Gestor de Cobranza / Asesor de Negocios / Ejecutivo de Cobranza',
+            'fase'        => 'Verificación',
+            'decision'    => true,
+            'pregunta'    => '¿La verificación es positiva?',
+            'si'          => 'Continúa con paso 5',
+            'no'          => 'Fin del procedimiento',
+            'actividad'   => null,
+        ],
+        [
+            'n'           => 5,
+            'responsable' => 'Administrador de Tienda / Gestor de Cobranza / CNC / Asesor de Negocios / Ejecutivo de Cobranza',
+            'fase'        => 'Propuesta',
+            'decision'    => false,
+            'actividad'   => 'Propone vía correo la solicitud de exoneración al Nivel de Autonomía (Jefe de Recuperaciones, Coordinador Zonal de Recuperaciones o Jefe Zonal de Tiendas). El correo debe contener el formato FUD establecido.',
+        ],
+        [
+            'n'           => 6,
+            'responsable' => 'Nivel de Autonomía: Coordinador Zonal de Recuperaciones / Jefe de Recuperaciones / Jefe Zonal de Tiendas',
+            'fase'        => 'Aprobación',
+            'decision'    => true,
+            'pregunta'    => '¿Ingresa y aprueba en el Sistema Informático?',
+            'si'          => 'Continúa con paso 7',
+            'no'          => 'Fin del procedimiento',
+            'actividad'   => null,
+        ],
+        [
+            'n'           => 7,
+            'responsable' => 'Administrador de Tienda / Coordinador Zonal de Recuperaciones',
+            'fase'        => 'Aprobación',
+            'decision'    => false,
+            'actividad'   => 'Remite correo al personal de Operaciones de la Tienda, adjuntando el correo de aprobación del nivel de autonomía con el monto a pagar y el monto a exonerar. Si el cliente paga en otra Tienda, el Administrador de Tienda Origen remite el correo a esa Tienda.',
+        ],
+        [
+            'n'           => 8,
+            'responsable' => 'Administrador de Tienda / Coordinador Zonal de Recuperaciones / Asesor de Negocios',
+            'fase'        => 'Aprobación',
+            'decision'    => false,
+            'actividad'   => 'Elabora el Acuerdo de Pago respecto de la operación con exoneración y lo remite al área de Operaciones.',
+        ],
+        [
+            'n'           => 9,
+            'responsable' => 'Gestor de Servicios / Gestor Supervisor de Operaciones y Servicios / Supervisor de Operaciones y Servicios',
+            'fase'        => 'Ejecución',
+            'decision'    => false,
+            'actividad'   => 'Atiende al cliente en ventanilla. Verifica el correo, valida datos del crédito y ejecuta el procedimiento de pago. Emite Comprobante de Pago y Nota de Abono, imprime el Acuerdo de Pago, toma firmas y entrega copia al cliente. El cliente paga según módulo y transacción correspondiente.',
+        ],
+        [
+            'n'           => 10,
+            'responsable' => 'Gestor de Servicios / Gestor Supervisor de Operaciones y Servicios / Supervisor de Operaciones y Servicios',
+            'fase'        => 'Ejecución',
+            'decision'    => false,
+            'actividad'   => 'Remite correo al Administrador de Tienda confirmando el pago del crédito, adjuntando escaneado el Comprobante de Pago, la Nota de Abono y el Acuerdo de Pago.',
+        ],
+        [
+            'n'           => 11,
+            'responsable' => 'Administrador de Tienda / Supervisor de Operaciones y Servicios',
+            'fase'        => 'Cierre',
+            'decision'    => false,
+            'actividad'   => 'Diariamente consolida y carga los sustentos en el link compartido (Comprobante de Pago, Nota de Abono y Acuerdo de Pago) de todas las operaciones de conciliación de la tienda a su cargo.',
+        ],
+        [
+            'n'           => 12,
+            'responsable' => 'Coordinador Zonal de Recuperaciones',
+            'fase'        => 'Cierre',
+            'decision'    => false,
+            'actividad'   => 'Diariamente valida la carga de sustentos de su zona y realiza la carga del formato de exoneración por Campaña en el link compartido (consolidado de operaciones de su zona).',
+        ],
+        [
+            'n'           => 13,
+            'responsable' => 'Analista / Asistente / Auxiliar de Recuperaciones',
+            'fase'        => 'Cierre',
+            'decision'    => false,
+            'actividad'   => 'Genera el reporte de conciliaciones dentro de los 2 primeros días hábiles del mes y lo remite a las áreas correspondientes. Fin del procedimiento.',
+        ],
+    ];
+
+    $fase_colores = [
+        'Contacto'    => 'var(--gris)',
+        'Verificación'=> '#1a56a0',
+        'Propuesta'   => 'var(--mostaza)',
+        'Aprobación'  => 'var(--rojo)',
+        'Ejecución'   => 'var(--verde)',
+        'Cierre'      => '#555',
+    ];
+    @endphp
+
+    <div class="grid2">
+        @foreach($pasos as $paso)
+
+        @if($paso['decision'])
+        {{-- Paso de decisión --}}
+        <div style="background:var(--mostaza-soft);border:1.5px solid var(--mostaza);border-radius:var(--radius-lg);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;">
+            <div style="width:32px;height:32px;border-radius:50%;background:var(--mostaza);color:#1a1a1a;font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">{{ $paso['n'] }}</div>
+            <div style="flex:1;min-width:0;">
+                <div style="font-size:10px;font-weight:700;color:#7a5f00;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">{{ $paso['fase'] }} · Decisión</div>
+                <div style="font-size:13px;font-weight:700;color:#5a4300;margin-bottom:10px;">{{ $paso['pregunta'] }}</div>
+                <div style="font-size:10px;font-weight:700;color:var(--gris);text-transform:uppercase;margin-bottom:6px;">Responsable</div>
+                <div style="font-size:12px;color:#555;margin-bottom:12px;">{{ $paso['responsable'] }}</div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <span class="badge badge-ok">✓ SÍ → {{ $paso['si'] }}</span>
+                    <span class="badge badge-danger">✗ NO → {{ $paso['no'] }}</span>
+                </div>
+            </div>
+        </div>
+
+        @else
+        {{-- Paso normal --}}
+        <div style="background:#fff;border:1px solid var(--borde);border-radius:var(--radius-lg);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;">
+            <div style="width:32px;height:32px;border-radius:50%;background:var(--rojo);color:#fff;font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">{{ $paso['n'] }}</div>
+            <div style="flex:1;min-width:0;">
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;color:{{ $fase_colores[$paso['fase']] ?? 'var(--gris)' }};">{{ $paso['fase'] }}</div>
+                <div style="font-size:10px;font-weight:700;color:var(--gris);text-transform:uppercase;margin-bottom:3px;">Responsable</div>
+                <div style="font-size:12px;color:#555;margin-bottom:8px;">{{ $paso['responsable'] }}</div>
+                <div style="font-size:13px;color:#333;line-height:1.5;">{{ $paso['actividad'] }}</div>
+            </div>
+        </div>
+        @endif
+
+        @endforeach
+    </div>
+
+    <div class="notice-success" style="margin-top:16px;">
+        ✅ <strong>Fin del procedimiento:</strong> El Analista de Recuperaciones genera el reporte de conciliaciones dentro de los <strong>2 primeros días hábiles del mes</strong> siguiente y lo remite a las áreas correspondientes.
+    </div>
+</div>
+
+
+@endsection
+
+
+@push('scripts')
+<script>
+/**
+ * Calculadora de beneficio máximo
+ * Lógica basada en Anexo I de la campaña
+ */
+function calcularBeneficio() {
+    const cartera       = document.getElementById('calc_cartera').value;
+    const calificacion  = document.getElementById('calc_calificacion').value;
+    const tipoCredito   = document.getElementById('calc_tipo_credito').value;
+    const dias          = parseInt(document.getElementById('calc_dias').value) || 0;
+    const cuotas        = parseInt(document.getElementById('calc_cuotas').value) || 0;
+    const condicion     = document.getElementById('calc_condicion').value;
+
+    if (!cartera || !calificacion || !condicion) {
+        document.getElementById('calc_resultado').style.display = 'none';
+        document.getElementById('calc_vacio').style.display = 'block';
+        return;
+    }
+
+    let intereses   = '—';
+    let capital     = 'No aplica';
+    let funcionario = '—';
+
+    // ── FOCMAC ──────────────────────────────────────────────────
+    if (cartera === 'focmac') {
+        intereses   = '100%';
+        capital     = 'Hasta 90%';
+        funcionario = 'Coordinador de Normalización de Cartera';
+    }
+
+    // ── CASTIGADA ────────────────────────────────────────────────
+    else if (cartera === 'castigada') {
+        intereses   = '100%';
+        capital     = dias <= 1095 ? 'Hasta 70%' : 'Hasta 80%'; // 3 años = 1095 días aprox
+        funcionario = 'Coordinador de Normalización de Cartera';
+    }
+
+    // ── JUDICIAL / EXTRAJUDICIAL ─────────────────────────────────
+    else if (cartera === 'judicial') {
+        intereses   = '100%';
+        capital     = 'Hasta 70%';
+        funcionario = 'SK < 3 UITs: Coordinador Zonal de Recuperaciones · SK > 3 UITs: Jefe de Recuperaciones';
+    }
+
+    // ── CANCELACIÓN TOTAL — VENCIDA / REPROGRAMADA / REFINANCIADA
+    else if (condicion === 'cancelacion') {
+        if (cartera === 'refinanciada') {
+            if (['deficiente','dudoso','perdida'].includes(calificacion)) {
+                if (dias >= 31 && dias <= 60) {
+                    intereses   = '100% intereses + moratorio';
+                    capital     = 'Hasta 25% SK (refinanciados)';
+                    funcionario = 'CZR (SK < 3 UITs) · Jefe Recuperaciones (SK > 3 UITs)';
+                } else if (dias >= 61) {
+                    intereses   = '100% intereses + moratorio';
+                    capital     = 'Hasta 50% SK';
+                    funcionario = 'CZR (SK < 3 UITs) · Jefe Recuperaciones (SK > 3 UITs)';
+                }
+            } else if (calificacion === 'cpp') {
+                intereses   = 'Hasta 70% intereses + 100% moratorio';
+                capital     = 'No aplica';
+                funcionario = 'Jefe Zonal de Tiendas';
+            }
+        } else {
+            if (calificacion === 'cpp') {
+                intereses   = 'Hasta 50% intereses + 100% moratorio';
+                capital     = 'No aplica';
+                funcionario = 'Jefe Zonal de Tiendas';
+            } else if (['deficiente','dudoso','perdida'].includes(calificacion)) {
+                if (dias >= 31 && dias <= 60) {
+                    intereses   = 'Hasta 100% intereses + moratorio';
+                    capital     = 'No aplica';
+                    funcionario = 'Coordinador Zonal de Recuperaciones';
+                } else if (dias >= 61) {
+                    intereses   = 'Hasta 100% intereses + moratorio';
+                    capital     = 'Hasta 50% SK';
+                    funcionario = 'CZR (SK < 3 UITs) · Jefe Recuperaciones (SK > 3 UITs)';
+                }
+            }
+        }
+    }
+
+    // ── PAGO DE CUOTAS ───────────────────────────────────────────
+    else if (condicion === 'cuotas') {
+
+        // Refinanciados Dudoso/Pérdida 9–30 días
+        if (cartera === 'refinanciada' && ['dudoso','perdida'].includes(calificacion) && dias >= 9 && dias <= 30 && cuotas >= 1) {
+            intereses   = 'Hasta 30% intereses + 100% moratorio';
+            funcionario = 'Coordinador Zonal de Recuperaciones';
+        }
+        // Refinanciados cualquier calificación >= 31 días
+        else if (cartera === 'refinanciada' && dias >= 31 && cuotas >= 1) {
+            intereses   = 'Hasta 60% intereses + 100% moratorio';
+            funcionario = 'Coordinador Zonal de Recuperaciones';
+        }
+        // Hipotecarios CPP >= 61 días
+        else if (tipoCredito === 'hipotecario' && calificacion === 'cpp' && dias >= 61) {
+            intereses   = cuotas >= 1 ? 'Hasta 50% intereses + 100% moratorio' : '—';
+            funcionario = 'Coordinador Zonal de Recuperaciones';
+        }
+        // Hipotecarios Deficiente/Dudoso/Pérdida >= 61 días
+        else if (tipoCredito === 'hipotecario' && ['deficiente','dudoso','perdida'].includes(calificacion) && dias >= 61) {
+            if (cuotas >= 2) {
+                intereses = 'Hasta 80% intereses + 100% moratorio';
+            } else {
+                intereses = 'Hasta 60% intereses + 100% moratorio';
+            }
+            funcionario = 'Coordinador Zonal de Recuperaciones';
+        }
+        // Cualquier calificación, se pone al día (>= 61 días)
+        else if (dias >= 61 && cuotas === 0) {
+            intereses   = 'Hasta 80% intereses + 100% moratorio';
+            funcionario = 'Coordinador Zonal de Recuperaciones';
+        }
+        // Deficiente/Dudoso/Pérdida no hipotecario >= 61 días
+        else if (['deficiente','dudoso','perdida'].includes(calificacion) && dias >= 61 && tipoCredito !== 'hipotecario') {
+            if (dias >= 91 && cuotas >= 3) {
+                intereses = 'Hasta 70% intereses + 100% moratorio';
+            } else if (dias >= 61 && cuotas >= 2) {
+                intereses = 'Hasta 60% intereses + 100% moratorio';
+            } else {
+                intereses = 'Hasta 40% intereses + 100% moratorio';
+            }
+            funcionario = 'Coordinador Zonal de Recuperaciones';
+        }
+        // General 31-60 días
+        else if (dias >= 31 && dias <= 60 && cuotas >= 1) {
+            if (tipoCredito === 'pequena_empresa') {
+                intereses = 'Hasta 40% intereses + 100% moratorio';
+            } else {
+                intereses = 'Hasta 30% intereses + 100% moratorio';
+            }
+            funcionario = 'Coordinador Zonal de Recuperaciones';
+        }
+    }
+
+    // Mostrar resultado
+    document.getElementById('res_intereses').textContent  = intereses;
+    document.getElementById('res_capital').textContent    = capital;
+    document.getElementById('res_funcionario').textContent = funcionario;
+    document.getElementById('calc_vacio').style.display    = 'none';
+    document.getElementById('calc_resultado').style.display = 'block';
+}
+</script>
+@endpush
