@@ -42,6 +42,7 @@ class BandejaController extends Controller
             'comentario_aprobador' => $request->comentario,
             'aprobado_por'         => $user->id,
             'fecha_decision'       => now()->toDateString(),
+            'decidido_en'          => now(),
         ]);
 
         // Guardar adjuntos del aprobador si los subió

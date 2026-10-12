@@ -26,6 +26,7 @@ class DemoSeeder extends Seeder
     private \Faker\Generator $faker;
     private AsignadorAprobador $asignador;
     private Carbon $hoy;
+    private Carbon $ahora;   // límite: ningún evento queda en el futuro
     private array $tiendas = [];        // nombre => Tienda
     private array $ejecutivosZona = []; // zona_id => [User]
     private array $czrZona = [];        // zona_id => User
@@ -46,6 +47,7 @@ class DemoSeeder extends Seeder
         $this->faker->seed(2026);
         $this->asignador = app(AsignadorAprobador::class);
         $this->hoy = now()->startOfDay();
+        $this->ahora = now()->subMinutes(10);
 
         $this->crearTiendas();
         $this->crearUsuarios();
@@ -248,7 +250,7 @@ class DemoSeeder extends Seeder
 
             // Más actividad reciente: la campaña empezó el 01/09
             $hace   = (int) floor(92 * pow(mt_rand(0, 1000) / 1000, 1.3));
-            $envio  = $this->hoy->copy()->subDays($hace);
+            $envio  = $this->hoy->copy()->subDays($hace)->setTime(mt_rand(8, 12), mt_rand(0, 59));
             $ejec   = $this->ejecutivoDe($cli);
             $res    = $this->elegirPonderado([
                 [52, 'Aprobado'], [11, 'En revisión'], [8, 'Observado'], [7, 'Rechazado'],
@@ -256,7 +258,7 @@ class DemoSeeder extends Seeder
             ])[1];
             // Lo que sigue en revisión es reciente
             if (in_array($res, ['En revisión', 'Corregido-Revision'])) {
-                $envio = $this->hoy->copy()->subDays(mt_rand(0, 6));
+                $envio = $this->hoy->copy()->subDays(mt_rand(1, 6))->setTime(mt_rand(8, 17), mt_rand(0, 59));
             }
 
             $nivel = $this->asignador->nivelRequerido($cli);
@@ -265,20 +267,20 @@ class DemoSeeder extends Seeder
 
             if (str_starts_with($res, 'Corregido')) {
                 // Versión 1 observada y luego corregida
-                $dec1 = $this->despues($envio, 1, 3);
+                $dec1 = $this->despues($envio, 20, 72);
                 $v1 = $this->fud($cli, $ejec, $apr, $nivel, $tipo, $envio, $motivos, 'Rechazado', $dec1,
                     $obsAprobador[mt_rand(0, count($obsAprobador) - 1)]);
                 $this->log($apr, 'Decisión FUD', 'Observado', $v1, $dec1, $v1->comentario_aprobador);
-                $envio2 = $this->despues($dec1, 0, 2);
+                $envio2 = $this->despues($dec1, 2, 40);
                 $estado2 = $res === 'Corregido-Aprobado' ? 'Aprobado' : 'En revisión';
-                $dec2 = $estado2 === 'Aprobado' ? $this->despues($envio2, 0, 2) : null;
+                $dec2 = $estado2 === 'Aprobado' ? $this->despues($envio2, 2, 40) : null;
                 $v2 = $this->fud($cli, $ejec, $apr, $nivel, $tipo, $envio2, $motivos, $estado2, $dec2, null, $v1);
                 $this->log($ejec, 'Corrección de FUD', 'En revisión', $v2, $envio2, 'Corrección #1 enviada tras observación.');
                 if ($estado2 === 'Aprobado') $this->aprobar($v2, $apr, $cli, $dec2);
                 continue;
             }
 
-            $dec = $res === 'En revisión' ? null : $this->despues($envio, 0, 4);
+            $dec = $res === 'En revisión' ? null : $this->despues($envio, 2, 96);
             $comentario = match ($res) {
                 'Observado' => $obsAprobador[mt_rand(0, count($obsAprobador) - 1)],
                 'Rechazado' => $rechazos[mt_rand(0, count($rechazos) - 1)],
@@ -301,7 +303,7 @@ class DemoSeeder extends Seeder
             'extrajudicial' => 'Cartera Extrajudicial / Judicial', 'castigada' => 'Cartera Castigada', 'focmac' => 'Cartera FOCMAC',
         ];
         $enCampana = $envio->gte('2026-09-01');
-        $creado    = $envio->copy()->setTime(mt_rand(8, 17), mt_rand(0, 59));
+        $creado    = $envio->copy();
 
         $fud = PropuestaFud::create([
             'parent_fud_id'         => $padre?->id,
@@ -320,10 +322,11 @@ class DemoSeeder extends Seeder
             'veces_observado'       => $padre ? $padre->veces_observado + 1 : 0,
             'aprobado_por'          => $dec ? $apr->id : null,
             'comentario_aprobador'  => $comentario ?? ($estado === 'Aprobado' && mt_rand(0, 1) ? 'Conforme. Proceder con la ejecución en tienda.' : null),
-            'fecha_decision'        => $dec,
-            'fecha_envio'           => $envio,
+            'fecha_decision'        => $dec?->toDateString(),
+            'decidido_en'           => $dec,
+            'fecha_envio'           => $envio->toDateString(),
             'created_at'            => $creado,
-            'updated_at'            => $dec ? $dec->copy()->setTime(mt_rand(9, 18), mt_rand(0, 59)) : $creado,
+            'updated_at'            => $dec ?? $creado,
         ]);
 
         match ($tipo) {
@@ -379,13 +382,13 @@ class DemoSeeder extends Seeder
         $this->log($apr, 'Decisión FUD', 'Aprobado', $fud, $dec, $fud->comentario_aprobador);
         $cli->increment('veces_conciliado');
 
-        $diasDesde = $dec->diffInDays($this->hoy);
+        $diasDesde = $dec->diffInDays($this->ahora);
         $estado = $diasDesde < 3
             ? $this->elegirPonderado([[60, 'Pendiente'], [40, 'En revisión']])[1]
             : $this->elegirPonderado([[58, 'Aprobado'], [12, 'En revisión'], [14, 'Observado'], [11, 'Pendiente'], [5, 'Rechazado']])[1];
 
-        $carga    = $estado === 'Pendiente' ? null : $this->despues($dec, 0, 3);
-        $revision = in_array($estado, ['Aprobado', 'Observado', 'Rechazado']) ? $this->despues($carga, 0, 2) : null;
+        $carga    = $estado === 'Pendiente' ? null : $this->despues($dec, 2, 60);
+        $revision = in_array($estado, ['Aprobado', 'Observado', 'Rechazado']) ? $this->despues($carga, 1, 40) : null;
         $revisor  = $this->czrZona[$cli->zona_id] ?? $this->jefe;
 
         $sustento = Sustento::create([
@@ -393,8 +396,8 @@ class DemoSeeder extends Seeder
             'cargado_por'         => $fud->enviado_por,
             'revisado_por'        => $revision ? $revisor->id : null,
             'estado'              => $estado,
-            'fecha_carga'         => $carga,
-            'fecha_revision'      => $revision?->copy()->setTime(mt_rand(9, 18), mt_rand(0, 59)),
+            'fecha_carga'         => $carga?->toDateString(),
+            'fecha_revision'      => $revision,
             'comentario_revision' => match ($estado) {
                 'Observado' => 'Corregir el documento observado y volver a cargarlo.',
                 'Rechazado' => 'Los documentos no corresponden a la operación aprobada.',
@@ -440,7 +443,7 @@ class DemoSeeder extends Seeder
                 'comentario_revisor'  => $i === $observado
                     ? ['Falta la firma del titular.', 'El monto no coincide con lo aprobado.', 'Documento ilegible, volver a escanear.'][mt_rand(0, 2)]
                     : null,
-                'cargado_en'          => $carga->copy()->setTime(mt_rand(9, 18), mt_rand(0, 59)),
+                'cargado_en'          => $carga->copy()->subMinutes((count($tipos) - $i) * 2),
             ]);
         }
     }
@@ -482,7 +485,7 @@ class DemoSeeder extends Seeder
                 'telefono'         => '9'.mt_rand(10000000, 99999999),
             ]);
 
-            $registro = $this->hoy->copy()->subDays((int) floor(90 * pow(mt_rand(0, 1000) / 1000, 1.2)));
+            $registro = $this->hoy->copy()->subDays(1 + (int) floor(89 * pow(mt_rand(0, 1000) / 1000, 1.2)))->setTime(mt_rand(9, 17), mt_rand(0, 59));
             $cargados = mt_rand(1, 100) <= 45 ? 10 : mt_rand(3, 9);
             $czr      = $this->czrZona[$tienda->zona_id] ?? $this->jefe;
 
@@ -493,7 +496,7 @@ class DemoSeeder extends Seeder
                 'motivo_habilitacion' => mt_rand(0, 1) ? 'Garantía rechazada por Cía. Seguros' : 'Pérdida de eficacia de la garantía',
                 'confirmacion_dpto'   => $cargados === 10 || mt_rand(0, 1),
                 'responsable'         => $czr->name,
-                'fecha_registro'      => $registro,
+                'fecha_registro'      => $registro->toDateString(),
                 'estado'              => $cargados === 10 ? 'Completo' : 'Incompleto',
                 'created_at'          => $registro,
                 'updated_at'          => $registro,
@@ -538,16 +541,24 @@ class DemoSeeder extends Seeder
             'operacion'        => (string) $cli->operacion,
             'estado'           => $estado,
             'descripcion'      => $desc,
-            'fecha_accion'     => $fecha,
-            'created_at'       => $fecha->copy()->setTime(mt_rand(8, 18), mt_rand(0, 59)),
+            'fecha_accion'     => $fecha->toDateString(),
+            'created_at'       => $fecha->copy(),
         ]);
     }
 
-    /** Fecha entre $min y $max días después, sin pasar de hoy. */
-    private function despues(Carbon $desde, int $min, int $max): Carbon
+    /** Momento entre $minHoras y $maxHoras después de $desde, sin pasar del momento actual. */
+    private function despues(Carbon $desde, int $minHoras, int $maxHoras): Carbon
     {
-        $f = $desde->copy()->addDays(mt_rand($min, $max));
-        return $f->gt($this->hoy) ? $this->hoy->copy() : $f;
+        $f = $desde->copy()->addMinutes(mt_rand($minHoras * 60, $maxHoras * 60));
+        // Horario de oficina: 08:00 a 19:00
+        if ($f->hour < 8)   $f->setTime(mt_rand(8, 10), mt_rand(0, 59));
+        if ($f->hour >= 19) $f->addDay()->setTime(mt_rand(8, 10), mt_rand(0, 59));
+        if ($f->lte($desde)) $f = $desde->copy()->addMinutes(mt_rand(10, 90));
+        if ($f->gt($this->ahora)) {
+            $f = $desde->copy()->addMinutes(mt_rand(5, 30));
+            if ($f->gt($this->ahora)) $f = $desde->copy()->addMinute();
+        }
+        return $f;
     }
 
     private function elegirPonderado(array $opciones): array

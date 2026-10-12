@@ -18,6 +18,8 @@
     <p>Operación {{ $cli->operacion }} · {{ $fud->tipo_negociacion_desc }}</p>
   </div>
   <div class="page-head-actions">
+    <a href="{{ route('aprobaciones.show', $fud) }}" class="btn btn-secondary btn-sm"><i class="bi bi-diagram-3"></i> Trazabilidad</a>
+    <a href="{{ route('aprobaciones.pdf', $fud) }}" class="btn btn-secondary btn-sm"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
     @if($fud->veces_observado > 0)
       <span class="badge badge-gray">Corrección {{ $fud->veces_observado }}</span>
     @endif

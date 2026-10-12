@@ -12,6 +12,7 @@ use App\Http\Controllers\ReportesController;
 use App\Http\Controllers\RevisionSustentosController;
 use App\Http\Controllers\DashboardSustentosController;
 use App\Http\Controllers\ValidacionController;
+use App\Http\Controllers\AprobacionesController;
 
 require __DIR__.'/auth.php';
 
@@ -34,6 +35,7 @@ Route::middleware('auth')->group(function () {
 
     // ── Bandeja (aprobadores) ────────────────────────────────
     Route::middleware('grupo:aprobador')->group(function () {
+        Route::get('/aprobaciones', [AprobacionesController::class, 'index'])->name('aprobaciones.index');
         Route::get('/bandeja',               [BandejaController::class, 'index'])->name('bandeja.index');
         Route::post('/bandeja/{fud}/decidir',[BandejaController::class, 'decidir'])->name('bandeja.decidir');
     });
@@ -64,6 +66,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/{sustento}/observar', [RevisionSustentosController::class, 'observar'])->name('observar');
         Route::post('/{sustento}/rechazar', [RevisionSustentosController::class, 'rechazar'])->name('rechazar');
     });
+
+    // ── Trazabilidad completa de una operación (aprobadores y ejecutivo que la envió) ──
+    Route::get('/expediente/{fud}/trazabilidad',     [AprobacionesController::class, 'show'])->name('aprobaciones.show');
+    Route::get('/expediente/{fud}/trazabilidad/pdf', [AprobacionesController::class, 'pdf'])->name('aprobaciones.pdf');
 
     // ── Seguimiento ──────────────────────────────────────────
     Route::get('/seguimiento', [SeguimientoController::class, 'index'])->name('seguimiento.index');

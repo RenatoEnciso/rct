@@ -91,6 +91,9 @@
           <i class="bi bi-inbox"></i> Bandeja de aprobación
           @if($pendBandeja) <span class="nav-count">{{ $pendBandeja }}</span> @endif
         </a>
+        <a class="nav-btn {{ request()->routeIs('aprobaciones.*') ? 'active' : '' }}" href="{{ route('aprobaciones.index') }}">
+          <i class="bi bi-patch-check"></i> Mis aprobaciones
+        </a>
         <a class="nav-btn {{ request()->routeIs('revision.index', 'revision.show') ? 'active' : '' }}" href="{{ route('revision.index') }}">
           <i class="bi bi-clipboard-check"></i> Revisión de sustentos
         </a>

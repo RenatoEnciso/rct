@@ -18,6 +18,7 @@
     <p>Cuenta {{ $cli->cuenta }} · Operación {{ $cli->operacion }} · {{ $fud->tipo_negociacion_desc }}</p>
   </div>
   <div class="page-head-actions">
+    <a href="{{ route('aprobaciones.show', $fud) }}" class="btn btn-secondary btn-sm"><i class="bi bi-diagram-3"></i> Trazabilidad completa</a>
     <span class="badge badge-lg {{ Estilo::badge($sustento->estado) }}">
       <i class="bi {{ Estilo::icono($sustento->estado) }}"></i> {{ $sustento->estado === 'Aprobado' ? 'Conforme' : $sustento->estado }}
     </span>

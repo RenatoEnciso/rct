@@ -15,12 +15,13 @@ class PropuestaFud extends Model
         'en_campana','tipo_operacion','motivo',
         'nivel_autonomia_req','estado_fud','veces_observado',
         'aprobado_por','comentario_aprobador',
-        'fecha_decision','fecha_envio',
+        'fecha_decision','decidido_en','fecha_envio',
     ];
 
     protected $casts = [
         'fecha_envio'    => 'date',
         'fecha_decision' => 'date',
+        'decidido_en'    => 'datetime',
         'en_campana'     => 'boolean',
     ];
 
