@@ -1,240 +1,151 @@
 @extends('layouts.app')
-@section('title', 'Bandeja de Aprobación')
+@section('title', 'Bandeja de aprobación')
+
+@use('App\Support\Estilo')
 
 @section('content')
+@php
+  $alcance = [
+    1 => 'Pago de cuotas; cancelaciones totales Deficiente, Dudoso o Pérdida; conciliación de capital con SK menor a 3 UIT.',
+    2 => 'Además: SK mayor a 3 UIT, excepciones a topes de descuento y exceso del límite de 4 conciliaciones.',
+    3 => 'Casos escalados desde la Jefatura de Recuperaciones.',
+  ];
+  $num = fn($v) => rtrim(rtrim((string) $v, '0'), '.');
+@endphp
 
 <div class="page-head">
-  <div class="page-head-text">
-    <h2>Bandeja de Aprobación</h2>
-    <p>FUDs pendientes de revisión para su nivel de autonomía.</p>
+  <div>
+    <h2>Bandeja de aprobación</h2>
+    <p>Propuestas asignadas a su nivel de autonomía, pendientes de decisión.</p>
   </div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap">
-    <span class="badge badge-info">
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
-      </svg>
-      Nivel {{ auth()->user()->nivel() }} · {{ auth()->user()->rol->nombre }}
-    </span>
-    <span class="badge {{ $pendientes->count() ? 'badge-danger' : 'badge-ok' }}">
-      {{ $pendientes->count() }} pendientes
-    </span>
+  <div class="page-head-actions">
+    <span class="badge badge-gray"><i class="bi bi-person-badge"></i> Nivel {{ auth()->user()->nivel() }} · {{ auth()->user()->rol->nombre }}</span>
+    <span class="badge {{ $pendientes->count() ? 'badge-rojo' : 'badge-ok' }}">{{ $pendientes->count() }} pendiente(s)</span>
   </div>
 </div>
 
-@php
-  $avisos = [
-    1 => 'Como <strong>Coordinador Zonal</strong> puedes aprobar: conciliaciones de intereses (cartera vencida no hipotecaria), cancelaciones totales Deficiente/Dudoso/Pérdida con SK &lt; 3 UITs.',
-    2 => 'Como <strong>Jefe de Recuperaciones</strong> puedes aprobar todos los casos de nivel 1 más: cancelaciones con SK &gt; 3 UITs y excedentes del límite de 4 conciliaciones.',
-    3 => 'Como <strong>Gerente de División</strong> tienes visibilidad total y autorización de casos escalados.',
-  ];
-@endphp
-<div class="notice">{!! $avisos[auth()->user()->nivel()] ?? '' !!}</div>
+<div class="notice"><i class="bi bi-info-circle"></i><span><strong>Alcance de su autonomía:</strong> {{ $alcance[auth()->user()->nivel()] ?? '' }}</span></div>
 
-<div class="card">
-  <div class="card-title">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/>
-    </svg>
-    FUDs pendientes de decisión
+<div class="card card-flush">
+  <div class="card-head" style="padding-bottom:4px">
+    <div class="card-title"><i class="bi bi-inbox"></i> Propuestas pendientes</div>
   </div>
-
-  <div style="overflow-x:auto">
-    <table>
-      <thead>
-        <tr>
-          <th>Fecha</th><th>Enviado por</th><th>Cliente</th><th>Operación</th>
-          <th>Saldo Capital</th><th>Calificación</th><th>Tipo</th><th>Versión</th><th>Acción</th>
-        </tr>
-      </thead>
-      <tbody>
-        @forelse($pendientes as $p)
-          <tr>
-            <td>{{ $p->fecha_envio->format('d/m/Y') }}</td>
-            <td style="font-size:12px">{{ $p->enviador->name }}</td>
-            <td>
-              <strong>{{ $p->cliente->nombre_cliente }}</strong><br>
-              <span style="font-size:11px;color:#999">{{ $p->cliente->cuenta }}</span>
-            </td>
-            <td>{{ $p->cliente->operacion }}</td>
-            <td><strong>{{ $p->cliente->saldo_formateado }}</strong></td>
-            <td><span class="badge badge-info">{{ $p->cliente->calificacion_rcc }}</span></td>
-            <td style="font-size:12px">{{ $p->tipo_negociacion_desc }}</td>
-            <td>
-              @if($p->veces_observado > 0)
-                <span class="badge badge-mostaza">
-                  Corrección #{{ $p->veces_observado }}
-                </span>
-              @else
-                <span class="badge badge-gray">1er envío</span>
-              @endif
-            </td>
-            <td>
-              <button class="btn btn-primary btn-sm" onclick="abrirModal({{ $p->id }})">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                </svg>
-                Revisar
-              </button>
-            </td>
-          </tr>
-        @empty
-          <tr>
-            <td colspan="9" style="text-align:center;padding:32px;color:#999">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"
-                   style="display:block;margin:0 auto 10px">
-                <circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/>
-              </svg>
-              No hay FUDs pendientes en tu bandeja. ✓
-            </td>
-          </tr>
-        @endforelse
-      </tbody>
-    </table>
+  <div style="padding:0 20px">
+    <div class="table-wrap">
+      <table data-rct-table data-search-placeholder="Buscar cliente, operación o ejecutivo">
+        <thead>
+          <tr><th>Enviado</th><th>Ejecutivo</th><th>Cliente</th><th class="num">Saldo capital</th><th>Calificación</th><th>Tipo</th><th>Envío</th><th></th></tr>
+        </thead>
+        <tbody>
+          @forelse($pendientes as $p)
+            <tr>
+              <td class="nowrap">{{ $p->fecha_envio->format('d/m/Y') }}<div class="cell-sub">{{ $p->fecha_envio->diffForHumans() }}</div></td>
+              <td>{{ $p->enviador->name }}<div class="cell-sub">{{ $p->cliente->tienda->nombre ?? '' }}</div></td>
+              <td><div class="cell-main">{{ $p->cliente->nombre_cliente }}</div><div class="cell-sub">Op. {{ $p->cliente->operacion }}</div></td>
+              <td class="num">{{ $p->cliente->saldo_formateado }}</td>
+              <td><span class="badge badge-gray">{{ $p->cliente->calificacion_rcc }}</span></td>
+              <td>{{ $p->tipo_negociacion_desc }}</td>
+              <td>
+                @if($p->veces_observado > 0)
+                  <span class="badge badge-pending">Corrección {{ $p->veces_observado }}</span>
+                @else
+                  <span class="badge badge-gray">Primer envío</span>
+                @endif
+              </td>
+              <td class="num"><button type="button" class="btn btn-primary btn-sm" data-modal-open="modal-{{ $p->id }}">Revisar</button></td>
+            </tr>
+          @empty
+            <tr data-empty><td colspan="8" class="empty-state">
+              <i class="bi bi-check2-all"></i><strong>Bandeja al día</strong><span>No tiene propuestas pendientes de decisión.</span>
+            </td></tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
   </div>
+  <div style="height:16px"></div>
 </div>
 
-{{-- MODALES de decisión --}}
 @foreach($pendientes as $p)
-<div id="modal-{{ $p->id }}" class="modal">
-  <div class="modal-box" style="width:min(700px,96vw)">
-    <div class="modal-head">
-      <h3 class="modal-title">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-        Revisar FUD · {{ $p->cliente->nombre_cliente }}
-      </h3>
-      <button class="modal-close" onclick="cerrarModal({{ $p->id }})">×</button>
-    </div>
-
-    {{-- Datos principales --}}
-    <div class="grid2" style="font-size:13px;margin-bottom:16px;gap:10px">
-      @foreach([
-        'Cliente'          => $p->cliente->nombre_cliente,
-        'Operación'        => $p->cliente->operacion,
-        'Saldo Capital'    => $p->cliente->saldo_formateado,
-        'Días de atraso'   => $p->cliente->dias_atraso . ' días',
-        'Calificación'     => $p->cliente->calificacion_rcc,
-        'Estado crédito'   => $p->cliente->estado_cartera,
-        'Tipo negociación' => $p->tipo_negociacion_desc,
-        'Enviado por'      => $p->enviador->name,
-      ] as $label => $val)
+  @php $cli = $p->cliente; $det = $p->getDetalle(); @endphp
+  <div class="rct-modal" id="modal-{{ $p->id }}" role="dialog" aria-labelledby="titulo-{{ $p->id }}">
+    <div class="rct-modal-box">
+      <div class="rct-modal-head">
         <div>
-          <div class="detail-label">{{ $label }}</div>
-          <div class="detail-value">{{ $val }}</div>
+          <h3 class="rct-modal-title" id="titulo-{{ $p->id }}">{{ $cli->nombre_cliente }}</h3>
+          <div class="cell-sub">FUD-{{ str_pad($p->id, 5, '0', STR_PAD_LEFT) }} · {{ $p->tipo_negociacion_desc }} · enviado por {{ $p->enviador->name }} el {{ $p->fecha_envio->format('d/m/Y') }}</div>
         </div>
-      @endforeach
-    </div>
-
-    {{-- Indicador de corrección --}}
-    @if($p->veces_observado > 0)
-      <div style="background:#fff8e7;border-left:4px solid var(--mostaza);
-                  padding:10px 14px;border-radius:0 8px 8px 0;font-size:12px;margin-bottom:14px">
-        <strong>⚠ Esta es la corrección #{{ $p->veces_observado }}</strong> de este FUD.
-        El ejecutivo corrigió y re-envió tras una observación anterior.
+        <button type="button" class="rct-modal-close" data-modal-close aria-label="Cerrar"><i class="bi bi-x-lg"></i></button>
       </div>
-    @endif
 
-    {{-- Motivo --}}
-    <div style="background:#fafafa;border-radius:8px;padding:12px;margin-bottom:14px">
-      <div class="detail-label" style="margin-bottom:6px">Motivo / Sustento del ejecutivo</div>
-      <p style="margin:0;font-size:13px;color:#333;line-height:1.6">{{ $p->motivo }}</p>
-    </div>
+      <div class="rct-modal-body">
+        @if($p->veces_observado > 0 && $p->padre)
+          <div class="notice-warning"><i class="bi bi-arrow-repeat"></i>
+            <span><strong>Corrección {{ $p->veces_observado }}.</strong> Observación anterior: {{ $p->padre->comentario_aprobador }}</span></div>
+        @endif
 
-    {{-- Adjuntos del ejecutivo --}}
-    @if($p->adjuntos->count())
-      <div style="margin-bottom:14px">
-        <div class="detail-label" style="margin-bottom:8px">
-          Archivos adjuntos ({{ $p->adjuntos->count() }})
+        <div class="detail-grid" style="margin-bottom:16px">
+          <div><div class="detail-label">Operación</div><div class="detail-value">{{ $cli->operacion }}</div></div>
+          <div><div class="detail-label">Saldo capital</div><div class="detail-value">{{ $cli->saldo_formateado }}</div></div>
+          <div><div class="detail-label">Días de atraso</div><div class="detail-value">{{ $cli->dias_atraso }}</div></div>
+          <div><div class="detail-label">Calificación</div><div class="detail-value">{{ $cli->calificacion_rcc }}</div></div>
+          <div><div class="detail-label">Situación de cartera</div><div class="detail-value">{{ $cli->estado_cartera }}</div></div>
+          <div><div class="detail-label">Conciliaciones (12 meses)</div><div class="detail-value">{{ $cli->veces_conciliado }} de 4</div></div>
         </div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px">
-          @foreach($p->adjuntos as $adj)
-            <a href="{{ route('fud.download', $adj) }}"
-               style="display:flex;align-items:center;gap:5px;padding:5px 10px;
-                      background:#f0f0f0;border-radius:7px;font-size:11px;color:inherit;text-decoration:none">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--rojo)" stroke-width="2">
-                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
-              </svg>
-              {{ $adj->nombre_archivo }}
-            </a>
-          @endforeach
-        </div>
-      </div>
-    @endif
 
-    {{-- Nivel requerido --}}
-    <div style="background:var(--mostaza-soft);border-left:4px solid var(--mostaza);
-                padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:20px;font-size:12px">
-      <strong>Beneficio solicitado:</strong> Nivel {{ $p->nivel_autonomia_req }}
-      — Aprobador: {{ $p->aprobador->name ?? '—' }}
+        @if($det)
+          <div class="card-plain" style="padding:14px;margin-bottom:16px">
+            <div class="quote-label">Condiciones propuestas</div>
+            <div class="detail-grid">
+              @if($p->tipo_negociacion === 'cuotas')
+                <div><div class="detail-label">Cuotas</div><div class="detail-value">{{ $det->cuota_desde }} a {{ $det->cuota_hasta }}</div></div>
+                <div><div class="detail-label">Intereses</div><div class="detail-value">{{ $num($det->desc_interes) }}%</div></div>
+                <div><div class="detail-label">Moratorio</div><div class="detail-value">{{ $num($det->desc_moratorio) }}%</div></div>
+                <div><div class="detail-label">Pone al día</div><div class="detail-value">{{ $det->pone_al_dia ? 'Sí' : 'No' }}</div></div>
+              @elseif($p->tipo_negociacion === 'cancelacion')
+                <div><div class="detail-label">Monto a pagar</div><div class="detail-value">{{ Estilo::soles($det->monto_a_pagar) }}</div></div>
+                <div><div class="detail-label">Intereses</div><div class="detail-value">{{ $num($det->desc_interes) }}%</div></div>
+                <div><div class="detail-label">Capital</div><div class="detail-value">{{ $num($det->desc_capital) }}%</div></div>
+                <div><div class="detail-label">Fecha límite</div><div class="detail-value">{{ $det->fecha_limite?->format('d/m/Y') ?? '—' }}</div></div>
+              @else
+                <div><div class="detail-label">Beneficio sobre SK</div><div class="detail-value">{{ $num($det->beneficio_pct_sk) }}%</div></div>
+                <div><div class="detail-label">Etapa procesal</div><div class="detail-value">{{ $det->etapa_procesal ?? '—' }}</div></div>
+                <div><div class="detail-label">Gravamen / embargo</div><div class="detail-value">{{ $det->monto_gravamen ? Estilo::soles($det->monto_gravamen) : '—' }}</div></div>
+              @endif
+            </div>
+          </div>
+        @endif
+
+        <div class="quote-label">Sustento del ejecutivo</div>
+        <div class="quote" style="margin-bottom:16px">{{ $p->motivo }}</div>
+
+        @if($p->adjuntos->count())
+          <div class="quote-label">Archivos adjuntos</div>
+          <div class="file-list" style="margin-bottom:16px">
+            @foreach($p->adjuntos as $adj)
+              <a href="{{ route('fud.download', $adj) }}" class="file-chip"><i class="bi bi-file-earmark-arrow-down"></i><span>{{ $adj->nombre_archivo }}</span></a>
+            @endforeach
+          </div>
+        @endif
+
+        <form method="POST" action="{{ route('bandeja.decidir', $p) }}" enctype="multipart/form-data" class="form-section">
+          @csrf
+          <div class="field">
+            <label for="comentario-{{ $p->id }}">Comentario <span class="field-hint">(obligatorio al observar o rechazar)</span></label>
+            <textarea id="comentario-{{ $p->id }}" name="comentario" rows="3" placeholder="Condiciones, observaciones o documentos faltantes"></textarea>
+          </div>
+          <div class="field" style="margin-top:12px">
+            <label for="adj-{{ $p->id }}">Adjuntar archivos (opcional)</label>
+            <input id="adj-{{ $p->id }}" type="file" name="adjuntos_aprobador[]" multiple accept=".pdf,.jpg,.jpeg,.png,.xlsx,.docx" class="input-rct">
+          </div>
+          <div class="actions">
+            <button type="submit" name="decision" value="Rechazado" class="btn btn-danger" data-confirm="El rechazo es definitivo. ¿Desea rechazar esta propuesta?"><i class="bi bi-x-circle"></i> Rechazar</button>
+            <button type="submit" name="decision" value="Observado" class="btn btn-warning"><i class="bi bi-arrow-return-left"></i> Observar</button>
+            <button type="submit" name="decision" value="Aprobado" class="btn btn-success" data-confirm="¿Confirma la aprobación de esta propuesta?"><i class="bi bi-check2-circle"></i> Aprobar</button>
+          </div>
+        </form>
+      </div>
     </div>
-
-    {{-- Formulario decisión --}}
-    <form method="POST" action="{{ route('bandeja.decidir', $p) }}"
-          enctype="multipart/form-data">
-      @csrf
-
-      <div class="field" style="margin-bottom:14px">
-        <label>Comentario del aprobador (obligatorio al observar o rechazar)</label>
-        <textarea name="comentario" rows="3"
-          placeholder="Observaciones, condiciones, documentos faltantes, etc."></textarea>
-      </div>
-
-      {{-- Adjuntos del aprobador --}}
-      <div class="field" style="margin-bottom:20px">
-        <label>Adjuntar archivos (opcional)</label>
-        <input type="file" name="adjuntos_aprobador[]" multiple
-               accept=".pdf,.jpg,.jpeg,.png,.xlsx,.docx"
-               style="margin-bottom:4px">
-        <span style="font-size:11px;color:#999">PDF, imagen, Excel o Word. Máx 10MB por archivo.</span>
-      </div>
-
-      <div style="display:grid;gap:8px">
-        <button type="submit" name="decision" value="Aprobado"
-          class="btn btn-success btn-block" style="padding:13px;font-size:14px">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/>
-          </svg>
-          APROBAR E INGRESAR EN SISTEMA
-        </button>
-        <button type="submit" name="decision" value="Observado"
-          class="btn btn-secondary btn-block" style="padding:11px;font-size:13px">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="12" y1="8" x2="12" y2="12"/>
-            <line x1="12" y1="16" x2="12.01" y2="16"/>
-          </svg>
-          OBSERVAR (devolver para corrección)
-        </button>
-        <button type="submit" name="decision" value="Rechazado"
-          class="btn btn-danger btn-block" style="padding:11px;font-size:13px">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="15" y1="9" x2="9" y2="15"/>
-            <line x1="9" y1="9" x2="15" y2="15"/>
-          </svg>
-          RECHAZAR DEFINITIVAMENTE
-        </button>
-      </div>
-    </form>
   </div>
-</div>
 @endforeach
-
 @endsection
-
-@push('scripts')
-<script>
-function abrirModal(id)  { document.getElementById('modal-' + id).classList.add('show'); }
-function cerrarModal(id) { document.getElementById('modal-' + id).classList.remove('show'); }
-
-// Cerrar modal con Escape
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    document.querySelectorAll('.modal.show')
-      .forEach(m => m.classList.remove('show'));
-  }
-});
-</script>
-@endpush

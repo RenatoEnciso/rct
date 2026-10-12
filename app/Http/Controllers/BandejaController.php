@@ -10,7 +10,8 @@ class BandejaController extends Controller
     {
         $user = $request->user();
 
-        $pendientes = PropuestaFud::with('cliente','enviador','adjuntos')
+        $pendientes = PropuestaFud::with('cliente.tienda', 'enviador', 'adjuntos', 'padre',
+                                         'detalleCuotas', 'detalleCancelacion', 'detalleJudicial')
             ->porAprobador($user->id)
             ->enRevision()
             ->latest()

@@ -4,535 +4,253 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<title>@yield('title', 'RCT Recuperaciones') – Caja Trujillo</title>
+<title>@yield('title', 'Inicio') · RCT Recuperaciones · Caja Trujillo</title>
 
-{{-- Fuente --}}
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-{{-- Bootstrap 5 CSS --}}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-{{-- Lucide (una sola carga, al final del head) --}}
-<link rel="stylesheet" href="{{ asset('assets/css/rct.css') }}">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{{ asset('assets/css/rct.css') }}?v={{ filemtime(public_path('assets/css/rct.css')) }}">
 @stack('styles')
 </head>
 <body>
+@php
+  $user = auth()->user();
+  $pendBandeja = $user->esAprobador()
+      ? \App\Models\PropuestaFud::porAprobador($user->id)->enRevision()->count() : 0;
+  $pendSustentos = $user->esGrupoFud()
+      ? \App\Models\Sustento::where('cargado_por', $user->id)->whereIn('estado', ['Pendiente', 'Observado'])->count() : 0;
+  $iniciales = collect(explode(' ', trim($user->name)))->filter()->take(2)
+      ->map(fn($p) => mb_strtoupper(mb_substr($p, 0, 1)))->implode('');
+@endphp
 
-{{-- ── HEADER ── --}}
+{{-- Encabezado --}}
 <header class="rct-header">
   <div class="d-flex align-items-center gap-3">
-
-    {{-- Toggler mobile --}}
-    <button class="navbar-toggler-rct d-lg-none"
-            id="sidebarToggle"
-            type="button"
-            aria-label="Abrir menú">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="2.5">
-        <line x1="3" y1="6" x2="21" y2="6"/>
-        <line x1="3" y1="12" x2="21" y2="12"/>
-        <line x1="3" y1="18" x2="21" y2="18"/>
-      </svg>
+    <button class="navbar-toggler-rct d-lg-none" id="sidebarToggle" type="button" aria-label="Abrir menú">
+      <i class="bi bi-list"></i>
     </button>
-
-    <div class="brand-logo-mark">CT</div>
-    <div>
-      <div class="brand-name">CAJA TRUJILLO</div>
-      <div class="brand-sub">Campaña: Sin Atrasos que Atrasan</div>
-    </div>
+    <a href="{{ route('dashboard') }}" class="brand">
+      <div class="brand-logo-mark">CT</div>
+      <div>
+        <div class="brand-name">Caja Trujillo</div>
+        <div class="brand-sub">RCT · Sistema de Recuperaciones</div>
+      </div>
+    </a>
   </div>
 
   <div class="header-right">
     <div class="user-chip">
-      <div class="user-avatar">
-        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-      </div>
+      <div class="user-avatar" aria-hidden="true">{{ $iniciales }}</div>
       <div class="d-none d-sm-block">
-        <div class="user-name">{{ strtoupper(auth()->user()->name) }}</div>
-        <div class="user-rol">{{ auth()->user()->rol->nombre }}</div>
+        <div class="user-name">{{ $user->name }}</div>
+        <div class="user-rol">{{ $user->rol->nombre }}</div>
       </div>
     </div>
-
     <form method="POST" action="{{ route('logout') }}">
       @csrf
-      <button type="submit" class="btn-logout">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="2.5">
-          <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
-          <polyline points="16 17 21 12 16 7"/>
-          <line x1="21" y1="12" x2="9" y2="12"/>
-        </svg>
-        <span class="d-none d-sm-inline">Salir</span>
+      <button type="submit" class="btn-logout" title="Cerrar sesión">
+        <i class="bi bi-box-arrow-right"></i>
+        <span class="d-none d-md-inline">Salir</span>
       </button>
     </form>
   </div>
 </header>
 
-{{-- ── LAYOUT ── --}}
 <div class="rct-layout">
-
-  {{-- Backdrop mobile --}}
   <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
-  {{-- SIDEBAR --}}
+  {{-- Menú lateral --}}
   <aside class="rct-sidebar" id="sidebar">
-
-    @php $user = auth()->user(); @endphp
-
-    <div class="nav-section-label">Gestión de Campaña</div>
-
-    <a class="nav-btn {{ request()->routeIs('dashboard') ? 'active' : '' }}"
-       href="{{ route('dashboard') }}">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <rect x="3" y="3" width="7" height="7" rx="1"/>
-        <rect x="14" y="3" width="7" height="7" rx="1"/>
-        <rect x="3" y="14" width="7" height="7" rx="1"/>
-        <rect x="14" y="14" width="7" height="7" rx="1"/>
-      </svg>
-      Panel Principal
-    </a>
-    <a class="nav-btn {{ request()->routeIs('lineamientos') ? 'active' : '' }}"
-       href="{{ route('lineamientos') }}">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <rect x="3" y="3" width="7" height="7" rx="1"/>
-        <rect x="14" y="3" width="7" height="7" rx="1"/>
-        <rect x="3" y="14" width="7" height="7" rx="1"/>
-        <rect x="14" y="14" width="7" height="7" rx="1"/>
-      </svg>
-      Lineamientos
-    </a>
-
-    @if($user->esGrupoFud())
-      <a class="nav-btn {{ request()->routeIs('fud.create') ? 'active' : '' }}"
-         href="{{ route('fud.create') }}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-          <polyline points="17 8 12 3 7 8"/>
-          <line x1="12" y1="3" x2="12" y2="15"/>
-        </svg>
-        Envío de FUD
+    <nav aria-label="Menú principal">
+      <div class="nav-section-label">General</div>
+      <a class="nav-btn {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
+        <i class="bi bi-grid"></i> Panel principal
+      </a>
+      <a class="nav-btn {{ request()->routeIs('lineamientos') ? 'active' : '' }}" href="{{ route('lineamientos') }}">
+        <i class="bi bi-journal-text"></i> Lineamientos
       </a>
 
-      <a class="nav-btn {{ request()->routeIs('fud.index') ? 'active' : '' }}"
-         href="{{ route('fud.index') }}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
-          <rect x="9" y="3" width="6" height="4" rx="1"/>
-          <line x1="9" y1="12" x2="15" y2="12"/>
-          <line x1="9" y1="16" x2="12" y2="16"/>
-        </svg>
-        Mis Propuestas
-      </a>
-    @endif
+      @if($user->esGrupoFud())
+        <div class="nav-section-label">Gestión de campaña</div>
+        <a class="nav-btn {{ request()->routeIs('fud.create') ? 'active' : '' }}" href="{{ route('fud.create') }}">
+          <i class="bi bi-file-earmark-plus"></i> Nueva propuesta FUD
+        </a>
+        <a class="nav-btn {{ request()->routeIs('fud.index', 'fud.show', 'fud.edit') ? 'active' : '' }}" href="{{ route('fud.index') }}">
+          <i class="bi bi-folder2-open"></i> Mis propuestas
+        </a>
+        <a class="nav-btn {{ request()->routeIs('sustentos.*') ? 'active' : '' }}" href="{{ route('sustentos.index') }}">
+          <i class="bi bi-paperclip"></i> Carga de sustentos
+          @if($pendSustentos) <span class="nav-count">{{ $pendSustentos }}</span> @endif
+        </a>
+      @endif
 
-    @if($user->esAprobador())
-    <a class="nav-btn {{ request()->routeIs('reportes.*') ? 'active' : '' }}"
-   href="{{ route('reportes.dashboard') }}">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-    <rect x="2" y="3" width="6" height="18" rx="1"/>
-    <rect x="9" y="8" width="6" height="13" rx="1"/>
-    <rect x="16" y="13" width="6" height="8" rx="1"/>
-  </svg>
-  Reporte Campaña
-</a>
-      <a class="nav-btn {{ request()->routeIs('bandeja.*') ? 'active' : '' }}"
-         href="{{ route('bandeja.index') }}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <circle cx="12" cy="12" r="10"/>
-          <polyline points="9 12 11 14 15 10"/>
-        </svg>
-        Bandeja de Aprobación
-      </a>
-      <a class="nav-btn {{ request()->routeIs('revision.index', 'revision.show') ? 'active' : '' }}"
-         href="{{ route('revision.index') }}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <circle cx="12" cy="12" r="10"/>
-          <polyline points="9 12 11 14 15 10"/>
-        </svg>
-        Revisión
-      </a>
-            <a class="nav-btn {{ request()->routeIs('revision.dashboard') ? 'active' : '' }}"
-         href="{{ route('revision.dashboard') }}">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-    <rect x="2" y="3" width="6" height="18" rx="1"/>
-    <rect x="9" y="8" width="6" height="13" rx="1"/>
-    <rect x="16" y="13" width="6" height="8" rx="1"/>
-  </svg>
-        Reporte Conciliaciones
-      </a>
-      <a class="nav-btn {{ request()->routeIs('indicadores.*') ? 'active' : '' }}"
-         href="{{ route('indicadores.index') }}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <line x1="18" y1="20" x2="18" y2="10"/>
-          <line x1="12" y1="20" x2="12" y2="4"/>
-          <line x1="6" y1="20" x2="6" y2="14"/>
-        </svg>
-        Indicadores
-      </a>
+      @if($user->esAprobador())
+        <div class="nav-section-label">Aprobación y control</div>
+        <a class="nav-btn {{ request()->routeIs('bandeja.*') ? 'active' : '' }}" href="{{ route('bandeja.index') }}">
+          <i class="bi bi-inbox"></i> Bandeja de aprobación
+          @if($pendBandeja) <span class="nav-count">{{ $pendBandeja }}</span> @endif
+        </a>
+        <a class="nav-btn {{ request()->routeIs('revision.index', 'revision.show') ? 'active' : '' }}" href="{{ route('revision.index') }}">
+          <i class="bi bi-clipboard-check"></i> Revisión de sustentos
+        </a>
+        <a class="nav-btn {{ request()->routeIs('cartera.*') ? 'active' : '' }}" href="{{ route('cartera.exclusiones') }}">
+          <i class="bi bi-bank"></i> Programas de gobierno
+        </a>
 
-      <a class="nav-btn {{ request()->routeIs('cartera.*') ? 'active' : '' }}"
-         href="{{ route('cartera.exclusiones') }}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <circle cx="12" cy="12" r="10"/>
-          <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
-        </svg>
-        Exclusiones
+        <div class="nav-section-label">Reportes</div>
+        <a class="nav-btn {{ request()->routeIs('reportes.*') ? 'active' : '' }}" href="{{ route('reportes.dashboard') }}">
+          <i class="bi bi-bar-chart-line"></i> Reporte de campaña
+        </a>
+        <a class="nav-btn {{ request()->routeIs('revision.dashboard') ? 'active' : '' }}" href="{{ route('revision.dashboard') }}">
+          <i class="bi bi-file-earmark-bar-graph"></i> Reporte de conciliaciones
+        </a>
+        <a class="nav-btn {{ request()->routeIs('indicadores.*') ? 'active' : '' }}" href="{{ route('indicadores.index') }}">
+          <i class="bi bi-speedometer2"></i> Indicadores
+        </a>
+      @endif
+
+      <div class="nav-section-label">Trazabilidad</div>
+      <a class="nav-btn {{ request()->routeIs('seguimiento.*') ? 'active' : '' }}" href="{{ route('seguimiento.index') }}">
+        <i class="bi bi-clock-history"></i> Seguimiento
       </a>
-    @endif
-
-    @if($user->esGrupoFud())
-    <a class="nav-btn {{ request()->routeIs('sustentos.*') ? 'active' : '' }}"
-       href="{{ route('sustentos.index') }}">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
-      </svg>
-      Carga de Sustentos
-    </a>
-    @endif
-
-    <a class="nav-btn {{ request()->routeIs('seguimiento.*') ? 'active' : '' }}"
-       href="{{ route('seguimiento.index') }}">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <circle cx="11" cy="11" r="8"/>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-      </svg>
-      Seguimiento
-    </a>
-
-    <div class="nav-section-label" style="margin-top:12px">Sesión</div>
-
-    <form method="POST" action="{{ route('logout') }}">
-      @csrf
-      <button type="submit" class="nav-btn nav-btn--danger">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
-          <polyline points="16 17 21 12 16 7"/>
-          <line x1="21" y1="12" x2="9" y2="12"/>
-        </svg>
-        Cerrar sesión
-      </button>
-    </form>
+    </nav>
   </aside>
 
-  {{-- MAIN --}}
+  {{-- Contenido --}}
   <main class="rct-main">
-
-    {{-- Alertas globales --}}
     @if(session('success'))
-      <div class="alert alert-success alert-dismissible fade show" role="alert">
-        ✅ {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      <div class="flash flash-success" role="status">
+        <i class="bi bi-check-circle"></i><div class="flash-body">{{ session('success') }}</div>
+        <button type="button" class="flash-close" aria-label="Cerrar"><i class="bi bi-x-lg"></i></button>
       </div>
     @endif
-
     @if(session('warning'))
-      <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        ⚠️ {{ session('warning') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      <div class="flash flash-warning" role="status">
+        <i class="bi bi-exclamation-triangle"></i><div class="flash-body">{{ session('warning') }}</div>
+        <button type="button" class="flash-close" aria-label="Cerrar"><i class="bi bi-x-lg"></i></button>
       </div>
     @endif
-
     @if(session('error'))
-      <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        ❌ {{ session('error') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      <div class="flash flash-error" role="alert">
+        <i class="bi bi-x-circle"></i><div class="flash-body">{{ session('error') }}</div>
+        <button type="button" class="flash-close" aria-label="Cerrar"><i class="bi bi-x-lg"></i></button>
       </div>
     @endif
-
     @if($errors->any())
-      <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <strong>Por favor corrige los siguientes errores:</strong>
-        <ul class="mb-0 mt-1" style="font-size:13px">
-          @foreach($errors->all() as $e)
-            <li>{{ $e }}</li>
-          @endforeach
-        </ul>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      <div class="flash flash-error" role="alert">
+        <i class="bi bi-x-circle"></i>
+        <div class="flash-body">
+          <strong>Revise la información ingresada:</strong>
+          <ul>@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
+        </div>
+        <button type="button" class="flash-close" aria-label="Cerrar"><i class="bi bi-x-lg"></i></button>
       </div>
     @endif
 
     @yield('content')
   </main>
+</div>
 
-</div>{{-- .rct-layout --}}
-
-{{-- Bootstrap 5 JS --}}
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-{{-- Sidebar toggle mobile --}}
-<script>
-(function () {
-  const toggle   = document.getElementById('sidebarToggle');
-  const sidebar  = document.getElementById('sidebar');
-  const backdrop = document.getElementById('sidebarBackdrop');
-
-  function open()  { sidebar.classList.add('open');  backdrop.classList.add('open');  }
-  function close() { sidebar.classList.remove('open'); backdrop.classList.remove('open'); }
-
-  toggle  ?.addEventListener('click',   () => sidebar.classList.contains('open') ? close() : open());
-  backdrop?.addEventListener('click',   close);
-
-  // Cierra al navegar en mobile
-  sidebar.querySelectorAll('a.nav-btn').forEach(a =>
-    a.addEventListener('click', () => { if (window.innerWidth < 992) close(); })
-  );
-})();
-</script>
-
-@stack('scripts')
-{{-- ── Asistente flotante ──────────────────────────────────── --}}
-@auth
-<div id="asistente-widget" style="position:fixed;bottom:24px;right:24px;z-index:9999;font-family:inherit">
-
-  {{-- Burbuja de chat --}}
-  <div id="asistente-box"
-       style="display:none;width:340px;background:#fff;border-radius:16px;
-              box-shadow:0 8px 32px rgba(0,0,0,0.18);overflow:hidden;
-              border:1px solid var(--borde);margin-bottom:12px">
-
-    {{-- Header --}}
-    <div style="background:var(--rojo);padding:14px 16px;
-                display:flex;align-items:center;justify-content:space-between">
-      <div style="display:flex;align-items:center;gap:10px">
-        <div style="width:32px;height:32px;background:rgba(255,255,255,0.2);
-                    border-radius:50%;display:flex;align-items:center;justify-content:center">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-               stroke="white" stroke-width="2">
-            <path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/>
-            <path d="M12 16v-4M12 8h.01"/>
-          </svg>
-        </div>
-        <div>
-          <div style="color:white;font-weight:700;font-size:13px">Asistente RCT</div>
-          <div style="color:rgba(255,255,255,0.75);font-size:10px">Powered by Gemini</div>
-        </div>
+{{-- Asistente --}}
+<div id="asistente-widget">
+  <div class="asistente-box" id="asistente-box" role="dialog" aria-label="Asistente RCT">
+    <div class="asistente-head">
+      <div>
+        <strong>Asistente RCT</strong>
+        <small>Consultas sobre su gestión en la campaña</small>
       </div>
-      <button onclick="toggleAsistente()"
-              style="background:none;border:none;cursor:pointer;
-                     color:white;font-size:20px;line-height:1;padding:0">×</button>
+      <button type="button" onclick="toggleAsistente()" aria-label="Cerrar asistente"><i class="bi bi-x-lg"></i></button>
     </div>
-
-    {{-- Mensajes --}}
-    <div id="asistente-mensajes"
-         style="height:300px;overflow-y:auto;padding:16px;
-                display:flex;flex-direction:column;gap:10px;background:#f8f9fa">
+    <div class="asistente-msgs" id="asistente-mensajes">
       <div class="msg-bot">
-        👋 Hola, <strong>{{ auth()->user()->name }}</strong>.<br>
-        Soy tu asistente RCT. Puedo contarte el estado de tus FUDs,
-        clientes disponibles y más. ¿En qué te ayudo?
+        Hola, {{ $user->name }}. Puedo informarle el estado de sus expedientes, pendientes
+        y clientes disponibles en la campaña. ¿En qué puedo ayudarle?
       </div>
     </div>
-
-    {{-- Input ── ÚNICO, sin duplicado --}}
-    <div style="padding:12px;border-top:1px solid var(--borde);
-                display:flex;gap:8px;background:#fff;align-items:center">
-
-      <input id="asistente-input" type="text"
-             placeholder="Escribe o habla..."
-             style="flex:1;border:1px solid #dee2e6;border-radius:8px;
-                    padding:8px 12px;font-size:13px;outline:none"
+    <div class="asistente-input">
+      <input id="asistente-input" type="text" placeholder="Escriba su consulta" autocomplete="off"
              onkeydown="if(event.key==='Enter') enviarMensaje()">
-
-      {{-- Micrófono --}}
-      <button id="btn-mic" onclick="toggleMic()"
-              title="Hablar"
-              style="background:#f0f0f0;border:none;border-radius:8px;
-                     padding:8px 11px;cursor:pointer;font-size:15px;
-                     flex-shrink:0">
-        🎙️
-      </button>
-
-      {{-- Enviar --}}
-      <button onclick="enviarMensaje()"
-              style="background:#c0392b;color:white;border:none;
-                     border-radius:8px;padding:8px 14px;cursor:pointer;
-                     font-size:14px;font-weight:700;flex-shrink:0">➤</button>
+      <button type="button" id="btn-mic" onclick="toggleMic()" title="Dictar por voz" aria-label="Dictar por voz"><i class="bi bi-mic"></i></button>
+      <button type="button" class="send" onclick="enviarMensaje()" title="Enviar" aria-label="Enviar"><i class="bi bi-send"></i></button>
     </div>
   </div>
-
-  {{-- Botón flotante --}}
-  <button onclick="toggleAsistente()"
-          id="asistente-btn"
-          style="width:52px;height:52px;border-radius:50%;
-                 background:var(--rojo);color:white;border:none;
-                 cursor:pointer;box-shadow:0 4px 16px rgba(180,0,0,0.35);
-                 display:flex;align-items:center;justify-content:center;
-                 margin-left:auto;transition:transform 0.2s"
-          onmouseover="this.style.transform='scale(1.08)'"
-          onmouseout="this.style.transform='scale(1)'">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-         stroke="white" stroke-width="2">
-      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-    </svg>
+  <button type="button" class="asistente-fab" onclick="toggleAsistente()" aria-label="Abrir asistente">
+    <i class="bi bi-chat-square-text"></i><span class="d-none d-sm-inline">Asistente</span>
   </button>
 </div>
 
-<style>
-.msg-bot {
-  background: white;
-  border: 1px solid #e8e8e8;
-  border-radius: 12px 12px 12px 2px;
-  padding: 10px 13px;
-  font-size: 12.5px;
-  color: #333;
-  max-width: 90%;
-  line-height: 1.5;
-}
-.msg-user {
-  background: var(--rojo);
-  color: white;
-  border-radius: 12px 12px 2px 12px;
-  padding: 10px 13px;
-  font-size: 12.5px;
-  max-width: 90%;
-  align-self: flex-end;
-  line-height: 1.5;
-}
-</style>
-
+<script src="{{ asset('assets/js/rct.js') }}?v={{ filemtime(public_path('assets/js/rct.js')) }}"></script>
 <script>
-const _CSRF = document.querySelector('meta[name=csrf-token]').content;
+(function () {
+  var CSRF = document.querySelector('meta[name=csrf-token]').content;
+  var enviando = false, rec = null, micActivo = false;
 
-// ── Toggle del chat ─────────────────────────────────────────
-function toggleAsistente() {
-  const box = document.getElementById('asistente-box');
-  const abierto = box.style.display === 'block';
-  box.style.display = abierto ? 'none' : 'block';
-  if (!abierto) document.getElementById('asistente-input').focus();
-}
+  window.toggleAsistente = function () {
+    var box = document.getElementById('asistente-box');
+    box.classList.toggle('open');
+    if (box.classList.contains('open')) document.getElementById('asistente-input').focus();
+  };
 
-// ── Helpers de mensajes ─────────────────────────────────────
-function _esc(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-function _msgBot(html) {
-  return `<div class="msg-bot">${html}</div>`;
-}
-
-function _msgUser(texto) {
-  return `<div class="msg-user">${_esc(texto)}</div>`;
-}
-
-// ── Enviar mensaje ──────────────────────────────────────────
-let _enviando = false;
-
-async function enviarMensaje() {
-  if (_enviando) return;
-  const input   = document.getElementById('asistente-input');
-  const caja    = document.getElementById('asistente-mensajes');
-  const mensaje = input.value.trim();
-  if (!mensaje) return;
-
-  _enviando = true;
-  caja.innerHTML += _msgUser(mensaje);
-  input.value = '';
-
-  const tid = 'tp' + Date.now();
-  caja.innerHTML += `<div id="${tid}" class="msg-bot" style="color:#999">⏳ Escribiendo...</div>`;
-  caja.scrollTop = caja.scrollHeight;
-
-  try {
-    const res  = await fetch('{{ route("asistente.chat") }}', {
-      method:  'POST',
-      headers: { 'Content-Type':'application/json', 'X-CSRF-TOKEN': _CSRF },
-      body:    JSON.stringify({ mensaje }),
-    });
-    const data = await res.json();
-    document.getElementById(tid)?.remove();
-    const respuesta = data.respuesta;
-    caja.innerHTML += _msgBot(respuesta.replace(/\n/g,'<br>'));
-    hablar(respuesta);
-  } catch(e) {
-    document.getElementById(tid)?.remove();
-    caja.innerHTML += _msgBot('<span style="color:#c0392b">Error de conexión. Intenta de nuevo.</span>');
+  function agregar(clase, html) {
+    var caja = document.getElementById('asistente-mensajes');
+    var div = document.createElement('div');
+    div.className = clase; div.innerHTML = html;
+    caja.appendChild(div); caja.scrollTop = caja.scrollHeight;
+    return div;
   }
 
-  _enviando = false;
-  caja.scrollTop = caja.scrollHeight;
-}
+  window.enviarMensaje = async function () {
+    if (enviando) return;
+    var input = document.getElementById('asistente-input');
+    var mensaje = input.value.trim();
+    if (!mensaje) return;
+    enviando = true;
+    agregar('msg-user', rctEsc(mensaje));
+    input.value = '';
+    var espera = agregar('msg-bot pending', 'Procesando consulta…');
+    try {
+      var res = await fetch('{{ route('asistente.chat') }}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+        body: JSON.stringify({ mensaje: mensaje })
+      });
+      var data = await res.json();
+      espera.remove();
+      if (!res.ok) throw new Error();
+      agregar('msg-bot', rctEsc(data.respuesta).replace(/\n/g, '<br>'));
+      hablar(data.respuesta);
+    } catch (e) {
+      espera.remove();
+      agregar('msg-bot error', 'No fue posible obtener una respuesta en este momento. Intente nuevamente.');
+    }
+    enviando = false;
+  };
 
-// ── Voz: reconocimiento STT ─────────────────────────────────
-let _rec = null;
-let _micActivo = false;
+  window.toggleMic = function () {
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { agregar('msg-bot', 'El dictado por voz no está disponible en este navegador.'); return; }
+    if (micActivo) { rec && rec.stop(); return; }
+    var btn = document.getElementById('btn-mic');
+    rec = new SR(); rec.lang = 'es-PE'; rec.interimResults = false; rec.maxAlternatives = 1;
+    rec.onstart = function () { micActivo = true; btn.classList.add('listening'); btn.innerHTML = '<i class="bi bi-stop-fill"></i>'; };
+    rec.onresult = function (e) { var i = document.getElementById('asistente-input'); i.value = e.results[0][0].transcript; i.focus(); };
+    rec.onend = rec.onerror = function () { micActivo = false; btn.classList.remove('listening'); btn.innerHTML = '<i class="bi bi-mic"></i>'; };
+    rec.start();
+  };
 
-function toggleMic() {
-  if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-    alert('Tu navegador no soporta reconocimiento de voz. Usa Chrome.');
-    return;
+  function hablar(texto) {
+    if (!('speechSynthesis' in window)) return;
+    speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(texto);
+    u.lang = 'es-PE'; u.rate = 1.05;
+    var voz = speechSynthesis.getVoices().find(function (v) { return v.lang.indexOf('es') === 0; });
+    if (voz) u.voice = voz;
+    speechSynthesis.speak(u);
   }
-
-  // Si el mic está activo, detenerlo manualmente → onend limpia el estado
-  if (_micActivo) {
-    _rec?.stop();
-    return;
-  }
-
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  _rec = new SR();
-  _rec.lang            = 'es-PE';
-  _rec.interimResults  = false;
-  _rec.maxAlternatives = 1;
-
-  _rec.onstart = () => {
-    _micActivo = true;
-    const btn = document.getElementById('btn-mic');
-    btn.textContent      = '⏹';        // ← indica "toca para detener"
-    btn.title            = 'Detener';
-    btn.style.background = '#fde8e8';
-  };
-
-  // ── CAMBIO CLAVE: solo llena el input, NO envía automáticamente ──
-  _rec.onresult = (e) => {
-    const texto = e.results[0][0].transcript;
-    const input = document.getElementById('asistente-input');
-    input.value = texto;
-    input.focus();
-    // El usuario revisa el texto y presiona Enter o ➤ para enviar
-  };
-
-  _rec.onend = () => {
-    _micActivo = false;
-    const btn = document.getElementById('btn-mic');
-    btn.textContent      = '🎙️';
-    btn.title            = 'Hablar';
-    btn.style.background = '#f0f0f0';
-  };
-
-  _rec.onerror = (e) => {
-    _micActivo = false;
-    const btn = document.getElementById('btn-mic');
-    btn.textContent      = '🎙️';
-    btn.title            = 'Hablar';
-    btn.style.background = '#f0f0f0';
-    if (e.error !== 'no-speech') alert('Error de micrófono: ' + e.error);
-  };
-
-  _rec.start();
-}
-
-// ── Voz: síntesis TTS ───────────────────────────────────────
-function hablar(texto) {
-  if (!('speechSynthesis' in window)) return;
-  window.speechSynthesis.cancel();
-
-  const utt  = new SpeechSynthesisUtterance(texto);
-  utt.lang   = 'es-PE';
-  utt.rate   = 1.05;
-  utt.pitch  = 1;
-
-  const voces = window.speechSynthesis.getVoices();
-  const voz   = voces.find(v => v.lang.startsWith('es')) ?? null;
-  if (voz) utt.voice = voz;
-
-  window.speechSynthesis.speak(utt);
-}
-
-// Precarga de voces en Chrome (carga asíncrona)
-window.speechSynthesis.onvoiceschanged = () => {
-  window.speechSynthesis.getVoices();
-};
+  if ('speechSynthesis' in window) speechSynthesis.onvoiceschanged = function () { speechSynthesis.getVoices(); };
+})();
 </script>
-@endauth
+@stack('scripts')
 </body>
 </html>

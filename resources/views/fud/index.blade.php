@@ -1,99 +1,74 @@
 @extends('layouts.app')
-@section('title', 'Mis Propuestas')
+@section('title', 'Mis propuestas')
+
+@use('App\Support\Estilo')
 
 @section('content')
-
 <div class="page-head">
-  <div class="page-head-text">
-    <h2>📋 Mis Propuestas (FUDs enviados)</h2>
-    <p>Historial de propuestas de exoneración enviadas al nivel de autonomía.</p>
+  <div>
+    <h2>Mis propuestas</h2>
+    <p>Propuestas de conciliación (FUD) enviadas al nivel de autonomía.</p>
   </div>
-  <a href="{{ route('fud.create') }}" class="btn btn-primary">+ Nueva propuesta</a>
+  <div class="page-head-actions">
+    <a href="{{ route('fud.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nueva propuesta</a>
+  </div>
 </div>
 
-{{-- Filtros --}}
-<div class="card-plain" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;padding:16px;border-radius:10px">
-  <form method="GET" style="display:flex;gap:12px;flex-wrap:wrap;width:100%">
-    <div class="field" style="flex:1;min-width:140px">
-      <label>Estado</label>
-      <select name="estado" onchange="this.form.submit()">
+<div class="card card-flush">
+  <form method="GET" class="grid4" style="padding:16px 20px;align-items:end;border-bottom:1px solid var(--borde)">
+    <div class="field span-2">
+      <label for="q">Cliente u operación</label>
+      <input id="q" type="search" name="q" value="{{ request('q') }}" placeholder="Buscar por nombre o número de operación">
+    </div>
+    <div class="field">
+      <label for="estado">Estado</label>
+      <select id="estado" name="estado" onchange="this.form.submit()">
         <option value="">Todos</option>
         @foreach(['En revisión','Aprobado','Observado','Rechazado'] as $e)
-          <option value="{{ $e }}" {{ request('estado') === $e ? 'selected' : '' }}>{{ $e }}</option>
+          <option value="{{ $e }}" @selected(request('estado') === $e)>{{ $e }}</option>
         @endforeach
       </select>
     </div>
-    <div class="field" style="flex:2;min-width:180px">
-      <label>Buscar cliente</label>
-      <input name="q" value="{{ request('q') }}" placeholder="Nombre o nro. operación"
-             onchange="this.form.submit()">
+    <div class="d-flex gap-2">
+      <button class="btn btn-primary"><i class="bi bi-search"></i> Buscar</button>
+      <a href="{{ route('fud.index') }}" class="btn btn-ghost">Limpiar</a>
     </div>
   </form>
-</div>
 
-<div class="card">
-  <div class="card-title">Propuestas registradas</div>
-  <table>
-    <thead>
-      <tr>
-        <th>#</th><th>Fecha</th><th>Cliente</th><th>Operación</th>
-        <th>Tipo</th><th>Saldo Capital</th><th>Aprobador</th><th>Estado</th><th></th>
-      </tr>
-    </thead>
-    <tbody>
-      @forelse($propuestas as $p)
-        @php
-          $vig   = $p->ultimaVersion();
-          $badge = match($vig->estado_fud) {
-            'Aprobado'  => 'badge-ok',
-            'Observado','Rechazado' => 'badge-danger',
-            default     => 'badge-pending',
-          };
-        @endphp
-        <tr>
-          <td>{{ $propuestas->total() - $loop->index }}</td>
-          <td>{{ $p->fecha_envio->format('d/m/Y') }}</td>
-          <td><strong>{{ $p->cliente->nombre_cliente }}</strong></td>
-          <td>{{ $p->cliente->operacion }}</td>
-          <td style="font-size:12px">{{ $p->tipo_negociacion_desc ?? '—' }}</td>
-          <td>{{ $p->cliente->saldo_formateado }}</td>
-          <td style="font-size:12px;color:#666">{{ $vig->aprobador->name ?? '—' }}</td>
-          <td>
-            <span class="badge {{ $badge }}">{{ $vig->estado_fud }}</span>
-            @if($vig->veces_observado > 0)
-              <div style="font-size:10px;color:#888;margin-top:3px">Corrección #{{ $vig->veces_observado }}</div>
-            @endif
-          </td>
-          <td>
-            <div style="display:flex;gap:6px;flex-wrap:wrap">
-              <a href="{{ route('fud.show', $vig) }}"
-                class="btn btn-ghost btn-sm">
-                Ver Detalle
-              </a>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Enviado</th><th>Cliente</th><th>Tipo de negociación</th><th class="num">Saldo capital</th><th>Aprobador</th><th>Estado</th><th></th></tr>
+      </thead>
+      <tbody>
+        @forelse($propuestas as $p)
+          @php $vig = $p->ultimaVersion(); @endphp
+          <tr>
+            <td class="nowrap">{{ $p->fecha_envio->format('d/m/Y') }}</td>
+            <td><div class="cell-main">{{ $p->cliente->nombre_cliente }}</div><div class="cell-sub">Op. {{ $p->cliente->operacion }}</div></td>
+            <td>{{ $p->tipo_negociacion_desc ?? '—' }}</td>
+            <td class="num">{{ $p->cliente->saldo_formateado }}</td>
+            <td>{{ $vig->aprobador->name ?? '—' }}</td>
+            <td>
+              <span class="badge {{ Estilo::badge($vig->estado_fud) }}">{{ $vig->estado_fud }}</span>
+              @if($vig->veces_observado > 0)<div class="cell-sub">Corrección {{ $vig->veces_observado }}</div>@endif
+            </td>
+            <td class="num nowrap">
               @if($vig->estaObservado())
-                <a href="{{ route('fud.edit', $vig) }}"
-                  class="btn btn-secondary btn-sm">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
-                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                  </svg>
-                  Corregir
-                </a>
+                <a href="{{ route('fud.edit', $vig) }}" class="btn btn-warning btn-sm"><i class="bi bi-pencil-square"></i> Corregir</a>
               @endif
-            </div>
-          </td>
-          
-        </tr>
-      @empty
-        <tr>
-          <td colspan="9" style="text-align:center;padding:24px;color:#999">
-            No hay propuestas que coincidan.
-          </td>
-        </tr>
-      @endforelse
-    </tbody>
-  </table>
-  <div style="margin-top:16px">{{ $propuestas->withQueryString()->links() }}</div>
+              <a href="{{ route('fud.show', $vig) }}" class="btn btn-secondary btn-sm">Ver detalle</a>
+            </td>
+          </tr>
+        @empty
+          <tr><td colspan="7" class="empty-state">
+            <i class="bi bi-folder2-open"></i><strong>Sin propuestas</strong>
+            <span>No hay propuestas que coincidan con la búsqueda.</span>
+          </td></tr>
+        @endforelse
+      </tbody>
+    </table>
+  </div>
+  {{ $propuestas->withQueryString()->links() }}
 </div>
-
 @endsection

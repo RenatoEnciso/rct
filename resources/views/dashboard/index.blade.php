@@ -1,239 +1,184 @@
 @extends('layouts.app')
-@section('title', 'Panel Principal')
+@section('title', 'Panel principal')
 
 @section('content')
-@php $user = auth()->user(); @endphp
+@php
+  $estadoBadge = fn($e) => match($e) {
+    'Aprobado' => 'badge-ok', 'Observado' => 'badge-pending', 'Rechazado' => 'badge-danger', default => 'badge-info',
+  };
+@endphp
 
-{{-- CABECERA --}}
 <div class="page-head">
-  <div class="page-head-text">
-    <h2>Bienvenido, {{ strtoupper($user->name) }}</h2>
+  <div>
+    @php $h = (int) now()->format('G'); @endphp
+    <h2>{{ $h < 12 ? 'Buenos días' : ($h < 19 ? 'Buenas tardes' : 'Buenas noches') }}, {{ $user->name }}</h2>
     @if($campana)
-      <p>Campaña <strong>"{{ $campana->nombre }}"</strong>
-         · {{ $campana->fecha_inicio->format('d/m/Y') }} – {{ $campana->fecha_fin->format('d/m/Y') }}</p>
+      <p>Campaña «{{ $campana->nombre }}» · vigencia del {{ $campana->fecha_inicio->format('d/m/Y') }} al {{ $campana->fecha_fin->format('d/m/Y') }}</p>
     @else
       <p>No hay una campaña activa configurada.</p>
     @endif
   </div>
-  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+  <div class="page-head-actions">
     @if($campana && now()->between($campana->fecha_inicio, $campana->fecha_fin->copy()->endOfDay()))
-      <span class="badge badge-ok">Campaña vigente · quedan {{ (int) now()->diffInDays($campana->fecha_fin) }} días</span>
+      <span class="badge badge-ok dot">Campaña vigente · {{ (int) now()->diffInDays($campana->fecha_fin) }} días restantes</span>
     @endif
-    <span class="badge badge-info">{{ $user->rol->nombre }}</span>
+    @if($user->esGrupoFud())
+      <a href="{{ route('fud.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nueva propuesta</a>
+    @else
+      <a href="{{ route('bandeja.index') }}" class="btn btn-primary"><i class="bi bi-inbox"></i> Ir a la bandeja</a>
+    @endif
   </div>
 </div>
 
-{{-- KPIs --}}
-<div class="grid4" style="margin-bottom:24px">
-  @if($user->esGrupoFud())
-    <div class="kpi-card ">
-      <div class="kpi-label">Mis expedientes</div>
+@if($user->esGrupoFud())
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label"><i class="bi bi-folder2"></i> Mis expedientes</div>
       <div class="kpi-value">{{ $kpis['total'] }}</div>
-      <div class="kpi-sub">{{ $kpis['sustentos'] }} con sustentos por cargar</div>
+      <div class="kpi-sub">Propuestas vigentes</div>
     </div>
-    <div class="kpi-card mostaza">
-      <div class="kpi-label">En revisión</div>
+    <div class="kpi-card info">
+      <div class="kpi-label"><i class="bi bi-hourglass-split"></i> En revisión</div>
       <div class="kpi-value">{{ $kpis['revision'] }}</div>
-      <div class="kpi-sub">Esperando aprobación</div>
+      <div class="kpi-sub">Esperando decisión del aprobador</div>
     </div>
     <div class="kpi-card verde">
-      <div class="kpi-label">Aprobadas</div>
+      <div class="kpi-label"><i class="bi bi-check2-circle"></i> Aprobadas</div>
       <div class="kpi-value">{{ $kpis['aprobadas'] }}</div>
       <div class="kpi-sub">{{ $kpis['total'] ? round($kpis['aprobadas'] / $kpis['total'] * 100) : 0 }}% de mis expedientes</div>
     </div>
-    <div class="kpi-card danger">
-      <div class="kpi-label">Observadas / Rechazadas</div>
-      <div class="kpi-value">{{ $kpis['observadas'] }}</div>
-      <div class="kpi-sub">Requieren atención</div>
+    <div class="kpi-card rojo">
+      <div class="kpi-label"><i class="bi bi-exclamation-circle"></i> Requieren atención</div>
+      <div class="kpi-value">{{ $kpis['observadas'] + $kpis['sustentos'] }}</div>
+      <div class="kpi-sub">{{ $kpis['observadas'] }} observadas o rechazadas · {{ $kpis['sustentos'] }} sustentos</div>
     </div>
-  @else
-    <div class="kpi-card">
-      <div class="kpi-label">En tu bandeja</div>
+  </div>
+
+  @if($kpis['sustentos'])
+    <div class="notice-warning">
+      <i class="bi bi-paperclip"></i>
+      <span>Tiene <strong>{{ $kpis['sustentos'] }}</strong> operación(es) aprobada(s) con sustentos por cargar o corregir.
+        <a href="{{ route('sustentos.index') }}" class="fw-600">Ir a carga de sustentos</a></span>
+    </div>
+  @endif
+
+  <div class="card">
+    <div class="card-title"><i class="bi bi-signpost-split"></i> Flujo de la conciliación</div>
+    <div class="steps">
+      <div class="step done">Contacto con el cliente</div>
+      <div class="step done">Verificación en base de campaña</div>
+      <div class="step active">Envío de propuesta FUD</div>
+      <div class="step">Aprobación por autonomía</div>
+      <div class="step">Ejecución en tienda</div>
+      <div class="step">Carga de sustentos</div>
+    </div>
+  </div>
+
+  <div class="card card-flush">
+    <div class="card-head">
+      <div class="card-title"><i class="bi bi-clock-history"></i> Propuestas recientes</div>
+      <a href="{{ route('fud.index') }}" class="btn btn-secondary btn-sm">Ver todas</a>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Cliente</th><th>Tipo de negociación</th><th>Aprobador</th><th>Enviado</th><th>Estado</th><th></th></tr>
+        </thead>
+        <tbody>
+          @forelse($propuestas as $p)
+            <tr>
+              <td><div class="cell-main">{{ $p->cliente->nombre_cliente }}</div><div class="cell-sub">Op. {{ $p->cliente->operacion }}</div></td>
+              <td>{{ $p->tipo_negociacion_desc ?? '—' }}</td>
+              <td>{{ $p->aprobador->name ?? '—' }}</td>
+              <td class="nowrap">{{ $p->fecha_envio->format('d/m/Y') }}</td>
+              <td><span class="badge {{ $estadoBadge($p->estado_fud) }}">{{ $p->estado_fud }}</span></td>
+              <td class="num"><a href="{{ route('fud.show', $p) }}" class="btn btn-ghost btn-sm">Ver detalle <i class="bi bi-chevron-right"></i></a></td>
+            </tr>
+          @empty
+            <tr data-empty><td colspan="6" class="empty-state">
+              <i class="bi bi-folder2-open"></i><strong>Aún no ha enviado propuestas</strong>
+              <span>Registre su primera propuesta desde <a href="{{ route('fud.create') }}">Nueva propuesta FUD</a>.</span>
+            </td></tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+@else
+  <div class="kpi-grid">
+    <div class="kpi-card rojo">
+      <div class="kpi-label"><i class="bi bi-inbox"></i> En mi bandeja</div>
       <div class="kpi-value">{{ $kpis['pendientes'] }}</div>
-      <div class="kpi-sub">FUDs pendientes de decisión</div>
+      <div class="kpi-sub">FUD pendientes de decisión</div>
     </div>
     <div class="kpi-card verde">
-      <div class="kpi-label">Aprobados por mí</div>
+      <div class="kpi-label"><i class="bi bi-check2-circle"></i> Aprobados por mí</div>
       <div class="kpi-value">{{ $kpis['aprobadas'] }}</div>
-      <div class="kpi-sub">{{ $kpis['mes'] }} decisiones este mes</div>
+      <div class="kpi-sub">{{ $kpis['mes'] }} decisiones en el mes</div>
     </div>
     <div class="kpi-card mostaza">
-      <div class="kpi-label">Observados por mí</div>
+      <div class="kpi-label"><i class="bi bi-arrow-return-left"></i> Observados por mí</div>
       <div class="kpi-value">{{ $kpis['observadas'] }}</div>
       <div class="kpi-sub">Esperando corrección del ejecutivo</div>
     </div>
     <div class="kpi-card info">
-      <div class="kpi-label">Nivel de autonomía</div>
+      <div class="kpi-label"><i class="bi bi-diagram-3"></i> Nivel de autonomía</div>
       <div class="kpi-value">{{ $kpis['nivel'] }}</div>
       <div class="kpi-sub">{{ $user->rol->nombre }}</div>
     </div>
-  @endif
-</div>
+  </div>
 
-{{-- ALERTA BANDEJA --}}
-@if($user->esAprobador() && isset($pendientes) && $pendientes->count())
-  <div class="notice" style="margin-bottom:20px">
-    <strong>📬 Tienes {{ $pendientes->count() }} FUD(s) pendientes de revisión.</strong>
-    <a href="{{ route('bandeja.index') }}" style="color:var(--rojo);font-weight:700;margin-left:10px">
-      Ir a bandeja →
-    </a>
+  <div class="grid2" style="margin-bottom:20px">
+    <div class="card">
+      <div class="card-title"><i class="bi bi-person-badge"></i> Alcance de su autonomía</div>
+      @php
+        $autonomias = [
+          1 => 'Pago de cuotas; cancelaciones totales de cartera Deficiente, Dudoso o Pérdida sin descuento de capital; conciliación de capital con SK menor a 3 UIT.',
+          2 => 'Todo lo del nivel 1, además de cancelaciones con SK mayor a 3 UIT, excepciones a los topes de descuento y casos que exceden el límite de 4 conciliaciones en 12 meses.',
+          3 => 'Casos escalados desde la Jefatura de Recuperaciones y excepciones fuera de su autonomía.',
+        ];
+      @endphp
+      <p class="fs-13 text-gris" style="margin:0">{{ $autonomias[$user->nivel()] ?? '' }}</p>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="bi bi-calendar-event"></i> Plazos de la campaña</div>
+      <div class="metric-list fs-13">
+        <div class="d-flex gap-2"><i class="bi bi-dot text-rojo"></i><span>Reporte de conciliaciones: primeros 2 días hábiles del mes.</span></div>
+        <div class="d-flex gap-2"><i class="bi bi-dot text-rojo"></i><span>Sustentos: carga y validación diaria por tienda y zona.</span></div>
+        <div class="d-flex gap-2"><i class="bi bi-dot text-rojo"></i><span>Pago fraccionado: máximo {{ $campana->max_dias_pago_fraccionado ?? 90 }} días desde la primera amortización.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card card-flush">
+    <div class="card-head">
+      <div class="card-title"><i class="bi bi-inbox"></i> Pendientes de decisión</div>
+      <a href="{{ route('bandeja.index') }}" class="btn btn-secondary btn-sm">Abrir bandeja</a>
+    </div>
+    <div class="table-wrap">
+      <table data-rct-table data-page-size="8" data-search-placeholder="Buscar cliente, operación o ejecutivo">
+        <thead>
+          <tr><th>Enviado</th><th>Ejecutivo</th><th>Cliente</th><th class="num">Saldo capital</th><th>Calificación</th><th>Tipo</th></tr>
+        </thead>
+        <tbody>
+          @forelse($pendientes as $p)
+            <tr>
+              <td class="nowrap">{{ $p->fecha_envio->format('d/m/Y') }}</td>
+              <td>{{ $p->enviador->name }}</td>
+              <td><div class="cell-main">{{ $p->cliente->nombre_cliente }}</div><div class="cell-sub">Op. {{ $p->cliente->operacion }}</div></td>
+              <td class="num">{{ $p->cliente->saldo_formateado }}</td>
+              <td><span class="badge badge-gray">{{ $p->cliente->calificacion_rcc }}</span></td>
+              <td>{{ $p->tipo_negociacion_desc }}</td>
+            </tr>
+          @empty
+            <tr data-empty><td colspan="6" class="empty-state">
+              <i class="bi bi-check2-all"></i><strong>Bandeja al día</strong><span>No tiene propuestas pendientes de decisión.</span>
+            </td></tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
   </div>
 @endif
-
-{{-- GRUPO FUD: flujo + tabla --}}
-@if($user->esGrupoFud())
-  <div class="card">
-    <div class="card-title">📌 Flujo de la Campaña</div>
-    <div class="steps">
-      <div class="step done">1. Contacto cliente</div>
-      <div class="step done">2. Verif. elegibilidad</div>
-      <div class="step active">3. Envío FUD</div>
-      <div class="step">4. Aprobación</div>
-      <div class="step">5. Ejecución</div>
-      <div class="step">6. Sustentos</div>
-    </div>
-    <div class="grid3" style="margin-top:16px">
-      <div style="font-size:13px;padding:14px;background:#fafafa;border-radius:8px;border-left:3px solid var(--rojo)">
-        <strong>Documentos obligatorios</strong><br>
-        <span style="color:#666;font-size:12px">Acuerdo de Pago + Nota de Abono. Cancelación SK &gt; 3 UIT: adjuntar Informe-Propuesta.</span>
-      </div>
-      <div style="font-size:13px;padding:14px;background:#fafafa;border-radius:8px;border-left:3px solid var(--mostaza)">
-        <strong>Límite de conciliaciones</strong><br>
-        <span style="color:#666;font-size:12px">Máx. 4 veces en 12 meses por cliente. Excedentes requieren autorización.</span>
-      </div>
-      <div style="font-size:13px;padding:14px;background:#fafafa;border-radius:8px;border-left:3px solid var(--verde)">
-        <strong>Exclusiones clave</strong><br>
-        <span style="color:#666;font-size:12px">Pignoraticios, leasing, Multigas, programas de Gobierno (salvo rechazados).</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
-      <span>📋 Mis propuestas recientes</span>
-      <a href="{{ route('fud.create') }}" class="btn btn-primary" style="font-size:12px;padding:8px 14px">
-        + Nueva propuesta
-      </a>
-    </div>
-    <table>
-      <thead>
-        <tr>
-          <th>Cliente</th><th>Operación</th><th>Tipo</th>
-          <th>Aprobador</th><th>Estado</th><th>Fecha</th><th></th>
-        </tr>
-      </thead>
-      <tbody>
-        @forelse($propuestas as $p)
-          <tr>
-            <td><strong>{{ $p->cliente->nombre_cliente }}</strong></td>
-            <td>{{ $p->cliente->operacion }}</td>
-            <td style="font-size:12px">{{ $p->tipo_negociacion_desc ?? '—' }}</td>
-            <td style="font-size:12px;color:#666">{{ $p->aprobador->name ?? '—' }}</td>
-            <td>
-              @php
-                $badge = match($p->estado_fud) {
-                  'Aprobado'    => 'badge-ok',
-                  'Observado',
-                  'Rechazado'   => 'badge-danger',
-                  default       => 'badge-pending',
-                };
-              @endphp
-              <span class="badge {{ $badge }}">{{ $p->estado_fud }}</span>
-            </td>
-            <td>{{ $p->fecha_envio->format('d/m/Y') }}</td>
-            <td>
-              <a href="{{ route('fud.show', $p) }}"
-                 style="font-size:12px;color:var(--rojo);font-weight:600">Ver →</a>
-            </td>
-          </tr>
-        @empty
-          <tr>
-            <td colspan="7" style="text-align:center;color:#999;padding:28px">
-              No hay propuestas aún.
-              <a href="{{ route('fud.create') }}" style="color:var(--rojo);font-weight:700">
-                Crear primera propuesta →
-              </a>
-            </td>
-          </tr>
-        @endforelse
-      </tbody>
-    </table>
-  </div>
-
-{{-- GRUPO APROBADOR --}}
-@else
-  <div class="card">
-    <div class="card-title">📊 Resumen de gestión – campaña activa</div>
-    <div class="grid2">
-      <div>
-        <p style="font-size:13px;color:#555;margin:0 0 12px">
-          Como <strong>{{ $user->rol->nombre }}</strong> tienes autonomía para revisar
-          y aprobar FUDs según los lineamientos de la campaña.
-        </p>
-        @php
-          $autonomias = [
-            1 => 'Puedes aprobar: conciliaciones de intereses (cartera vencida no hipotecaria), cancelaciones totales Deficiente/Dudoso/Pérdida con SK < 3 UITs, cartera judicial/extrajudicial con SK < 3 UITs.',
-            2 => 'Puedes aprobar todo lo del nivel 1 más: cancelaciones con SK > 3 UITs, excedentes del límite de 4 conciliaciones, excepciones de descuento mayor al estándar.',
-            3 => 'Tienes visibilidad completa de la campaña y autorización para casos escalados desde Jefatura de Recuperaciones.',
-          ];
-        @endphp
-        <div style="background:#fafafa;border-radius:8px;padding:14px;font-size:13px;border-left:3px solid var(--rojo)">
-          {{ $autonomias[$user->nivel()] ?? '' }}
-        </div>
-      </div>
-      <div>
-        <div class="card-title" style="font-size:13px;margin-bottom:12px">📅 Recordatorios clave</div>
-        <div style="font-size:12px;color:#555;display:flex;flex-direction:column;gap:8px">
-          <div style="padding:8px 12px;background:#fff8e7;border-radius:6px;border-left:3px solid var(--mostaza)">
-            Reportes de conciliaciones: <strong>primeros 2 días hábiles del mes</strong>
-          </div>
-          <div style="padding:8px 12px;background:#f0faf5;border-radius:6px;border-left:3px solid var(--verde)">
-            Sustentos: cargar diariamente en link del Área de Operaciones
-          </div>
-          <div style="padding:8px 12px;background:#fdf0f0;border-radius:6px;border-left:3px solid var(--rojo)">
-            Pago fraccionado cancelación total: <strong>máx. 90 días</strong> desde 1ra amortización
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">✅ FUDs pendientes de decisión</div>
-    <table>
-      <thead>
-        <tr>
-          <th>Fecha</th><th>Enviado por</th><th>Cliente</th><th>Operación</th>
-          <th>Saldo Capital</th><th>Calificación</th><th>Tipo</th><th>Acción</th>
-        </tr>
-      </thead>
-      <tbody>
-        @forelse($pendientes ?? [] as $p)
-          <tr>
-            <td>{{ $p->fecha_envio->format('d/m/Y') }}</td>
-            <td style="font-size:12px">{{ $p->enviador->name }}</td>
-            <td><strong>{{ $p->cliente->nombre_cliente }}</strong></td>
-            <td>{{ $p->cliente->operacion }}</td>
-            <td><strong>{{ $p->cliente->saldo_formateado }}</strong></td>
-            <td><span class="badge badge-info">{{ $p->cliente->calificacion_rcc }}</span></td>
-            <td style="font-size:12px">{{ $p->tipo_negociacion_desc }}</td>
-            <td>
-              <a href="{{ route('bandeja.index') }}"
-                 class="btn btn-primary" style="font-size:12px;padding:6px 12px">
-                Revisar
-              </a>
-            </td>
-          </tr>
-        @empty
-          <tr>
-            <td colspan="8" style="text-align:center;color:#999;padding:28px">
-              No hay FUDs pendientes en tu bandeja. ✓
-            </td>
-          </tr>
-        @endforelse
-      </tbody>
-    </table>
-  </div>
-@endif
-
 @endsection

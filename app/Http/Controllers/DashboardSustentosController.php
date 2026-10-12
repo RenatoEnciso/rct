@@ -60,7 +60,7 @@ class DashboardSustentosController extends Controller
             'data'   => [
                 $aprobados, $enRevision, $observados, $pendientes, $rechazados
             ],
-            'colors' => ['#1a7a4a','#b07d00','#c0392b','#6b7280','#7f1d1d'],
+            'colors' => ['#1f7a4d','#1f4e8c','#d08a1e','#9aa3ae','#a3182c'],
         ];
 
         return view('revision.dashboard', compact(
