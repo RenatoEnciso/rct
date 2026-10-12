@@ -8,12 +8,17 @@
 <div class="page-head">
   <div class="page-head-text">
     <h2>Bienvenido, {{ strtoupper($user->name) }}</h2>
-    <p>Campaña <strong>"Sin Atrasos que Atrasan"</strong>
-       · {{ $campana?->fecha_inicio->format('d M Y') }}
-       – {{ $campana?->fecha_fin->format('d M Y') }}</p>
+    @if($campana)
+      <p>Campaña <strong>"{{ $campana->nombre }}"</strong>
+         · {{ $campana->fecha_inicio->format('d/m/Y') }} – {{ $campana->fecha_fin->format('d/m/Y') }}</p>
+    @else
+      <p>No hay una campaña activa configurada.</p>
+    @endif
   </div>
-  <div style="display:flex;gap:8px;align-items:center">
-    <span class="badge badge-ok">🟢 Campaña Activa</span>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    @if($campana && now()->between($campana->fecha_inicio, $campana->fecha_fin->copy()->endOfDay()))
+      <span class="badge badge-ok">Campaña vigente · quedan {{ (int) now()->diffInDays($campana->fecha_fin) }} días</span>
+    @endif
     <span class="badge badge-info">{{ $user->rol->nombre }}</span>
   </div>
 </div>
@@ -22,9 +27,9 @@
 <div class="grid4" style="margin-bottom:24px">
   @if($user->esGrupoFud())
     <div class="kpi-card ">
-      <div class="kpi-label">Propuestas enviadas</div>
+      <div class="kpi-label">Mis expedientes</div>
       <div class="kpi-value">{{ $kpis['total'] }}</div>
-      <div class="kpi-sub">Total acumulado</div>
+      <div class="kpi-sub">{{ $kpis['sustentos'] }} con sustentos por cargar</div>
     </div>
     <div class="kpi-card mostaza">
       <div class="kpi-label">En revisión</div>
@@ -34,12 +39,12 @@
     <div class="kpi-card verde">
       <div class="kpi-label">Aprobadas</div>
       <div class="kpi-value">{{ $kpis['aprobadas'] }}</div>
-      <div class="kpi-sub">Este ciclo</div>
+      <div class="kpi-sub">{{ $kpis['total'] ? round($kpis['aprobadas'] / $kpis['total'] * 100) : 0 }}% de mis expedientes</div>
     </div>
     <div class="kpi-card danger">
       <div class="kpi-label">Observadas / Rechazadas</div>
       <div class="kpi-value">{{ $kpis['observadas'] }}</div>
-      <div class="kpi-sub">Requieren corrección</div>
+      <div class="kpi-sub">Requieren atención</div>
     </div>
   @else
     <div class="kpi-card">
@@ -48,14 +53,14 @@
       <div class="kpi-sub">FUDs pendientes de decisión</div>
     </div>
     <div class="kpi-card verde">
-      <div class="kpi-label">Aprobados (campaña)</div>
+      <div class="kpi-label">Aprobados por mí</div>
       <div class="kpi-value">{{ $kpis['aprobadas'] }}</div>
-      <div class="kpi-sub">Total conciliaciones OK</div>
+      <div class="kpi-sub">{{ $kpis['mes'] }} decisiones este mes</div>
     </div>
     <div class="kpi-card mostaza">
-      <div class="kpi-label">En revisión (global)</div>
-      <div class="kpi-value">{{ $kpis['revision'] }}</div>
-      <div class="kpi-sub">Pendientes de aprobación</div>
+      <div class="kpi-label">Observados por mí</div>
+      <div class="kpi-value">{{ $kpis['observadas'] }}</div>
+      <div class="kpi-sub">Esperando corrección del ejecutivo</div>
     </div>
     <div class="kpi-card info">
       <div class="kpi-label">Nivel de autonomía</div>
@@ -66,7 +71,7 @@
 </div>
 
 {{-- ALERTA BANDEJA --}}
-@if($user->puedeAprobar() && isset($pendientes) && $pendientes->count())
+@if($user->esAprobador() && isset($pendientes) && $pendientes->count())
   <div class="notice" style="margin-bottom:20px">
     <strong>📬 Tienes {{ $pendientes->count() }} FUD(s) pendientes de revisión.</strong>
     <a href="{{ route('bandeja.index') }}" style="color:var(--rojo);font-weight:700;margin-left:10px">

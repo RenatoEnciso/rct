@@ -32,7 +32,7 @@ class Sustento extends Model
 
     public function estaCompleto(): bool
     {
-        return $this->estado === 'Completo';
+        return $this->estado === 'Aprobado'; // sustento validado por Recuperaciones
     }
 
     protected $fillable = [

@@ -125,6 +125,13 @@ class PropuestaFud extends Model
     {
         return $q->where('enviado_por', $userId);
     }
+    // Expedientes vigentes: la última versión de cada FUD (sin correcciones posteriores).
+    // Es la base de todos los indicadores, para no contar versiones reemplazadas.
+    public function scopeVigentes(Builder $q): Builder
+    {
+        return $q->whereDoesntHave('versiones');
+    }
+
     // Solo FUDs raíz (no correcciones) para el listado principal
     public function scopeRaiz(Builder $q): Builder
     {

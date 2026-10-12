@@ -215,10 +215,14 @@
 <div class="page-head">
   <div class="page-head-text">
     <h2>Dashboard de Reportes</h2>
-    <p>Campaña <strong>"Sin Atrasos que Atrasan"</strong> · Resumen ejecutivo de gestión</p>
+    <p>Resumen ejecutivo de gestión · {{ $campana ? 'Campaña "'.$campana->nombre.'"' : 'Sin campaña activa' }}</p>
   </div>
   <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-    <span class="badge badge-ok">🟢 Campaña Activa</span>
+    @if($campana)
+      <span class="badge {{ now()->between($campana->fecha_inicio, $campana->fecha_fin->endOfDay()) ? 'badge-ok' : 'badge-gray' }}">
+        {{ $campana->nombre }} · {{ $campana->fecha_inicio->format('d/m/Y') }} – {{ $campana->fecha_fin->format('d/m/Y') }}
+      </span>
+    @endif
     <span class="badge badge-info">{{ auth()->user()->rol->nombre }}</span>
     <span style="font-size:12px;color:#888">
       Actualizado: {{ now()->format('d/m/Y H:i') }}
@@ -236,6 +240,15 @@
         <option value="{{ $z->id }}" {{ $zonaId == $z->id ? 'selected' : '' }}>
           {{ $z->nombre }}
         </option>
+      @endforeach
+    </select>
+  </div>
+  <div class="field">
+    <label>Tienda</label>
+    <select name="tienda_id" onchange="this.form.submit()">
+      <option value="">Todas las tiendas</option>
+      @foreach($tiendas as $t)
+        <option value="{{ $t->id }}" {{ $tiendaId == $t->id ? 'selected' : '' }}>{{ $t->nombre }}</option>
       @endforeach
     </select>
   </div>
@@ -326,11 +339,11 @@
 
   {{-- Monto honrado --}}
   <div class="kpi-lg azul">
-    <div class="kpi-lg-label">Monto honrado</div>
+    <div class="kpi-lg-label">Capital normalizado</div>
     <div class="kpi-lg-numero" style="font-size:24px">
-      S/ {{ number_format($montoHonrado / 1000000, 2) }}M
+      S/ {{ number_format($montoNormalizado / 1000000, 2) }}M
     </div>
-    <div class="kpi-lg-sub">Capital conciliado</div>
+    <div class="kpi-lg-sub">FUD aprobados con sustento conforme</div>
     <div class="kpi-icon">
       <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#1a56a0" stroke-width="1">
         <line x1="12" y1="1" x2="12" y2="23"/>
@@ -349,19 +362,19 @@
     <div class="kpi-sub">Post-aprobación</div>
   </div>
   <div class="kpi-card verde">
-    <div class="kpi-label">Sustentos completos</div>
-    <div class="kpi-value">{{ $sustentosCompletos }}</div>
-    <div class="kpi-sub">Documentación OK</div>
-  </div>
-  <div class="kpi-card mostaza">
-    <div class="kpi-label">Sustentos pendientes</div>
-    <div class="kpi-value">{{ $sustentosPendientes }}</div>
-    <div class="kpi-sub">Faltan documentos</div>
+    <div class="kpi-label">Sustentos conformes</div>
+    <div class="kpi-value">{{ $sustentosConformes }}</div>
+    <div class="kpi-sub">Validados por Recuperaciones · {{ $cumplimientoSustentos }}%</div>
   </div>
   <div class="kpi-card info">
-    <div class="kpi-label">Cumplim. sustentos</div>
-    <div class="kpi-value">{{ $cumplimientoSustentos }}%</div>
-    <div class="kpi-sub">% con docs completos</div>
+    <div class="kpi-label">En revisión</div>
+    <div class="kpi-value">{{ $sustentosEnRevision }}</div>
+    <div class="kpi-sub">Cargados, esperando revisor</div>
+  </div>
+  <div class="kpi-card mostaza">
+    <div class="kpi-label">Por cargar o corregir</div>
+    <div class="kpi-value">{{ $sustentosPendientes }}</div>
+    <div class="kpi-sub">Pendientes y observados</div>
   </div>
 </div>
 
@@ -385,7 +398,7 @@
             <th style="text-align:center">Total FUDs</th>
             <th style="text-align:center">Aprobados</th>
             <th style="text-align:left;min-width:160px">Cumplimiento Actual</th>
-            <th style="text-align:center">Variación</th>
+            <th style="text-align:center" title="Tasa de aprobación de lo decidido este mes vs. mes anterior">Var. vs mes ant.</th>
           </tr>
         </thead>
         <tbody>
@@ -413,7 +426,7 @@
               </td>
               <td style="text-align:center">
                 <span class="{{ $varClass }}">
-                  {{ $varIcon }} {{ abs($fila['variacion']) }}%
+                  {{ $varIcon }} {{ abs($fila['variacion']) }} pts
                 </span>
               </td>
             </tr>
@@ -489,7 +502,7 @@
             S/ {{ number_format($montoEnRiesgo / 1000000, 2) }}M
           </div>
           <div style="font-size:11px;color:#aaa">
-            Capital de FUDs aprobados sin sustentos
+            Capital de FUD aprobados con sustento aún no validado
           </div>
         </div>
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
@@ -623,6 +636,32 @@
 
 </div>
 
+{{-- ── PROGRAMAS DE GOBIERNO ──────────────────────────── --}}
+<div class="card" style="margin-bottom:20px">
+  <div class="card-title">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M3 21h18M5 21V10l7-5 7 5v11M9 21v-6h6v6"/>
+    </svg>
+    Programas de gobierno · expedientes de habilitación
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px">
+    <div class="kpi-card"><div class="kpi-label">Expedientes</div><div class="kpi-value">{{ $gobierno['total'] }}</div><div class="kpi-sub">Registrados</div></div>
+    <div class="kpi-card verde"><div class="kpi-label">Completos</div><div class="kpi-value">{{ $gobierno['completos'] }}</div><div class="kpi-sub">10 de 10 documentos</div></div>
+    <div class="kpi-card mostaza"><div class="kpi-label">Incompletos</div><div class="kpi-value">{{ $gobierno['incompletos'] }}</div><div class="kpi-sub">Faltan documentos</div></div>
+    <div class="kpi-card info"><div class="kpi-label">Avance promedio</div><div class="kpi-value">{{ $gobierno['avance'] }}%</div><div class="kpi-sub">Documentos cargados</div></div>
+  </div>
+  @forelse($gobierno['porPrograma'] as $programa => $g)
+    @php $pctG = $g['total'] ? round($g['completos'] / $g['total'] * 100) : 0; @endphp
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;font-size:12px">
+      <div style="min-width:120px;font-weight:600">{{ $programa }}</div>
+      <div class="bar-track"><div class="bar-fill {{ $pctG >= 70 ? 'ok' : ($pctG >= 40 ? 'warn' : 'danger') }}" style="width:{{ max($pctG, 2) }}%"></div></div>
+      <div style="min-width:90px;text-align:right;color:#666">{{ $g['completos'] }}/{{ $g['total'] }} completos</div>
+    </div>
+  @empty
+    <p style="color:#999;font-size:13px;text-align:center;padding:12px">Aún no hay expedientes de programas de gobierno.</p>
+  @endforelse
+</div>
+
 {{-- ── FILA: estados (dona visual) + actividad reciente ─── --}}
 <div class="grid2" style="margin-bottom:20px">
 
@@ -724,7 +763,7 @@
           </div>
           <div style="font-size:10px;color:#aaa;margin-top:1px">
             Por: {{ $fud->aprobadoPor->name ?? $fud->enviador->name }}
-            · {{ $fud->updated_at->diffForHumans() }}
+            · {{ ($fud->fecha_decision ?? $fud->updated_at)->diffForHumans() }}
           </div>
         </div>
         <span class="badge {{ $fud->badgeClass() }}" style="font-size:10px;flex-shrink:0">

@@ -8,7 +8,12 @@ class CarteraController extends Controller
 {
     public function exclusiones()
     {
-        return view('cartera.exclusiones');
+        $expedientes = ExpedienteGobierno::with('cliente.tienda', 'registrador')
+            ->withCount('documentos')
+            ->latest('fecha_registro')->latest('id')
+            ->paginate(10);
+
+        return view('cartera.exclusiones', compact('expedientes'));
     }
 
     public function registrarGobierno(Request $request)

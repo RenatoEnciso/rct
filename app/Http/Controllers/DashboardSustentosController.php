@@ -38,7 +38,11 @@ class DashboardSustentosController extends Controller
             ->groupBy('mes', 'estado')
             ->orderBy('mes')
             ->get()
-            ->groupBy('mes');
+            ->groupBy('mes')
+            // "2026-09" → "Sep 2026" para el eje del gráfico
+            ->mapWithKeys(fn($g, $mes) => [
+                ucfirst(\Carbon\Carbon::createFromFormat('Y-m', $mes)->locale('es')->translatedFormat('M Y')) => $g,
+            ]);
 
         // Top analistas con más cargas
         $topAnalistas = Sustento::select('cargado_por',

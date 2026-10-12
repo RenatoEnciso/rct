@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             CampanaSeeder::class,
             UserSeeder::class,
             ClienteCarteraSeeder::class,
+            DemoSeeder::class,
         ]);
     }
 }

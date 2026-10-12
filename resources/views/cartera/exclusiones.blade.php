@@ -106,4 +106,39 @@
   </div>
 </div>
 
+{{-- Expedientes registrados --}}
+<div class="card" style="margin-top:20px">
+  <div class="card-title">Expedientes de programas de gobierno registrados</div>
+  <div style="overflow-x:auto">
+    <table>
+      <thead>
+        <tr><th>Fecha</th><th>Cliente</th><th>Tienda</th><th>Programa</th><th>Motivo</th><th style="min-width:160px">Avance documentario</th><th>Estado</th></tr>
+      </thead>
+      <tbody>
+        @forelse($expedientes as $e)
+          @php $pctE = round(min($e->documentos_count, 10) / 10 * 100); @endphp
+          <tr>
+            <td style="font-size:12px">{{ $e->fecha_registro?->format('d/m/Y') }}</td>
+            <td><strong style="font-size:12px">{{ $e->cliente->nombre_cliente ?? '—' }}</strong><br>
+                <span style="font-size:11px;color:#999">Op. {{ $e->cliente->operacion ?? '—' }}</span></td>
+            <td style="font-size:12px">{{ $e->cliente->tienda->nombre ?? '—' }}</td>
+            <td style="font-size:12px">{{ $e->programa }}</td>
+            <td style="font-size:11px;color:#666">{{ $e->motivo_habilitacion }}</td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="progress-bar" style="flex:1;margin:0"><div class="progress-fill" style="width:{{ $pctE }}%"></div></div>
+                <span style="font-size:11px;font-weight:700">{{ min($e->documentos_count, 10) }}/10</span>
+              </div>
+            </td>
+            <td><span class="badge {{ $e->estado === 'Completo' ? 'badge-ok' : 'badge-pending' }}">{{ $e->estado }}</span></td>
+          </tr>
+        @empty
+          <tr><td colspan="7" style="text-align:center;color:#999;padding:24px">Aún no hay expedientes registrados.</td></tr>
+        @endforelse
+      </tbody>
+    </table>
+  </div>
+  <div style="margin-top:12px">{{ $expedientes->links() }}</div>
+</div>
+
 @endsection
