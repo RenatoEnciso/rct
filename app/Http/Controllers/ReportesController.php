@@ -188,20 +188,25 @@ class ReportesController extends Controller
 
     private function resumenGobierno($zonaId, $tiendaId): array
     {
-        $exp = ExpedienteGobierno::withCount('documentos')
-            ->when($zonaId,   fn($q) => $q->whereHas('cliente', fn($c) => $c->where('zona_id', $zonaId)))
-            ->when($tiendaId, fn($q) => $q->whereHas('cliente', fn($c) => $c->where('tienda_id', $tiendaId)))
+        $exp = ExpedienteGobierno::with('lote')
+            ->when($zonaId,   fn($q) => $q->where('zona_id', $zonaId))
+            ->when($tiendaId, fn($q) => $q->where('tienda_id', $tiendaId))
             ->get();
+
+        // Completo = cuenta con los documentos exigidos por COFIDE (incluye los ya revisados)
+        $completos = ['Completo', 'Revisado por zona', 'Conforme'];
+        $catalogo  = \App\Models\GobTipoDocumento::catalogo();
+        $exigidos  = fn($e) => max(1, $catalogo->filter(fn($t) => $t->exigidoPara($e->tipo_persona ?? 'natural'))->count());
 
         $total = $exp->count();
         return [
             'total'       => $total,
-            'completos'   => $exp->where('estado', 'Completo')->count(),
-            'incompletos' => $exp->where('estado', '!=', 'Completo')->count(),
-            'avance'      => $total ? round($exp->avg(fn($e) => min($e->documentos_count, 10) / 10 * 100), 1) : 0,
-            'porPrograma' => $exp->groupBy('programa')->map(fn($g) => [
+            'completos'   => $exp->whereIn('estado', $completos)->count(),
+            'incompletos' => $exp->whereNotIn('estado', $completos)->count(),
+            'avance'      => $total ? round($exp->avg(fn($e) => max(0, 1 - $e->faltantes / $exigidos($e)) * 100), 1) : 0,
+            'porPrograma' => $exp->groupBy(fn($e) => $e->lote->programa ?? $e->programa ?? 'Sin programa')->map(fn($g) => [
                 'total'     => $g->count(),
-                'completos' => $g->where('estado', 'Completo')->count(),
+                'completos' => $g->whereIn('estado', $completos)->count(),
             ])->sortByDesc('total')->all(),
         ];
     }

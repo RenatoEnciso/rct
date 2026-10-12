@@ -42,7 +42,7 @@ class IndicadoresController extends Controller
             ->groupBy('mes')->orderBy('mes')->get();
 
         $gobTotal     = ExpedienteGobierno::count();
-        $gobCompletos = ExpedienteGobierno::where('estado', 'Completo')->count();
+        $gobCompletos = ExpedienteGobierno::whereIn('estado', ['Completo', 'Revisado por zona', 'Conforme'])->count();
 
         return view('indicadores.index', compact(
             'total', 'revision', 'aprobadas', 'tasa', 'campana',

@@ -89,6 +89,7 @@ Route::middleware('auth')->group(function () {
     // ── Programas de gobierno: expedientes de honramiento ────
     Route::get('/gobierno',                         [GobiernoController::class, 'index'])->name('gobierno.index');
     Route::get('/gobierno/lotes',                   [GobiernoController::class, 'lotes'])->name('gobierno.lotes');
+    Route::get('/gobierno/indicadores',             [\App\Http\Controllers\GobiernoIndicadoresController::class, 'index'])->name('gobierno.indicadores');
     Route::put('/gobierno/lotes/{lote}',            [GobiernoController::class, 'actualizarLote'])->name('gobierno.lotes.actualizar');
     Route::get('/gobierno/expediente/{expediente}', [GobiernoController::class, 'show'])->name('gobierno.show');
     Route::post('/gobierno/expediente/{expediente}/documento',      [GobiernoController::class, 'cargarDocumento'])->name('gobierno.documento');
