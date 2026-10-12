@@ -104,6 +104,20 @@
             @endif
           @endif
 
+          @if($puedeRevisarDocs && $d && in_array($est, ['cargado', 'conforme', 'observado']) && $e->estado !== 'Conforme')
+            <div class="d-flex gap-2" style="margin-top:10px">
+              @if($est !== 'conforme')
+                <form method="POST" action="{{ route('gobierno.revision.documento', $d) }}">@csrf
+                  <input type="hidden" name="resultado" value="conforme">
+                  <button class="btn btn-success btn-sm"><i class="bi bi-check-lg"></i> Conforme</button></form>
+              @endif
+              @if($est !== 'observado')
+                <button type="button" class="btn btn-warning btn-sm" data-modal-open="modal-obs" data-doc-url="{{ route('gobierno.revision.documento', $d) }}" data-doc-nombre="{{ $t->nombre }}">
+                  <i class="bi bi-exclamation-lg"></i> Observar</button>
+              @endif
+            </div>
+          @endif
+
           @if($puedeSubir)
             <form method="POST" action="{{ route('gobierno.documento', $e) }}" enctype="multipart/form-data" style="margin-top:10px">
               @csrf
@@ -126,6 +140,39 @@
     </div>
   </div>
 @endforeach
+
+@if($nivelRevision)
+  @php $hayObservados = $exigidos->contains('estado', 'observado') || $complementarios->contains('estado', 'observado'); @endphp
+  <div class="card" style="border-color:var(--rojo-line)">
+    <div class="card-head">
+      <div class="card-title"><i class="bi bi-clipboard-check"></i> Revisión {{ $nivelRevision === 'zona' ? 'por zona' : 'central' }}</div>
+      <span class="cell-sub">{{ $nivelRevision === 'zona' ? 'Coordinador Zonal de Recuperaciones' : 'Jefatura de Recuperaciones' }}</span>
+    </div>
+    @if($hayObservados)
+      <div class="notice-warning"><i class="bi bi-exclamation-triangle"></i>
+        <span>Hay documentos observados. Registre la observación para que la tienda los corrija; la conformidad estará disponible cuando se carguen de nuevo.</span></div>
+    @else
+      <p class="fs-13 text-gris" style="margin-top:0">Revise los documentos exigidos por COFIDE. Al dar conformidad, los documentos presentados quedan conformes
+        {{ $nivelRevision === 'zona' ? 'y el expediente pasa a revisión central.' : 'y el expediente queda conforme.' }}
+        Para observar, marque primero como «Observado» los documentos que debe corregir la tienda.</p>
+    @endif
+    <form method="POST" action="{{ route('gobierno.revision.expediente', $e) }}">
+      @csrf
+      <div class="field">
+        <label for="comentario-rev">Comentario {{ $hayObservados ? '(obligatorio)' : '(opcional para la conformidad)' }}</label>
+        <textarea id="comentario-rev" name="comentario" rows="2" {{ $hayObservados ? 'required' : '' }} placeholder="Comentario para el historial y la tienda">{{ old('comentario') }}</textarea>
+      </div>
+      <div class="actions">
+        @if($hayObservados)
+          <button name="resultado" value="observado" class="btn btn-warning"><i class="bi bi-arrow-return-left"></i> Registrar observación</button>
+        @else
+          <button name="resultado" value="conforme" class="btn btn-success" data-confirm="¿Dar conformidad {{ $nivelRevision === 'zona' ? 'de zona' : 'central' }} al expediente {{ $e->id_externo }}?">
+            <i class="bi bi-check2-circle"></i> Dar conformidad {{ $nivelRevision === 'zona' ? 'de zona' : 'central' }}</button>
+        @endif
+      </div>
+    </form>
+  </div>
+@endif
 
 <div class="grid2" style="margin-bottom:20px">
   <div class="card">
@@ -162,6 +209,29 @@
   <a href="{{ route('gobierno.index') }}" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Volver a la bandeja</a>
 </div>
 
+{{-- Observar documento --}}
+<div class="rct-modal" id="modal-obs" role="dialog" aria-labelledby="obs-titulo">
+  <div class="rct-modal-box" style="width:min(520px,100%)">
+    <form method="POST" id="form-obs">
+      @csrf
+      <input type="hidden" name="resultado" value="observado">
+      <div class="rct-modal-head"><h3 class="rct-modal-title" id="obs-titulo">Observar documento</h3>
+        <button type="button" class="rct-modal-close" data-modal-close aria-label="Cerrar"><i class="bi bi-x-lg"></i></button></div>
+      <div class="rct-modal-body">
+        <p class="fs-13" style="margin-top:0">Documento: <strong id="obs-nombre"></strong></p>
+        <div class="field">
+          <label for="obs-comentario">Qué debe corregir la tienda <span class="req">*</span></label>
+          <textarea id="obs-comentario" name="comentario" rows="3" required placeholder="Ej.: el pagaré no está firmado por el titular."></textarea>
+        </div>
+      </div>
+      <div class="rct-modal-foot actions" style="margin-top:0">
+        <button type="button" class="btn btn-secondary" data-modal-close>Cancelar</button>
+        <button type="submit" class="btn btn-warning"><i class="bi bi-exclamation-lg"></i> Observar documento</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 {{-- Declarar documento no disponible --}}
 <div class="rct-modal" id="modal-nd" role="dialog" aria-labelledby="nd-titulo">
   <div class="rct-modal-box" style="width:min(520px,100%)">
@@ -189,6 +259,12 @@
 
 @push('scripts')
 <script>
+document.querySelectorAll('[data-doc-url]').forEach(function (b) {
+  b.addEventListener('click', function () {
+    document.getElementById('form-obs').action = b.dataset.docUrl;
+    document.getElementById('obs-nombre').textContent = b.dataset.docNombre;
+  });
+});
 document.querySelectorAll('[data-tipo-id]').forEach(function (b) {
   b.addEventListener('click', function () {
     document.getElementById('nd-tipo').value = b.dataset.tipoId;

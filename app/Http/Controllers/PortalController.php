@@ -43,13 +43,13 @@ class PortalController extends Controller
         $sinCargar = Sustento::where('cargado_por', $u->id)->where('estado', 'Pendiente')->count();
         $obsSust   = Sustento::where('cargado_por', $u->id)->where('estado', 'Observado')->count();
         $obsFud    = PropuestaFud::porEnviador($u->id)->vigentes()->where('estado_fud', 'Observado')->count();
-        $enRev     = PropuestaFud::porEnviador($u->id)->vigentes()->enRevision()->count();
+        $gob       = $u->tienda_id ? ExpedienteGobierno::where('tienda_id', $u->tienda_id)->whereIn('estado', ['Pendiente', 'Incompleto', 'Observado'])->count() : 0;
 
         return [
             ['Sustentos por cargar', $sinCargar, 'Operaciones aprobadas sin documentación', 'bi-paperclip', route('sustentos.index'), $sinCargar ? 'danger' : 'ok'],
             ['Sustentos observados', $obsSust, 'Documentos que debe corregir', 'bi-exclamation-triangle', route('sustentos.index'), $obsSust ? 'warn' : 'ok'],
             ['Propuestas por corregir', $obsFud, 'Observadas por el aprobador', 'bi-pencil-square', route('fud.index', ['estado' => 'Observado']), $obsFud ? 'warn' : 'ok'],
-            ['En revisión', $enRev, 'Esperando decisión del aprobador', 'bi-hourglass-split', route('fud.index', ['estado' => 'En revisión']), 'info'],
+            ['Expedientes de gobierno', $gob, 'Por completar o corregir (honramiento)', 'bi-bank', route('gobierno.index'), $gob ? 'warn' : 'ok'],
         ];
     }
 
@@ -59,13 +59,15 @@ class PortalController extends Controller
         $revisar = Sustento::where('estado', 'En revisión')
             ->when($u->nivel() === 1 && $u->tienda, fn($q) => $q->whereHas('propuesta.cliente', fn($c) => $c->where('zona_id', $u->tienda->zona_id)))
             ->count();
-        $gob = ExpedienteGobierno::where('estado', 'Incompleto')->count();
+        $central = $u->nivel() >= 2;
+        $gob = ExpedienteGobierno::visiblePara($u)->where('estado', $central ? 'Revisado por zona' : 'Completo')->count();
         $mes = PropuestaFud::where('aprobado_por', $u->id)->where('fecha_decision', '>=', now()->startOfMonth())->count();
 
         return [
             ['Solicitudes por decidir', $bandeja, 'En su bandeja de aprobación', 'bi-inbox', route('bandeja.index'), $bandeja ? 'danger' : 'ok'],
             ['Sustentos por revisar', $revisar, $u->nivel() === 1 ? 'Cargados en su zona' : 'Cargados en todas las zonas', 'bi-clipboard-check', route('revision.index', ['estado' => 'En revisión']), $revisar ? 'warn' : 'ok'],
-            ['Expedientes de gobierno incompletos', $gob, 'Checklist documentario pendiente', 'bi-bank', route('gobierno.index', ['estado' => 'Incompleto']), $gob ? 'warn' : 'ok'],
+            ['Expedientes de gobierno por revisar', $gob, $central ? 'Esperan la revisión central' : 'Completos en su zona', 'bi-bank',
+             route('gobierno.index', ['estado' => $central ? 'Revisado por zona' : 'Completo']), $gob ? 'warn' : 'ok'],
             ['Decisiones del mes', $mes, 'Aprobaciones, observaciones y rechazos', 'bi-patch-check', route('aprobaciones.index'), 'info'],
         ];
     }

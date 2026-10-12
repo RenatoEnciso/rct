@@ -37,10 +37,11 @@ class Permisos
     /** Nivel de revisión que le corresponde al usuario sobre el expediente (o null). */
     public function nivelRevision(User $u, ExpedienteGobierno $e): ?string
     {
-        if ($this->puedeRevisarCentral($u) && in_array($e->estado, ['Completo', 'Revisado por zona'])) {
-            return $e->estado === 'Revisado por zona' || !$this->zonaTieneCoordinador($e) ? 'central' : 'zona';
+        // Observado: permite registrar la observación en el historial (la conformidad exige corregir antes)
+        if ($this->puedeRevisarCentral($u) && in_array($e->estado, ['Completo', 'Revisado por zona', 'Observado'])) {
+            return $e->estado === 'Revisado por zona' || $e->revisado_zona_en || !$this->zonaTieneCoordinador($e) ? 'central' : 'zona';
         }
-        if ($this->puedeRevisarZona($u, $e) && $e->estado === 'Completo') return 'zona';
+        if ($this->puedeRevisarZona($u, $e) && in_array($e->estado, ['Completo', 'Observado'])) return 'zona';
         return null;
     }
 

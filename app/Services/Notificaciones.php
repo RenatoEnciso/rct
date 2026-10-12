@@ -120,6 +120,8 @@ class Notificaciones
                 'bi-pencil-square', 'warn'));
         }
 
+        $this->gobiernoTienda($u, $n, $hoy);
+
         return $n;
     }
 
@@ -166,15 +168,69 @@ class Notificaciones
                 'Sustentos por revisar', "{$antiguos} sustento(s) esperan revisión desde hace más de {$minimo} días.", 'bi-clipboard-check', 'warn'));
         }
 
-        // Programas de gobierno incompletos registrados por mí
-        $incompletos = ExpedienteGobierno::where('registrado_por', $u->id)->where('estado', 'Incompleto')
-            ->where('fecha_registro', '<=', now()->subDays(7))->count();
-        if ($incompletos) {
-            $n->push($this->item("rec-gob:{$hoy}", 'recordatorio', now(), route('gobierno.index', ['estado' => 'Incompleto']),
-                'Expedientes de gobierno incompletos', "{$incompletos} expediente(s) que registró llevan más de 7 días sin completar el checklist.", 'bi-bank', 'warn'));
-        }
+        $this->gobiernoRevision($u, $n, $hoy);
 
         return $n;
+    }
+
+    // ── Programas de gobierno (expedientes de honramiento) ───
+
+    private function gobiernoTienda(User $u, Collection $n, string $hoy): void
+    {
+        if (!$u->tienda_id) return;
+        $exps = ExpedienteGobierno::with('lote', 'documentos.tipo')->where('tienda_id', $u->tienda_id)->get();
+
+        // Observados: la tienda debe corregir los documentos
+        foreach ($exps->where('estado', 'Observado') as $e) {
+            $obs = $e->documentos->where('estado', 'observado');
+            $cuando = $obs->max('revisado_en') ?? $e->updated_at;
+            $n->push($this->item("gob-obs:{$e->id}:".Carbon::parse($cuando)->timestamp, 'gobierno', $cuando, route('gobierno.show', $e),
+                'Expediente de honramiento observado',
+                "{$e->cliente} (ID {$e->id_externo}): corrija ".$obs->map(fn($d) => $d->tipo->nombre_corto ?? $d->tipo_doc)->implode(', ').'.',
+                'bi-bank', 'warn'));
+        }
+
+        // Recordatorio diario: expedientes sin completar y su plazo de 30 días
+        $abiertos = $exps->whereIn('estado', ['Pendiente', 'Incompleto']);
+        if ($abiertos->count()) {
+            $vencidos = $abiertos->filter(fn($e) => $e->situacionPlazo() === 'vencido')->count();
+            $porVencer = $abiertos->filter(fn($e) => $e->situacionPlazo() === 'por_vencer')->count();
+            $detalle = collect([$vencidos ? "{$vencidos} con plazo vencido" : null, $porVencer ? "{$porVencer} vencen en 7 días o menos" : null])->filter()->implode(' y ');
+            $n->push($this->item("rec-gob-tienda:{$hoy}", 'recordatorio', now(), route('gobierno.index'),
+                'Expedientes de honramiento por completar',
+                "Su tienda tiene {$abiertos->count()} expediente(s) sin los documentos exigidos por COFIDE".($detalle ? ": {$detalle}." : '.'),
+                'bi-bank', $vencidos ? 'danger' : 'warn'));
+        }
+    }
+
+    private function gobiernoRevision(User $u, Collection $n, string $hoy): void
+    {
+        $permisos = app(\App\Services\Honramiento\Permisos::class);
+        $central = $permisos->puedeRevisarCentral($u);
+        $visibles = ExpedienteGobierno::visiblePara($u);
+
+        $paraZona = (clone $visibles)->where('estado', 'Completo')->count();
+        if ($paraZona && (!$central || $u->nivel() >= 2)) {
+            $n->push($this->item("gob-zona:{$hoy}:{$paraZona}", 'gobierno', now(), route('gobierno.index', ['estado' => 'Completo']),
+                'Expedientes de honramiento por revisar',
+                "{$paraZona} expediente(s) ".($central ? '' : 'de su zona ')."tienen los documentos exigidos por COFIDE y esperan la revisión por zona.",
+                'bi-clipboard-check', 'info'));
+        }
+        if ($central) {
+            $paraCentral = ExpedienteGobierno::where('estado', 'Revisado por zona')->count();
+            if ($paraCentral) {
+                $n->push($this->item("gob-central:{$hoy}:{$paraCentral}", 'gobierno', now(), route('gobierno.index', ['estado' => 'Revisado por zona']),
+                    'Expedientes para revisión central', "{$paraCentral} expediente(s) revisados por zona esperan la conformidad central.",
+                    'bi-patch-check', 'info'));
+            }
+            $vencidos = ExpedienteGobierno::with('lote')->whereIn('estado', ['Pendiente', 'Incompleto', 'Observado'])->get()
+                ->filter(fn($e) => $e->situacionPlazo() === 'vencido')->count();
+            if ($vencidos) {
+                $n->push($this->item("rec-gob-vencidos:{$hoy}", 'recordatorio', now(), route('gobierno.index', ['plazo' => 'vencido']),
+                    'Expedientes con plazo vencido', "{$vencidos} expediente(s) de honramiento superaron los 30 días de regularización sin completarse.",
+                    'bi-alarm', 'danger'));
+            }
+        }
     }
 
     // ── Utilidades ───────────────────────────────────────────

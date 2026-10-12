@@ -3,7 +3,7 @@
 
 @section('content')
 @php
-  $categorias = ['' => 'Todas', 'decision' => 'Decisiones', 'solicitud' => 'Solicitudes', 'sustento' => 'Sustentos', 'recordatorio' => 'Recordatorios'];
+  $categorias = ['' => 'Todas', 'decision' => 'Decisiones', 'solicitud' => 'Solicitudes', 'sustento' => 'Sustentos', 'gobierno' => 'Gobierno', 'recordatorio' => 'Recordatorios'];
   $noLeidas = $todas->where('leida', false)->count();
 @endphp
 

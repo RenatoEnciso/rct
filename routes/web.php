@@ -8,6 +8,7 @@ use App\Http\Controllers\SeguimientoController;
 use App\Http\Controllers\IndicadoresController;
 use App\Http\Controllers\GobiernoImportacionController;
 use App\Http\Controllers\GobiernoController;
+use App\Http\Controllers\GobiernoRevisionController;
 use App\Http\Controllers\AsistenteController;
 use App\Http\Controllers\ReportesController;
 use App\Http\Controllers\RevisionSustentosController;
@@ -94,6 +95,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/gobierno/expediente/{expediente}/no-disponible',  [GobiernoController::class, 'noDisponible'])->name('gobierno.no-disponible');
     Route::get('/gobierno/documento/{documento}/ver',               [GobiernoController::class, 'verDocumento'])->name('gobierno.documento.ver');
     Route::get('/gobierno/documento/{documento}/descargar',         [GobiernoController::class, 'descargarDocumento'])->name('gobierno.documento.descargar');
+    Route::post('/gobierno/documento/{documento}/revision',         [GobiernoRevisionController::class, 'documento'])->name('gobierno.revision.documento');
+    Route::post('/gobierno/expediente/{expediente}/revision',       [GobiernoRevisionController::class, 'expediente'])->name('gobierno.revision.expediente');
     Route::get('/cartera/exclusiones', fn() => redirect()->route('gobierno.index'))->name('cartera.exclusiones');   // ruta anterior
 
     // ── Trazabilidad completa de una operación (aprobadores y ejecutivo que la envió) ──

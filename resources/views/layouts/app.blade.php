@@ -58,7 +58,7 @@
           @endif
         </div>
         <div class="notif-tabs" role="tablist">
-          @foreach(['' => 'Todas', 'decision' => 'Decisiones', 'solicitud' => 'Solicitudes', 'sustento' => 'Sustentos', 'recordatorio' => 'Recordatorios'] as $cat => $lbl)
+          @foreach(['' => 'Todas', 'decision' => 'Decisiones', 'solicitud' => 'Solicitudes', 'sustento' => 'Sustentos', 'gobierno' => 'Gobierno', 'recordatorio' => 'Recordatorios'] as $cat => $lbl)
             @php $nCat = $cat ? $notifs->where('categoria', $cat)->where('leida', false)->count() : $notifNoLeidas->count(); @endphp
             @if(!$cat || $notifs->where('categoria', $cat)->count())
               <button type="button" class="{{ $cat === '' ? 'active' : '' }}" data-cat="{{ $cat }}">{{ $lbl }}@if($nCat) <span>{{ $nCat }}</span>@endif</button>
