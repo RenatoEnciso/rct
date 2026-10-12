@@ -9,6 +9,7 @@ use App\Models\{
 };
 use Illuminate\Support\Facades\Storage;
 use App\Services\AsignadorAprobador;
+use App\Services\RegistroFud;
 
 class FudController extends Controller
 {
@@ -39,7 +40,7 @@ class FudController extends Controller
     }
 
     // ── Guardar nuevo FUD ────────────────────────────────────
-    public function store(Request $request, AsignadorAprobador $asignador)
+    public function store(Request $request, RegistroFud $registro)
     {
         $request->validate([
             'cliente_cartera_id' => 'required|exists:clientes_cartera,id',
@@ -51,32 +52,15 @@ class FudController extends Controller
             'motivo.min'                  => 'El motivo debe tener al menos 20 caracteres.',
         ]);
 
-        $user    = $request->user();
         $cliente = ClienteCartera::findOrFail($request->cliente_cartera_id);
 
-        if ($cliente->superaLimite()) {
-            return back()->withErrors(['cliente_cartera_id' =>
-                'Este cliente ya alcanzó el límite de 4 conciliaciones en 12 meses.']);
+        // Mismo registro que el canal de mensajería: límite de usos, aprobador automático, detalle y bitácora
+        try {
+            $fud = $registro->registrar($cliente, $request->user(), $request->all(), (array) $request->file('adjuntos', []));
+        } catch (\DomainException $e) {
+            return back()->withInput()->withErrors(['cliente_cartera_id' => $e->getMessage()]);
         }
-
-        // El aprobador lo asigna el sistema según el nivel de autonomía del crédito
-        $nivelReq  = $asignador->nivelRequerido($cliente);
-        $aprobador = $asignador->asignar($cliente, $user->id);
-        if (!$aprobador) {
-            return back()->withInput()->withErrors(['cliente_cartera_id' =>
-                'No hay un aprobador disponible para el nivel de autonomía de este crédito.']);
-        }
-
-        $fud = $this->crearFud($request, $user->id, $nivelReq, ['aprobador_id' => $aprobador->id]);
-
-        $this->guardarDetalle($request, $fud->id);
-        $this->guardarAdjuntos($request, $fud->id, $user->id);
-
-        Seguimiento::registrar(
-            $user->id, 'FUD enviado',
-            'En revisión', $fud->id,
-            $cliente->nombre_cliente, $cliente->operacion
-        );
+        $aprobador = $fud->aprobador;
 
         return redirect()->route('fud.show', $fud)
             ->with('success', "FUD enviado a {$aprobador->name} ({$aprobador->rol->nombre}).");
@@ -249,32 +233,7 @@ class FudController extends Controller
 
     private function guardarDetalle(Request $request, int $fudId): void
     {
-        match($request->tipo_negociacion) {
-            'cuotas' => FudDetalleCuotas::create([
-                'propuesta_fud_id'   => $fudId,
-                'cuota_desde'        => $request->cuota_desde,
-                'cuota_hasta'        => $request->cuota_hasta,
-                'desc_interes'       => $request->desc_interes,
-                'desc_moratorio'     => $request->desc_moratorio ?? 100,
-                'pone_al_dia'        => $request->boolean('pone_al_dia'),
-                'cierra_mes_vigente' => $request->boolean('cierra_mes_vigente'),
-            ]),
-            'cancelacion' => FudDetalleCancelacion::create([
-                'propuesta_fud_id' => $fudId,
-                'monto_a_pagar'    => $request->monto_a_pagar,
-                'desc_interes'     => $request->desc_interes_canc,
-                'desc_capital'     => $request->desc_capital ?? 0,
-                'fecha_limite'     => $request->fecha_limite,
-                'mayor_tres_uit'   => $request->boolean('mayor_tres_uit'),
-                'sunarp_positivo'  => $request->boolean('sunarp_positivo'),
-            ]),
-            default => FudDetalleJudicial::create([
-                'propuesta_fud_id' => $fudId,
-                'monto_gravamen'   => $request->monto_gravamen,
-                'etapa_procesal'   => $request->etapa_procesal,
-                'beneficio_pct_sk' => $request->beneficio_pct_sk,
-            ]),
-        };
+        RegistroFud::guardarDetalle($request->tipo_negociacion, $fudId, $request->all());
     }
 
     private function guardarAdjuntos(Request $request, int $fudId, int $userId, ?string $tipo = null): void

@@ -79,11 +79,13 @@ class TrazabilidadExpediente
     private function eventos(Collection $versiones, ?Sustento $sustento, Collection $ids): Collection
     {
         $ev = collect();
+        $porWhatsapp = Seguimiento::whereIn('propuesta_fud_id', $ids)->where('tipo_operacion', 'FUD enviado')
+            ->where('descripcion', 'like', '%WhatsApp%')->exists();
 
         foreach ($versiones as $i => $v) {
             $ev->push([
                 'fecha'   => $v->created_at,
-                'titulo'  => $i === 0 ? 'Propuesta FUD enviada' : "Corrección {$i} enviada",
+                'titulo'  => $i === 0 ? 'Propuesta FUD enviada'.($porWhatsapp ? ' (canal WhatsApp)' : '') : "Corrección {$i} enviada",
                 'actor'   => $this->actor($v->enviador),
                 'detalle' => "{$v->tipo_negociacion_desc} · nivel de autonomía {$v->nivel_autonomia_req} · asignado a ".($v->aprobador->name ?? '—')
                              .($v->adjuntos->count() ? ' · '.$v->adjuntos->count().' archivo(s) adjunto(s)' : ''),

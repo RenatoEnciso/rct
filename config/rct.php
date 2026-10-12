@@ -18,4 +18,17 @@ return [
         'demora_max_ms' => 3000,
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Canal WhatsApp (vista de demostración)
+    |--------------------------------------------------------------------------
+    | Réplica funcional del canal de mensajería en /whatsapp. No pide login:
+    | opera como el usuario configurado. Por defecto solo se habilita en local.
+    */
+    'whatsapp' => [
+        'habilitado' => (bool) env('RCT_WHATSAPP_DEMO', env('APP_ENV') === 'local'),
+        'usuario'    => env('RCT_WHATSAPP_USUARIO', 'ejecutivo1@cajatrujillo.pe'),
+        'numero'     => '+51 944 120 300',
+    ],
+
 ];

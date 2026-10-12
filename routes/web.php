@@ -13,8 +13,17 @@ use App\Http\Controllers\RevisionSustentosController;
 use App\Http\Controllers\DashboardSustentosController;
 use App\Http\Controllers\ValidacionController;
 use App\Http\Controllers\AprobacionesController;
+use App\Http\Controllers\WhatsappController;
 
 require __DIR__.'/auth.php';
+
+// ── Canal WhatsApp (demostración, sin login; se habilita con RCT_WHATSAPP_DEMO) ──
+Route::prefix('whatsapp')->name('whatsapp.')->middleware('throttle:90,1')->group(function () {
+    Route::get('/',           [WhatsappController::class, 'index'])->name('index');
+    Route::get('/historial',  [WhatsappController::class, 'historial'])->name('historial');
+    Route::post('/mensaje',   [WhatsappController::class, 'mensaje'])->name('mensaje');
+    Route::post('/reiniciar', [WhatsappController::class, 'reiniciar'])->name('reiniciar');
+});
 
 Route::middleware('auth')->group(function () {
 
