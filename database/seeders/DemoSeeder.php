@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\{Hash, Storage};
 use App\Models\{
     User, Rol, Zona, Tienda, ClienteCartera, PropuestaFud,
     FudDetalleCuotas, FudDetalleCancelacion, FudDetalleJudicial, FudAdjunto,
-    Sustento, SustentoDocumento, Seguimiento, ExpedienteGobierno, ExpedienteGobiernoDoc
+    Sustento, SustentoDocumento, Seguimiento, ExpedienteGobierno
 };
 use App\Services\AsignadorAprobador;
 
@@ -53,7 +53,7 @@ class DemoSeeder extends Seeder
         $this->crearUsuarios();
         $clientes = $this->crearCartera(175);
         $this->crearFuds($clientes);
-        $this->crearProgramasGobierno(25);
+        // Los expedientes de Programas de Gobierno los crea HonramientoSeeder
 
         Model::reguard();
         $this->command?->info('Demo lista: '.ClienteCartera::count().' créditos, '
@@ -445,78 +445,6 @@ class DemoSeeder extends Seeder
                     : null,
                 'cargado_en'          => $carga->copy()->subMinutes((count($tipos) - $i) * 2),
             ]);
-        }
-    }
-
-    // ── Programas de gobierno ────────────────────────────────
-
-    private function crearProgramasGobierno(int $n): void
-    {
-        $docs = [
-            'DNI / Reporte tributario con Ficha RUC', 'Hoja Resumen', 'Formulario Conocimiento del Cliente',
-            'DJ del Programa – Anexo 02', 'DJ Patrimonial', 'Cargo del Contrato de Crédito',
-            'Cronograma de Pagos', 'Pagaré', 'Clasificación Regulatoria (RCC, EXPERIAN)', 'Evidencia de Ingresos',
-        ];
-        $tiendas = array_values($this->tiendas);
-        $base    = (int) ClienteCartera::max('id') + 5000;
-
-        for ($i = 0; $i < $n; $i++) {
-            $tienda = $tiendas[mt_rand(0, count($tiendas) - 1)];
-            $saldo  = round(mt_rand(800000, 9000000) / 100, 2);
-            $cli = ClienteCartera::create([
-                'zona_id'          => $tienda->zona_id,
-                'tienda_id'        => $tienda->id,
-                'cuenta'           => 300000000 + $base + $i,
-                'operacion'        => 400000000 + ($base + $i) * 3,
-                'nombre_cliente'   => $this->nombrePersona(),
-                'tipo_credito'     => ['PEQUEÑA EMPRESA', 'MICROEMPRESA', 'MEDIANA EMPRESA'][mt_rand(0, 2)],
-                'saldo_capital'    => $saldo,
-                'dias_atraso'      => $d = mt_rand(90, 700),
-                'rango_atraso'     => $this->rango($d),
-                'calificacion_rcc' => ['DEFICIENTE', 'DUDOSO', 'PÉRDIDA'][mt_rand(0, 2)],
-                'estado_cartera'   => 'VENCIDO',
-                'tipo_negociacion_campana' => 'cancelacion',
-                'autonomia'        => $saldo > 15450 ? 'Jefe de Recuperaciones' : 'CZR',
-                'activo_campana'   => true,
-                'es_prog_gobierno' => true,
-                'prog_gob_califica'=> true,
-                'tipo_documento'   => 'RUC',
-                'nro_documento'    => '10'.mt_rand(10000000, 79999999).mt_rand(0, 9),
-                'telefono'         => '9'.mt_rand(10000000, 99999999),
-            ]);
-
-            $registro = $this->hoy->copy()->subDays(1 + (int) floor(89 * pow(mt_rand(0, 1000) / 1000, 1.2)))->setTime(mt_rand(9, 17), mt_rand(0, 59));
-            $cargados = mt_rand(1, 100) <= 45 ? 10 : mt_rand(3, 9);
-            $czr      = $this->czrZona[$tienda->zona_id] ?? $this->jefe;
-
-            $exp = ExpedienteGobierno::create([
-                'cliente_cartera_id'  => $cli->id,
-                'registrado_por'      => $czr->id,
-                'programa'            => $this->elegirPonderado([[40, 'Reactiva Perú'], [30, 'FAE-MYPE'], [20, 'IMPULSA PERÚ'], [10, 'Otro']])[1],
-                'motivo_habilitacion' => mt_rand(0, 1) ? 'Garantía rechazada por Cía. Seguros' : 'Pérdida de eficacia de la garantía',
-                'confirmacion_dpto'   => $cargados === 10 || mt_rand(0, 1),
-                'responsable'         => $czr->name,
-                'fecha_registro'      => $registro->toDateString(),
-                'estado'              => $cargados === 10 ? 'Completo' : 'Incompleto',
-                'created_at'          => $registro,
-                'updated_at'          => $registro,
-            ]);
-
-            foreach (array_slice($docs, 0, $cargados) as $tipo) {
-                $nombre = \Illuminate\Support\Str::slug($tipo, '_')."_{$cli->operacion}.pdf";
-                ExpedienteGobiernoDoc::create([
-                    'expediente_id'  => $exp->id,
-                    'tipo_doc'       => $tipo,
-                    'nombre_archivo' => $nombre,
-                    'ruta_archivo'   => $this->pdf('gobierno', $nombre, $tipo, $cli),
-                    'hash'           => $this->ultimoHash,
-                    'estado_validacion' => 'conforme',
-                    'hallazgos'      => [],
-                    'validado_en'    => $registro,
-                    'modo_validacion'=> 'demo',
-                    'cargado_en'     => $registro,
-                ]);
-            }
         }
     }
 

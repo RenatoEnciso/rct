@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             ClienteCarteraSeeder::class,
             DemoSeeder::class,
+            HonramientoSeeder::class,
         ]);
     }
 }

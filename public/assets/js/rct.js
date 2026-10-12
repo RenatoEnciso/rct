@@ -82,7 +82,7 @@
 
     function pintar() {
       var q = input.value.trim().toLowerCase();
-      var visibles = filas.filter(function (r) { return !q || r.textContent.toLowerCase().indexOf(q) !== -1; });
+      var visibles = filas.filter(function (r) { return !r.hasAttribute('data-oculta') && (!q || r.textContent.toLowerCase().indexOf(q) !== -1); });
       var paginas = Math.max(1, Math.ceil(visibles.length / tamPagina));
       if (pagina > paginas) pagina = paginas;
       var desde = (pagina - 1) * tamPagina;

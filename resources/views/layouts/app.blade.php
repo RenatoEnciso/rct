@@ -147,7 +147,7 @@
         <a class="nav-btn {{ request()->routeIs('revision.index', 'revision.show') ? 'active' : '' }}" href="{{ route('revision.index') }}">
           <i class="bi bi-clipboard-check"></i> Revisión de sustentos
         </a>
-        <a class="nav-btn {{ request()->routeIs('cartera.*') ? 'active' : '' }}" href="{{ route('cartera.exclusiones') }}">
+        <a class="nav-btn {{ request()->routeIs('gobierno.*') ? 'active' : '' }}" href="{{ route('gobierno.index') }}">
           <i class="bi bi-bank"></i> Programas de gobierno
         </a>
 

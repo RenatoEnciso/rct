@@ -28,6 +28,32 @@ class Estilo
         };
     }
 
+    /** Estados del expediente de honramiento (Programas de Gobierno). */
+    public static function badgeHonramiento(?string $estado): string
+    {
+        return match ($estado) {
+            'Conforme'              => 'badge-ok',
+            'Revisado por zona'     => 'badge-info',
+            'Completo'              => 'badge-info',
+            'Incompleto'            => 'badge-pending',
+            'Observado'             => 'badge-danger',
+            'Incompleto definitivo' => 'badge-rojo',
+            default                 => 'badge-gray',   // Pendiente
+        };
+    }
+
+    /** Ícono y color del estado de un documento del checklist. */
+    public static function iconoDocumento(string $estado): array
+    {
+        return match ($estado) {
+            'conforme'      => ['bi-check-circle-fill', 'text-verde', 'Conforme'],
+            'cargado'       => ['bi-check-lg', 'text-verde', 'Cargado'],
+            'observado'     => ['bi-exclamation-triangle-fill', 'text-mostaza', 'Observado'],
+            'no_disponible' => ['bi-slash-circle', 'text-rojo', 'No disponible'],
+            default         => ['bi-x-lg', 'text-rojo', 'Falta'],
+        };
+    }
+
     /** Nombre legible del tipo de documento. */
     public static function tipoDoc(?string $tipo): string
     {

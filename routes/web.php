@@ -6,7 +6,7 @@ use App\Http\Controllers\BandejaController;
 use App\Http\Controllers\SustentosController;
 use App\Http\Controllers\SeguimientoController;
 use App\Http\Controllers\IndicadoresController;
-use App\Http\Controllers\CarteraController;
+use App\Http\Controllers\GobiernoImportacionController;
 use App\Http\Controllers\AsistenteController;
 use App\Http\Controllers\ReportesController;
 use App\Http\Controllers\RevisionSustentosController;
@@ -84,6 +84,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/{sustento}/rechazar', [RevisionSustentosController::class, 'rechazar'])->name('rechazar');
     });
 
+    // ── Programas de gobierno: expedientes de honramiento ────
+    Route::get('/gobierno', fn() => redirect()->route('gobierno.importar'))->name('gobierno.index');
+    Route::get('/cartera/exclusiones', fn() => redirect()->route('gobierno.index'))->name('cartera.exclusiones');   // ruta anterior
+
     // ── Trazabilidad completa de una operación (aprobadores y ejecutivo que la envió) ──
     Route::get('/expediente/{fud}/trazabilidad',     [AprobacionesController::class, 'show'])->name('aprobaciones.show');
     Route::get('/expediente/{fud}/trazabilidad/pdf', [AprobacionesController::class, 'pdf'])->name('aprobaciones.pdf');
@@ -94,12 +98,11 @@ Route::middleware('auth')->group(function () {
     // ── Indicadores y cartera (aprobadores) ─────────────────
     Route::middleware('grupo:aprobador')->group(function () {
         Route::get('/indicadores',         [IndicadoresController::class, 'index'])->name('indicadores.index');
-        Route::get('/cartera/exclusiones', [CarteraController::class, 'exclusiones'])->name('cartera.exclusiones');
-        Route::post('/cartera/gobierno',   [CarteraController::class, 'registrarGobierno'])->name('cartera.gobierno');
-        Route::get('/cartera/gobierno/{expediente}',            [CarteraController::class, 'show'])->name('cartera.gobierno.show');
-        Route::post('/cartera/gobierno/{expediente}/documento', [CarteraController::class, 'cargarDocumento'])->name('cartera.gobierno.documento');
-        Route::post('/cartera/gobierno/documento/{documento}/conforme', [CarteraController::class, 'conformeManual'])->name('cartera.gobierno.conforme');
-        Route::get('/cartera/gobierno/documento/{documento}/descargar', [CarteraController::class, 'descargar'])->name('cartera.gobierno.descargar');
+        // Programas de gobierno: importación del Excel de revisión (revisión central)
+        Route::get('/gobierno/importar',            [GobiernoImportacionController::class, 'formulario'])->name('gobierno.importar');
+        Route::post('/gobierno/importar',           [GobiernoImportacionController::class, 'previsualizar'])->name('gobierno.importar.previsualizar');
+        Route::post('/gobierno/importar/confirmar', [GobiernoImportacionController::class, 'confirmar'])->name('gobierno.importar.confirmar');
+        Route::get('/gobierno/importar/plantilla',  [GobiernoImportacionController::class, 'plantilla'])->name('gobierno.importar.plantilla');
         Route::get('/reportes/dashboard',  [ReportesController::class, 'dashboard'])->name('reportes.dashboard');
     });
 
