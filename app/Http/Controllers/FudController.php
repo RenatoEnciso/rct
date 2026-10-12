@@ -8,6 +8,7 @@ use App\Models\{
     FudAdjunto, Seguimiento, User
 };
 use Illuminate\Support\Facades\Storage;
+use App\Services\AsignadorAprobador;
 
 class FudController extends Controller
 {
@@ -32,22 +33,22 @@ class FudController extends Controller
     // ── Formulario nuevo FUD ─────────────────────────────────
     public function create()
     {
-        $zonas       = \App\Models\Zona::with('tiendas')->get();
-        $aprobadores = User::whereHas('rol', fn($q) =>
-            $q->where('grupo', 'aprobador')
-        )->get();
+        $zonas = \App\Models\Zona::with('tiendas')->get();
 
-        return view('fud.create', compact('zonas', 'aprobadores'));
+        return view('fud.create', compact('zonas'));
     }
 
     // ── Guardar nuevo FUD ────────────────────────────────────
-    public function store(Request $request)
+    public function store(Request $request, AsignadorAprobador $asignador)
     {
         $request->validate([
             'cliente_cartera_id' => 'required|exists:clientes_cartera,id',
             'tipo_negociacion'   => 'required|in:cuotas,cancelacion,extrajudicial,castigada,focmac',
             'motivo'             => 'required|min:20',
-            'aprobador_id'       => 'required|exists:users,id',
+        ], [
+            'cliente_cartera_id.required' => 'Seleccione un cliente de la cartera.',
+            'motivo.required'             => 'El motivo es obligatorio.',
+            'motivo.min'                  => 'El motivo debe tener al menos 20 caracteres.',
         ]);
 
         $user    = $request->user();
@@ -58,10 +59,15 @@ class FudController extends Controller
                 'Este cliente ya alcanzó el límite de 4 conciliaciones en 12 meses.']);
         }
 
-        $nivelReq = ($cliente->esMayor3UIT() ||
-                     in_array($cliente->estado_cartera, ['JUDICIAL','EXTRAJUDICIAL'])) ? 2 : 1;
+        // El aprobador lo asigna el sistema según el nivel de autonomía del crédito
+        $nivelReq  = $asignador->nivelRequerido($cliente);
+        $aprobador = $asignador->asignar($cliente, $user->id);
+        if (!$aprobador) {
+            return back()->withInput()->withErrors(['cliente_cartera_id' =>
+                'No hay un aprobador disponible para el nivel de autonomía de este crédito.']);
+        }
 
-        $fud = $this->crearFud($request, $user->id, $nivelReq);
+        $fud = $this->crearFud($request, $user->id, $nivelReq, ['aprobador_id' => $aprobador->id]);
 
         $this->guardarDetalle($request, $fud->id);
         $this->guardarAdjuntos($request, $fud->id, $user->id);
@@ -73,7 +79,7 @@ class FudController extends Controller
         );
 
         return redirect()->route('fud.show', $fud)
-            ->with('success', 'FUD enviado correctamente al aprobador.');
+            ->with('success', "FUD enviado a {$aprobador->name} ({$aprobador->rol->nombre}).");
     }
 
     // ── Ver detalle + hilo de versiones ─────────────────────
@@ -100,14 +106,10 @@ class FudController extends Controller
                 ->with('error', 'Solo se puede corregir un FUD observado.');
         }
 
-        $fud->load('cliente', 'adjuntos', 'detalleCuotas',
+        $fud->load('cliente', 'adjuntos', 'aprobador.rol', 'aprobadoPor.rol', 'detalleCuotas',
                     'detalleCancelacion', 'detalleJudicial');
 
-        $aprobadores = User::whereHas('rol', fn($q) =>
-            $q->where('grupo', 'aprobador')
-        )->get();
-
-        return view('fud.edit', compact('fud', 'aprobadores'));
+        return view('fud.edit', compact('fud'));
     }
 
     // ── Guardar corrección (crea NUEVO FUD con parent_fud_id) ─
@@ -120,18 +122,19 @@ class FudController extends Controller
         }
 
         $request->validate([
-            'motivo'       => 'required|min:20',
-            'aprobador_id' => 'required|exists:users,id',
+            'motivo' => 'required|min:20',
+        ], [
+            'motivo.required' => 'El motivo es obligatorio.',
+            'motivo.min'      => 'El motivo debe tener al menos 20 caracteres.',
         ]);
 
-        $user     = $request->user();
-        $nivelReq = ($fud->cliente->esMayor3UIT() ||
-                     in_array($fud->cliente->estado_cartera, ['JUDICIAL','EXTRAJUDICIAL'])) ? 2 : 1;
+        $user = $request->user();
 
-        // Crear nuevo FUD como corrección del observado
-        $nuevoFud = $this->crearFud($request, $user->id, $nivelReq, [
+        // La corrección vuelve al mismo aprobador que observó el FUD
+        $nuevoFud = $this->crearFud($request, $user->id, $fud->nivel_autonomia_req, [
             'parent_fud_id'      => $fud->id,
             'cliente_cartera_id' => $fud->cliente_cartera_id,
+            'aprobador_id'       => $fud->aprobado_por ?? $fud->aprobador_id,
             'veces_observado'    => $fud->veces_observado + 1,
         ]);
 
@@ -217,6 +220,13 @@ class FudController extends Controller
             ->limit(50)
             ->get();
 
+        // Vista previa del aprobador que asignará el sistema
+        $asignador = app(AsignadorAprobador::class);
+        $clientes->each(function ($c) use ($asignador, $request) {
+            $apr = $asignador->asignar($c, $request->user()->id);
+            $c->setAttribute('aprobador_asignado', $apr ? "{$apr->name} — {$apr->rol->nombre}" : null);
+        });
+
         return response()->json($clientes);
     }
 
@@ -226,7 +236,6 @@ class FudController extends Controller
         return PropuestaFud::create(array_merge([
             'cliente_cartera_id'    => $request->cliente_cartera_id,
             'enviado_por'           => $userId,
-            'aprobador_id'          => $request->aprobador_id,
             'tipo_negociacion'      => $request->tipo_negociacion,
             'tipo_negociacion_desc' => $request->tipo_negociacion_desc,
             'en_campana'            => true,

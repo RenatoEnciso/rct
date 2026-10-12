@@ -119,14 +119,12 @@
       </div>
       <div class="field">
         <label>Aprobador asignado</label>
-        <select name="aprobador_id" required>
-          @foreach($aprobadores as $apr)
-            <option value="{{ $apr->id }}"
-              {{ old('aprobador_id', $fud->aprobador_id) == $apr->id ? 'selected' : '' }}>
-              {{ $apr->name }} ({{ $apr->rol->nombre }})
-            </option>
-          @endforeach
-        </select>
+        @php $apr = $fud->aprobadoPor ?? $fud->aprobador; @endphp
+        <div style="padding:9px 12px;border:1px solid var(--borde);border-radius:8px;
+                    background:#f8f9fa;font-size:13px;font-weight:600;color:#1a56a0">
+          {{ $apr?->name ?? '—' }} @if($apr) <span style="font-weight:400;color:#666">({{ $apr->rol->nombre }})</span> @endif
+        </div>
+        <span style="font-size:11px;color:#888">La corrección vuelve a quien observó el FUD.</span>
       </div>
       <div class="field">
         <label>Tipo Operación</label>

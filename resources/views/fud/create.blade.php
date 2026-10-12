@@ -305,7 +305,6 @@
       <input type="hidden" name="cliente_cartera_id"    id="input-cliente-id">
       <input type="hidden" name="tipo_negociacion"      id="input-tipo-neg">
       <input type="hidden" name="tipo_negociacion_desc" id="input-tipo-desc">
-      {{-- aprobador_id se setea en el select visible abajo --}}
 
       {{-- ── Resumen de lo que el sistema determinó ── --}}
       <div style="background:#f8f9fa;border-radius:10px;padding:16px;
@@ -336,26 +335,16 @@
         </div>
       </div>
 
-      {{-- ── Lo único que puede editar el ejecutivo: aprobador, tipo op y motivo ── --}}
+      {{-- ── El aprobador lo asigna el sistema; el ejecutivo solo elige tipo de operación y motivo ── --}}
       <div class="grid3" style="margin-bottom:20px">
-        {{-- Aprobador: se pre-selecciona pero el ejecutivo puede cambiar si hay varios del mismo nivel --}}
         <div class="field" style="grid-column:span 2">
-          <label>
-            Aprobador asignado
-            <span style="font-size:10px;color:#888;font-weight:400;margin-left:6px">
-              (pre-seleccionado según autonomía — puede cambiar si hay varios del mismo nivel)
-            </span>
-          </label>
-          <select name="aprobador_id" id="input-aprobador" required>
-            <option value="">Seleccione el aprobador</option>
-            @foreach($aprobadores as $apr)
-              <option value="{{ $apr->id }}"
-                      data-nivel="{{ $apr->rol->nivel }}"
-                      data-nombre="{{ strtolower($apr->rol->nombre) }}">
-                {{ $apr->name }} — {{ $apr->rol->nombre }}
-              </option>
-            @endforeach
-          </select>
+          <label>Aprobador asignado automáticamente</label>
+          <div id="resumen-aprobador"
+               style="padding:9px 12px;border:1px solid var(--borde);border-radius:8px;
+                      background:#f8f9fa;font-size:13px;font-weight:600;color:#1a56a0">—</div>
+          <span style="font-size:11px;color:#888">
+            Asignado por el sistema según el nivel de autonomía del crédito y la zona.
+          </span>
         </div>
 
         <div class="field">
@@ -799,8 +788,9 @@ async function filtrarClientes() {
       if (sel) sel.value = esMayor ? '1' : '0';
     }
 
-    // ── Pre-seleccionar aprobador según autonomía ──
-    preseleccionarAprobador(autonomia);
+    // ── Aprobador asignado por el sistema ──
+    document.getElementById('resumen-aprobador').textContent =
+      c.aprobador_asignado ?? 'Sin aprobador disponible para este nivel';
 
     // Mostrar los pasos 2 y 3
     document.getElementById('card-cliente').style.display   = 'block';
@@ -808,28 +798,6 @@ async function filtrarClientes() {
     document.getElementById('card-cliente').scrollIntoView({ behavior: 'smooth' });
   }
 
-  // ── Pre-selecciona el aprobador que corresponde al nivel de autonomía ──
-  function preseleccionarAprobador(autonomia) {
-    const selectApr = document.getElementById('input-aprobador');
-    // Mapa de texto de autonomía → fragmento del nombre del rol
-    const mapa = {
-      'CZR':                     'coordinador',
-      'Jefe de Recuperaciones':  'jefe',
-      'Gerente de División':     'gerente',
-    };
-    const buscar = mapa[autonomia] ?? null;
-    if (!buscar) return;
-
-    // Itera las opciones y selecciona la primera que coincida con el nivel
-    for (const opt of selectApr.options) {
-      if (opt.dataset.nombre && opt.dataset.nombre.includes(buscar)) {
-        selectApr.value = opt.value;
-        return;
-      }
-    }
-  }
-
-  // ── Calcula el código interno a partir del texto del Excel ──
   const ETIQUETAS_NEG = {
     cuotas:        'Pago de Cuotas',
     cancelacion:   'Cancelación Total',
