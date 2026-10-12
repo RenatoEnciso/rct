@@ -2,7 +2,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\{ClienteCartera, ExpedienteGobierno, Sustento};
+use App\Models\{ExpedienteGobierno, Sustento};
 use App\Services\Validacion\CargaDocumentos;
 
 /**
@@ -30,19 +30,13 @@ class ValidacionController extends Controller
                 ->findOrFail($request->sustento_id);
             $contexto = $carga->contextoSustento($sustento);
         } else {
-            $expediente = $request->expediente_id ? ExpedienteGobierno::findOrFail($request->expediente_id) : null;
-            $cliente    = $expediente?->cliente ?? $this->clientePorReferencia($request->cliente_ref);
-            $contexto   = $cliente
-                ? $carga->contextoGobierno($cliente, $expediente)
-                : ['monto_aprobado' => 0, 'hashes_existentes' => [], 'programa' => true];
+            // Expedientes de honramiento: un documento por archivo y solo en PDF
+            $request->validate(['archivo' => 'mimes:pdf', 'expediente_id' => 'required|integer'], [
+                'archivo.mimes' => 'Los documentos de honramiento deben cargarse en PDF, un documento por archivo.',
+            ]);
+            $contexto = $carga->contextoGobierno(ExpedienteGobierno::findOrFail($request->expediente_id));
         }
 
         return response()->json($carga->previsualizar($request->file('archivo'), $request->tipo, $contexto));
-    }
-
-    private function clientePorReferencia(?string $ref): ?ClienteCartera
-    {
-        if (!$ref) return null;
-        return ClienteCartera::where('cuenta', trim($ref))->orWhere('operacion', trim($ref))->first();
     }
 }

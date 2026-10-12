@@ -215,7 +215,7 @@
 <div class="card">
   <div class="card-head">
     <div class="card-title"><i class="bi bi-bank"></i> Programas de gobierno</div>
-    <a href="{{ route('cartera.exclusiones') }}" class="btn btn-secondary btn-sm">Ver expedientes</a>
+    <a href="{{ route('gobierno.index') }}" class="btn btn-secondary btn-sm">Ver expedientes</a>
   </div>
   <div class="grid2">
     <div class="grid2" style="gap:12px">

@@ -170,7 +170,7 @@ class Notificaciones
         $incompletos = ExpedienteGobierno::where('registrado_por', $u->id)->where('estado', 'Incompleto')
             ->where('fecha_registro', '<=', now()->subDays(7))->count();
         if ($incompletos) {
-            $n->push($this->item("rec-gob:{$hoy}", 'recordatorio', now(), route('cartera.exclusiones', ['estado' => 'Incompleto']),
+            $n->push($this->item("rec-gob:{$hoy}", 'recordatorio', now(), route('gobierno.index', ['estado' => 'Incompleto']),
                 'Expedientes de gobierno incompletos', "{$incompletos} expediente(s) que registró llevan más de 7 días sin completar el checklist.", 'bi-bank', 'warn'));
         }
 

@@ -65,7 +65,7 @@ class PortalController extends Controller
         return [
             ['Solicitudes por decidir', $bandeja, 'En su bandeja de aprobación', 'bi-inbox', route('bandeja.index'), $bandeja ? 'danger' : 'ok'],
             ['Sustentos por revisar', $revisar, $u->nivel() === 1 ? 'Cargados en su zona' : 'Cargados en todas las zonas', 'bi-clipboard-check', route('revision.index', ['estado' => 'En revisión']), $revisar ? 'warn' : 'ok'],
-            ['Expedientes de gobierno incompletos', $gob, 'Checklist documentario pendiente', 'bi-bank', route('cartera.exclusiones', ['estado' => 'Incompleto']), $gob ? 'warn' : 'ok'],
+            ['Expedientes de gobierno incompletos', $gob, 'Checklist documentario pendiente', 'bi-bank', route('gobierno.index', ['estado' => 'Incompleto']), $gob ? 'warn' : 'ok'],
             ['Decisiones del mes', $mes, 'Aprobaciones, observaciones y rechazos', 'bi-patch-check', route('aprobaciones.index'), 'info'],
         ];
     }
@@ -179,7 +179,7 @@ class PortalController extends Controller
             $disp[] = ['Bandeja de aprobación', 'Decidir solicitudes', 'bi-inbox', route('bandeja.index')];
             $disp[] = ['Revisión de sustentos', 'Validar documentación', 'bi-clipboard-check', route('revision.index')];
             $disp[] = ['Mis aprobaciones', 'Trazabilidad y PDF', 'bi-patch-check', route('aprobaciones.index')];
-            $disp[] = ['Programas de gobierno', 'Expedientes y checklist', 'bi-bank', route('cartera.exclusiones')];
+            $disp[] = ['Programas de gobierno', 'Expedientes y checklist', 'bi-bank', route('gobierno.index')];
             $disp[] = ['Reporte de campaña', 'Indicadores por zona', 'bi-bar-chart-line', route('reportes.dashboard')];
         }
         $disp[] = ['Lineamientos', 'Reglas y calculadora', 'bi-journal-text', route('lineamientos')];

@@ -133,6 +133,9 @@
           <i class="bi bi-paperclip"></i> Carga de sustentos
           @if($pendSustentos) <span class="nav-count">{{ $pendSustentos }}</span> @endif
         </a>
+        <a class="nav-btn {{ request()->routeIs('gobierno.*') ? 'active' : '' }}" href="{{ route('gobierno.index') }}">
+          <i class="bi bi-bank"></i> Expedientes de gobierno
+        </a>
       @endif
 
       @if($user->esAprobador())

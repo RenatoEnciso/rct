@@ -7,6 +7,7 @@ use App\Http\Controllers\SustentosController;
 use App\Http\Controllers\SeguimientoController;
 use App\Http\Controllers\IndicadoresController;
 use App\Http\Controllers\GobiernoImportacionController;
+use App\Http\Controllers\GobiernoController;
 use App\Http\Controllers\AsistenteController;
 use App\Http\Controllers\ReportesController;
 use App\Http\Controllers\RevisionSustentosController;
@@ -85,7 +86,14 @@ Route::middleware('auth')->group(function () {
     });
 
     // ── Programas de gobierno: expedientes de honramiento ────
-    Route::get('/gobierno', fn() => redirect()->route('gobierno.importar'))->name('gobierno.index');
+    Route::get('/gobierno',                         [GobiernoController::class, 'index'])->name('gobierno.index');
+    Route::get('/gobierno/lotes',                   [GobiernoController::class, 'lotes'])->name('gobierno.lotes');
+    Route::put('/gobierno/lotes/{lote}',            [GobiernoController::class, 'actualizarLote'])->name('gobierno.lotes.actualizar');
+    Route::get('/gobierno/expediente/{expediente}', [GobiernoController::class, 'show'])->name('gobierno.show');
+    Route::post('/gobierno/expediente/{expediente}/documento',      [GobiernoController::class, 'cargarDocumento'])->name('gobierno.documento');
+    Route::post('/gobierno/expediente/{expediente}/no-disponible',  [GobiernoController::class, 'noDisponible'])->name('gobierno.no-disponible');
+    Route::get('/gobierno/documento/{documento}/ver',               [GobiernoController::class, 'verDocumento'])->name('gobierno.documento.ver');
+    Route::get('/gobierno/documento/{documento}/descargar',         [GobiernoController::class, 'descargarDocumento'])->name('gobierno.documento.descargar');
     Route::get('/cartera/exclusiones', fn() => redirect()->route('gobierno.index'))->name('cartera.exclusiones');   // ruta anterior
 
     // ── Trazabilidad completa de una operación (aprobadores y ejecutivo que la envió) ──

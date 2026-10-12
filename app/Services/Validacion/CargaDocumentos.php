@@ -2,7 +2,7 @@
 namespace App\Services\Validacion;
 
 use App\Contracts\ValidadorDocumentos;
-use App\Models\{ClienteCartera, ExpedienteGobierno, Sustento};
+use App\Models\{ExpedienteGobierno, Sustento};
 use Illuminate\Http\UploadedFile;
 
 /**
@@ -59,13 +59,11 @@ class CargaDocumentos
         ];
     }
 
-    public function contextoGobierno(ClienteCartera $cliente, ?ExpedienteGobierno $expediente = null): array
+    public function contextoGobierno(ExpedienteGobierno $expediente): array
     {
         return [
-            'monto_aprobado'    => (float) $cliente->saldo_capital,
-            'hashes_existentes' => $expediente
-                ? $expediente->documentos()->whereNotNull('hash')->pluck('cargado_en', 'hash')->all()
-                : [],
+            'monto_aprobado'    => (float) $expediente->monto_honrado,
+            'hashes_existentes' => $expediente->documentos()->whereNotNull('hash')->pluck('cargado_en', 'hash')->all(),
             'programa'          => true,
         ];
     }
