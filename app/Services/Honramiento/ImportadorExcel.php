@@ -15,6 +15,8 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
  */
 class ImportadorExcel
 {
+    private $docsExistentes = null;   // docs vigentes por ID externo (para la simulación)
+
     public function __construct(private Checklist $checklist) {}
 
     public function analizar(string $ruta): array
@@ -159,9 +161,14 @@ class ImportadorExcel
     {
         $e = new ExpedienteGobierno(['tipo_persona' => $r['tipo_persona']]);
         $docs = collect();
+        $this->docsExistentes ??= ExpedienteGobiernoDoc::where('vigente', true)
+            ->join('expedientes_gobierno as eg', 'eg.id', '=', 'expediente_gobierno_docs.expediente_id')->whereNotNull('eg.id_externo')
+            ->get(['expediente_gobierno_docs.*', 'eg.id_externo'])->groupBy('id_externo');
+        $existentes = $this->docsExistentes->get($r['id_externo']);
+        $conservar = $existentes ? $this->conservadosEnGrupo($r, $existentes->keyBy('tipo_documento_id')) : [];
         foreach ($this->tiposPorColumna($r) as $col => $tipos) {
             foreach ($tipos as $t) {
-                if ($r['docs'][$col] === 1) $docs->push(new ExpedienteGobiernoDoc(['tipo_documento_id' => $t->id, 'estado' => 'cargado']));
+                if ($r['docs'][$col] === 1 || in_array($t->id, $conservar)) $docs->push(new ExpedienteGobiernoDoc(['tipo_documento_id' => $t->id, 'estado' => 'cargado']));
             }
         }
         $definitivo = $r['estado_excel'] === 'Incompleto definitivo';
@@ -176,6 +183,22 @@ class ImportadorExcel
         $e->setRelation('documentos', $docs);
         $c = $this->checklist->calcular($e);
         return [$c['estado'], $c['faltantes']];
+    }
+
+    /**
+     * Columnas que agrupan varios documentos (p. ej. Reporte tributario + Ficha RUC en persona jurídica):
+     * si el Excel indica 0 y en RCT falta solo parte del grupo, el 0 se explica por lo que falta
+     * y los documentos ya presentados se conservan.
+     */
+    private function conservadosEnGrupo(array $r, $vigentes): array
+    {
+        $ids = [];
+        foreach ($this->tiposPorColumna($r) as $col => $tipos) {
+            if (count($tipos) < 2 || $r['docs'][$col] === 1) continue;
+            $presentes = collect($tipos)->filter(fn($t) => $vigentes->get($t->id)?->esPresentado());
+            if ($presentes->count() < count($tipos)) $ids = array_merge($ids, $presentes->pluck('id')->all());
+        }
+        return $ids;
     }
 
     /** Tipos de documento que corresponden a cada columna del Excel para el tipo de persona. */
@@ -244,8 +267,9 @@ class ImportadorExcel
             $e->estado = 'Pendiente';
         }
         // Las observaciones del Excel se conservan como comentario solo si aportan algo más que la lista de documentos
-        if ($r['observaciones'] !== '' && !$e->observaciones && !self::esListaDeDocumentos($r['observaciones'])) {
-            $e->observaciones = $r['observaciones'];
+        $libre = self::textoLibre($r['observaciones']);
+        if ($libre !== '' && !$e->observaciones) {
+            $e->observaciones = $libre;
         }
         $e->save();
 
@@ -260,6 +284,7 @@ class ImportadorExcel
     {
         $vigentes = $e->documentos()->get()->keyBy('tipo_documento_id');
         $definitivo = $r['estado_excel'] === 'Incompleto definitivo';
+        $conservar = $this->conservadosEnGrupo($r, $vigentes);
 
         foreach ($this->tiposPorColumna($r) as $col => $tipos) {
             foreach ($tipos as $t) {
@@ -272,8 +297,9 @@ class ImportadorExcel
                             'estado' => 'cargado', 'origen' => 'sftp', 'cargado_por' => $usuario->id, 'cargado_en' => now(),
                         ]);
                     }
-                } elseif ($doc && $doc->origen !== 'rct' && $doc->estado !== 'no_disponible') {
-                    // El Excel indica 0: se retira lo registrado desde Excel/SFTP (los archivos cargados en RCT se conservan)
+                } elseif ($doc && $doc->origen !== 'rct' && $doc->esPresentado() && !in_array($t->id, $conservar)) {
+                    // El Excel indica 0: se retira lo presentado desde Excel/SFTP (los archivos cargados en RCT
+                    // se conservan; un documento observado o no disponible ya explica el 0)
                     $doc->update(['vigente' => false]);
                     $doc = null;
                 }
@@ -305,6 +331,18 @@ class ImportadorExcel
             if ($conforme) $e->forceFill([$nivel === 'zona' ? 'revisado_zona_en' : 'revisado_central_en' => $fecha.' 12:00:00']);
         }
         $e->saveQuietly();
+    }
+
+    /**
+     * Parte de las observaciones del Excel escrita por el área: descarta los tramos que RCT genera
+     * al exportar ("Falta (COFIDE): …", "Observado: …") y los que solo enumeran documentos.
+     */
+    public static function textoLibre(string $texto): string
+    {
+        $auto = '/^(Observado en revisi[oó]n|Falta \(COFIDE\)\s*:|Observado\s*:|No disponible\s*:|Complementarios faltantes\s*:)/iu';
+        return collect(explode('|', $texto))->map(fn($t) => trim($t))
+            ->filter(fn($t) => $t !== '' && !preg_match($auto, $t) && !self::esListaDeDocumentos($t))
+            ->implode(' | ');
     }
 
     /** True si el texto solo enumera documentos (p. ej. "DJ Patrimonial | Evidencia"), que RCT ya calcula. */

@@ -28,6 +28,7 @@
       @elseif(auth()->user()->nivel() === 1) · Zona {{ auth()->user()->tienda->zona->nombre ?? '' }} @endif</p>
   </div>
   <div class="page-head-actions">
+    <a href="{{ route('gobierno.exportar', request()->except('page')) }}" class="btn btn-secondary" title="Exporta los expedientes con los filtros aplicados"><i class="bi bi-file-earmark-excel"></i> Exportar Excel</a>
     @if(auth()->user()->esAprobador())
       <a href="{{ route('gobierno.indicadores') }}" class="btn btn-secondary"><i class="bi bi-bar-chart-line"></i> Indicadores</a>
     @endif

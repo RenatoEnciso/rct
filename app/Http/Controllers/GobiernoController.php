@@ -3,8 +3,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use App\Models\{ExpedienteGobierno, ExpedienteGobiernoDoc, Gestion, GobTipoDocumento, Lote, Seguimiento, Tienda, Zona};
-use App\Services\Honramiento\{Checklist, Permisos};
+use App\Services\Honramiento\{Checklist, EscritorExcel, ExportadorExcel, Permisos};
 use App\Services\Validacion\CargaDocumentos;
 
 /** Bandeja y ficha de expedientes de honramiento de Programas de Gobierno. */
@@ -17,7 +18,43 @@ class GobiernoController extends Controller
         $u = $request->user();
         $base = fn() => ExpedienteGobierno::visiblePara($u);
 
-        $q = $base()->with(['gestion', 'lote', 'zona', 'tienda', 'documentos'])
+        $q = $this->filtrar($request);
+
+        $expedientes = $q->paginate(25)->withQueryString();
+
+        $conteo = $base()->selectRaw('estado, count(*) c')->groupBy('estado')->pluck('c', 'estado');
+        $zonasVisibles = $base()->distinct()->pluck('zona_id');
+
+        return view('gobierno.index', [
+            'expedientes' => $expedientes,
+            'conteo'      => $conteo,
+            'gestiones'   => Gestion::orderBy('nombre')->get(),
+            'zonas'       => Zona::whereIn('id', $zonasVisibles)->orderBy('nombre')->get(),
+            'tiendas'     => Tienda::whereIn('id', $base()->distinct()->pluck('tienda_id'))
+                                ->when($request->zona_id, fn($q, $v) => $q->where('zona_id', $v))->orderBy('nombre')->get(),
+            'lotes'       => Lote::orderBy('codigo')->get(),
+            'checklist'   => $this->checklist,
+            'esCentral'   => $this->permisos->puedeRevisarCentral($u),
+        ]);
+    }
+
+    /** Exporta al Excel del área los expedientes de la bandeja, con los filtros aplicados. */
+    public function exportar(Request $request, ExportadorExcel $exportador, EscritorExcel $escritor)
+    {
+        $exps = $this->filtrar($request)->with('gestion')->get();
+        $ruta = Storage::disk('private')->path('exportaciones/honramiento_'.Str::random(8).'.xlsx');
+        @mkdir(dirname($ruta), 0775, true);
+        $escritor->guardar($exportador->filas($exps), $ruta);
+
+        Seguimiento::registrar($request->user()->id, 'Exportación de expedientes de honramiento', 'Completada', null, null, null,
+            $exps->count().' expedientes exportados a Excel.');
+        return response()->download($ruta, 'Revision_expedientes_honramiento_'.now()->format('Ymd_Hi').'.xlsx')->deleteFileAfterSend();
+    }
+
+    /** Consulta de la bandeja: visibilidad del usuario + filtros + orden por prioridad. */
+    private function filtrar(Request $request)
+    {
+        $q = ExpedienteGobierno::visiblePara($request->user())->with(['gestion', 'lote', 'zona', 'tienda', 'documentos'])
             ->when($request->gestion_id, fn($q, $v) => $q->where('gestion_id', $v))
             ->when($request->zona_id,    fn($q, $v) => $q->where('zona_id', $v))
             ->when($request->tienda_id,  fn($q, $v) => $q->where('tienda_id', $v))
@@ -37,23 +74,8 @@ class GobiernoController extends Controller
             $q->whereIn('lote_id', $lotes)->whereNotIn('estado', ['Completo', 'Revisado por zona', 'Conforme']);
         }
 
-        $expedientes = $q->orderByRaw("FIELD(estado, 'Observado', 'Completo', 'Revisado por zona', 'Incompleto', 'Pendiente', 'Incompleto definitivo', 'Conforme')")
-            ->orderByDesc('id')->paginate(25)->withQueryString();
-
-        $conteo = $base()->selectRaw('estado, count(*) c')->groupBy('estado')->pluck('c', 'estado');
-        $zonasVisibles = $base()->distinct()->pluck('zona_id');
-
-        return view('gobierno.index', [
-            'expedientes' => $expedientes,
-            'conteo'      => $conteo,
-            'gestiones'   => Gestion::orderBy('nombre')->get(),
-            'zonas'       => Zona::whereIn('id', $zonasVisibles)->orderBy('nombre')->get(),
-            'tiendas'     => Tienda::whereIn('id', $base()->distinct()->pluck('tienda_id'))
-                                ->when($request->zona_id, fn($q, $v) => $q->where('zona_id', $v))->orderBy('nombre')->get(),
-            'lotes'       => Lote::orderBy('codigo')->get(),
-            'checklist'   => $this->checklist,
-            'esCentral'   => $this->permisos->puedeRevisarCentral($u),
-        ]);
+        return $q->orderByRaw("FIELD(estado, 'Observado', 'Completo', 'Revisado por zona', 'Incompleto', 'Pendiente', 'Incompleto definitivo', 'Conforme')")
+            ->orderByDesc('id');
     }
 
     public function show(Request $request, ExpedienteGobierno $expediente)
