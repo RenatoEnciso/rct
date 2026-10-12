@@ -28,7 +28,10 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // Al ingresar se muestran avisos emergentes con las notificaciones pendientes (una sola vez)
+        $request->session()->put('mostrar_avisos', true);
+
+        return redirect()->intended(route('inicio', absolute: false));
     }
 
     /**

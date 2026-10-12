@@ -14,6 +14,8 @@ use App\Http\Controllers\DashboardSustentosController;
 use App\Http\Controllers\ValidacionController;
 use App\Http\Controllers\AprobacionesController;
 use App\Http\Controllers\WhatsappController;
+use App\Http\Controllers\PortalController;
+use App\Http\Controllers\NotificacionesController;
 
 require __DIR__.'/auth.php';
 
@@ -27,8 +29,14 @@ Route::prefix('whatsapp')->name('whatsapp.')->middleware('throttle:90,1')->group
 
 Route::middleware('auth')->group(function () {
 
-    // Dashboard
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    // Inicio (portal) y panel de indicadores
+    Route::get('/', [PortalController::class, 'inicio'])->name('inicio');
+    Route::get('/panel', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Notificaciones
+    Route::get('/notificaciones', [NotificacionesController::class, 'index'])->name('notificaciones.index');
+    Route::post('/notificaciones/leer', [NotificacionesController::class, 'leer'])->name('notificaciones.leer');
+    Route::post('/notificaciones/leer-todas', [NotificacionesController::class, 'leerTodas'])->name('notificaciones.leer-todas');
 
     // ── FUD (grupo fud) ──────────────────────────────────────
     Route::middleware('grupo:fud')->group(function () {

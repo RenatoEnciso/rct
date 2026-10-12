@@ -22,6 +22,10 @@
       ? \App\Models\Sustento::where('cargado_por', $user->id)->whereIn('estado', ['Pendiente', 'Observado'])->count() : 0;
   $iniciales = collect(explode(' ', trim($user->name)))->filter()->take(2)
       ->map(fn($p) => mb_strtoupper(mb_substr($p, 0, 1)))->implode('');
+  $notifs = app(\App\Services\Notificaciones::class)->paraUsuario($user);
+  $notifNoLeidas = $notifs->where('leida', false);
+  // Avisos emergentes: solo al ingresar al sistema
+  $avisos = session()->pull('mostrar_avisos') ? $notifNoLeidas->take(4) : collect();
 @endphp
 
 {{-- Encabezado --}}
@@ -30,7 +34,7 @@
     <button class="navbar-toggler-rct d-lg-none" id="sidebarToggle" type="button" aria-label="Abrir menú">
       <i class="bi bi-list"></i>
     </button>
-    <a href="{{ route('dashboard') }}" class="brand">
+    <a href="{{ route('inicio') }}" class="brand">
       <div class="brand-logo-mark">CT</div>
       <div>
         <div class="brand-name">Caja Trujillo</div>
@@ -40,6 +44,45 @@
   </div>
 
   <div class="header-right">
+    {{-- Notificaciones --}}
+    <div class="notif" id="notif">
+      <button type="button" class="notif-btn" id="notif-btn" aria-label="Notificaciones" aria-expanded="false">
+        <i class="bi bi-bell"></i>
+        @if($notifNoLeidas->count())<span class="notif-count">{{ $notifNoLeidas->count() > 99 ? '99+' : $notifNoLeidas->count() }}</span>@endif
+      </button>
+      <div class="notif-panel" id="notif-panel" role="dialog" aria-label="Notificaciones">
+        <div class="notif-head">
+          <strong>Notificaciones</strong>
+          @if($notifNoLeidas->count())
+            <button type="button" class="notif-link" id="notif-todas">Marcar todo como leído</button>
+          @endif
+        </div>
+        <div class="notif-tabs" role="tablist">
+          @foreach(['' => 'Todas', 'decision' => 'Decisiones', 'solicitud' => 'Solicitudes', 'sustento' => 'Sustentos', 'recordatorio' => 'Recordatorios'] as $cat => $lbl)
+            @php $nCat = $cat ? $notifs->where('categoria', $cat)->where('leida', false)->count() : $notifNoLeidas->count(); @endphp
+            @if(!$cat || $notifs->where('categoria', $cat)->count())
+              <button type="button" class="{{ $cat === '' ? 'active' : '' }}" data-cat="{{ $cat }}">{{ $lbl }}@if($nCat) <span>{{ $nCat }}</span>@endif</button>
+            @endif
+          @endforeach
+        </div>
+        <div class="notif-list">
+          @forelse($notifs->take(30) as $n)
+            <a href="{{ $n['url'] }}" class="notif-item {{ $n['leida'] ? '' : 'unread' }}" data-clave="{{ $n['clave'] }}" data-cat="{{ $n['categoria'] }}">
+              <span class="notif-ico {{ $n['color'] }}"><i class="bi {{ $n['icono'] }}"></i></span>
+              <span class="notif-body">
+                <span class="notif-title">{{ $n['titulo'] }}</span>
+                <span class="notif-msg">{{ $n['mensaje'] }}</span>
+                <span class="notif-time">{{ $n['categoria'] === 'recordatorio' ? 'Recordatorio' : $n['fecha']->diffForHumans() }}</span>
+              </span>
+            </a>
+          @empty
+            <div class="empty-state"><i class="bi bi-bell-slash"></i><strong>Sin notificaciones</strong><span>Está al día.</span></div>
+          @endforelse
+        </div>
+        <a href="{{ route('notificaciones.index') }}" class="notif-foot">Ver todas las notificaciones</a>
+      </div>
+    </div>
+
     <div class="user-chip">
       <div class="user-avatar" aria-hidden="true">{{ $iniciales }}</div>
       <div class="d-none d-sm-block">
@@ -64,8 +107,15 @@
   <aside class="rct-sidebar" id="sidebar">
     <nav aria-label="Menú principal">
       <div class="nav-section-label">General</div>
+      <a class="nav-btn {{ request()->routeIs('inicio') ? 'active' : '' }}" href="{{ route('inicio') }}">
+        <i class="bi bi-house"></i> Inicio
+      </a>
       <a class="nav-btn {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
-        <i class="bi bi-grid"></i> Panel principal
+        <i class="bi bi-grid"></i> Mi panel
+      </a>
+      <a class="nav-btn {{ request()->routeIs('notificaciones.*') ? 'active' : '' }}" href="{{ route('notificaciones.index') }}">
+        <i class="bi bi-bell"></i> Notificaciones
+        @if($notifNoLeidas->count()) <span class="nav-count">{{ $notifNoLeidas->count() }}</span> @endif
       </a>
       <a class="nav-btn {{ request()->routeIs('lineamientos') ? 'active' : '' }}" href="{{ route('lineamientos') }}">
         <i class="bi bi-journal-text"></i> Lineamientos
@@ -155,6 +205,28 @@
   </main>
 </div>
 
+{{-- Avisos emergentes al ingresar --}}
+@if($avisos->count())
+  <div class="toasts" id="toasts" aria-live="polite">
+    @foreach($avisos as $i => $n)
+      <div class="toast-rct {{ $n['color'] }}" style="animation-delay: {{ $i * 350 }}ms">
+        <span class="notif-ico {{ $n['color'] }}"><i class="bi {{ $n['icono'] }}"></i></span>
+        <a href="{{ $n['url'] }}" class="toast-body" data-clave="{{ $n['clave'] }}">
+          <strong>{{ $n['titulo'] }}</strong>
+          <span>{{ \Illuminate\Support\Str::limit($n['mensaje'], 130) }}</span>
+        </a>
+        <button type="button" class="toast-close" aria-label="Cerrar"><i class="bi bi-x-lg"></i></button>
+        <span class="toast-bar" style="animation-delay: {{ $i * 350 }}ms"></span>
+      </div>
+    @endforeach
+    @if($notifNoLeidas->count() > $avisos->count())
+      <button type="button" class="toast-more" onclick="document.getElementById('notif-btn').click()">
+        Ver {{ $notifNoLeidas->count() - $avisos->count() }} notificación(es) más
+      </button>
+    @endif
+  </div>
+@endif
+
 {{-- Asistente --}}
 <div id="asistente-widget">
   <div class="asistente-box" id="asistente-box" role="dialog" aria-label="Asistente RCT">
@@ -185,6 +257,52 @@
 
 <script src="{{ asset('assets/js/rct.js') }}?v={{ filemtime(public_path('assets/js/rct.js')) }}"></script>
 <script>
+(function () {
+  // ── Notificaciones ─────────────────────────────────────────
+  var CSRF = document.querySelector('meta[name=csrf-token]').content;
+  var panel = document.getElementById('notif-panel'), btn = document.getElementById('notif-btn');
+  btn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    var abierto = panel.classList.toggle('open');
+    btn.setAttribute('aria-expanded', abierto);
+  });
+  document.addEventListener('click', function (e) { if (!e.target.closest('#notif')) panel.classList.remove('open'); });
+  panel.querySelectorAll('.notif-tabs button').forEach(function (t) {
+    t.addEventListener('click', function () {
+      panel.querySelectorAll('.notif-tabs button').forEach(function (x) { x.classList.remove('active'); });
+      t.classList.add('active');
+      var cat = t.getAttribute('data-cat');
+      panel.querySelectorAll('.notif-item').forEach(function (i) { i.style.display = !cat || i.getAttribute('data-cat') === cat ? '' : 'none'; });
+    });
+  });
+  function leer(clave) {
+    return fetch('{{ route('notificaciones.leer') }}', { method: 'POST', keepalive: true,
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF },
+      body: JSON.stringify({ clave: clave }) });
+  }
+  // Al abrir una notificación se marca como leída
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[data-clave]');
+    if (!a) return;
+    e.preventDefault();
+    leer(a.getAttribute('data-clave')).finally(function () { location.href = a.href; });
+  });
+  var todas = document.getElementById('notif-todas');
+  todas && todas.addEventListener('click', function () {
+    fetch('{{ route('notificaciones.leer-todas') }}', { method: 'POST', headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF } })
+      .then(function () { location.reload(); });
+  });
+  // Avisos emergentes: se ocultan solos a los 8 segundos o al cerrarlos
+  document.querySelectorAll('.toast-rct').forEach(function (t, i) {
+    var cerrar = function () {
+      t.classList.add('saliendo');
+      setTimeout(function () { t.remove(); var c = document.getElementById('toasts'); if (c && !c.querySelector('.toast-rct')) c.remove(); }, 300);
+    };
+    t.querySelector('.toast-close').addEventListener('click', cerrar);
+    setTimeout(cerrar, 8000 + i * 350);
+  });
+})();
+
 (function () {
   var CSRF = document.querySelector('meta[name=csrf-token]').content;
   var enviando = false, rec = null, micActivo = false;
