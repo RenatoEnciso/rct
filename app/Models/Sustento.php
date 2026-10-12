@@ -7,14 +7,6 @@ class Sustento extends Model
 {
     protected $table = 'sustentos';
 
-    // protected $fillable = [
-    //     'propuesta_fud_id','cargado_por','estado','fecha_carga',
-    // ];
-
-    // protected $casts = [
-    //     'fecha_carga' => 'date',
-    // ];
-
     public function propuesta()
     {
         return $this->belongsTo(PropuestaFud::class, 'propuesta_fud_id');
@@ -25,9 +17,15 @@ class Sustento extends Model
         return $this->belongsTo(User::class, 'cargado_por');
     }
 
+    // Documentos vigentes (los reemplazados en una corrección quedan en el historial)
     public function documentos()
     {
-        return $this->hasMany(SustentoDocumento::class, 'sustento_id');
+        return $this->hasMany(SustentoDocumento::class, 'sustento_id')->where('vigente', true);
+    }
+
+    public function historial()
+    {
+        return $this->hasMany(SustentoDocumento::class, 'sustento_id')->where('vigente', false)->latest('id');
     }
 
     public function estaCompleto(): bool

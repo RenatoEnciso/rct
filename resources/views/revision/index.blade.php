@@ -1,140 +1,101 @@
 @extends('layouts.app')
-@section('title', 'Revisión de Sustentos')
+@section('title', 'Revisión de sustentos')
+
+@use('App\Support\Estilo')
 
 @section('content')
-
 <div class="page-head">
-  <div class="page-head-text">
-    <h2>🔍 Revisión de Sustentos</h2>
-    <p>Documentación cargada por analistas pendiente de revisión.</p>
+  <div>
+    <h2>Revisión de sustentos</h2>
+    <p>Validación de la documentación de las conciliaciones aprobadas.</p>
+  </div>
+  <div class="page-head-actions">
+    <a href="{{ route('revision.dashboard') }}" class="btn btn-secondary"><i class="bi bi-file-earmark-bar-graph"></i> Reporte de conciliaciones</a>
   </div>
 </div>
 
-{{-- Badges de conteo por estado --}}
-<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
-  @foreach([
-    'Pendiente'   => ['#6b7280','#f3f4f6'],
-    'En revisión' => ['#1d4ed8','#eff6ff'],
-    'Aprobado'    => ['#065f46','#ecfdf5'],
-    'Observado'   => ['#92400e','#fffbeb'],
-    'Rechazado'   => ['#7f1d1d','#fff5f5'],
-  ] as $est => [$color,$bg])
-    <div style="background:{{ $bg }};border:1px solid {{ $color }}33;border-radius:20px;
-                padding:5px 14px;font-size:12px;font-weight:600;color:{{ $color }}">
-      {{ $est }}: {{ $conteos[$est] ?? 0 }}
-    </div>
+<div class="kpi-grid">
+  @foreach(['En revisión' => 'info', 'Observado' => 'mostaza', 'Pendiente' => '', 'Aprobado' => 'verde', 'Rechazado' => 'rojo'] as $estado => $color)
+    <a href="{{ route('revision.index', ['estado' => $estado]) }}" class="kpi-card {{ $color }}" style="color:inherit">
+      <div class="kpi-label"><i class="bi {{ Estilo::icono($estado) }}"></i> {{ $estado === 'Aprobado' ? 'Conformes' : $estado }}</div>
+      <div class="kpi-value">{{ $conteos[$estado] ?? 0 }}</div>
+      <div class="kpi-sub">{{ request('estado') === $estado ? 'Filtro aplicado' : 'Ver sustentos' }}</div>
+    </a>
   @endforeach
 </div>
 
-{{-- Filtros --}}
-<div class="card" style="margin-bottom:16px">
-  <form method="GET" action="{{ route('revision.index') }}"
-        style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">
-    <div style="display:flex;flex-direction:column;gap:4px">
-      <label style="font-size:11px;color:#6b7280;font-weight:600">Estado</label>
-      <select name="estado" style="font-size:12px;padding:6px 10px;border:1px solid #d1d5db;border-radius:6px">
+<div class="card card-flush">
+  <div class="card-head">
+    <div class="card-title"><i class="bi bi-clipboard-check"></i> Sustentos cargados</div>
+  </div>
+
+  <form method="GET" action="{{ route('revision.index') }}" class="grid4" style="padding:0 20px 16px;align-items:end">
+    <div class="field">
+      <label for="f-q">Cliente, cuenta u operación</label>
+      <input id="f-q" type="search" name="q" value="{{ request('q') }}" placeholder="Buscar">
+    </div>
+    <div class="field">
+      <label for="f-estado">Estado</label>
+      <select id="f-estado" name="estado">
         <option value="">Todos</option>
-        @foreach(['Pendiente','En revisión','Aprobado','Observado','Rechazado'] as $e)
-          <option value="{{ $e }}" {{ request('estado') === $e ? 'selected' : '' }}>{{ $e }}</option>
+        @foreach(['En revisión','Observado','Pendiente','Aprobado','Rechazado'] as $e)
+          <option value="{{ $e }}" @selected(request('estado') === $e)>{{ $e }}</option>
         @endforeach
       </select>
     </div>
-    <div style="display:flex;flex-direction:column;gap:4px">
-      <label style="font-size:11px;color:#6b7280;font-weight:600">Cuenta</label>
-      <input type="text" name="cuenta" value="{{ request('cuenta') }}"
-             placeholder="Nro. cuenta..."
-             style="font-size:12px;padding:6px 10px;border:1px solid #d1d5db;border-radius:6px">
+    <div class="field">
+      <label>Fecha de carga</label>
+      <div class="d-flex gap-2">
+        <input type="date" name="desde" value="{{ request('desde') }}" aria-label="Desde">
+        <input type="date" name="hasta" value="{{ request('hasta') }}" aria-label="Hasta">
+      </div>
     </div>
-    <div style="display:flex;flex-direction:column;gap:4px">
-      <label style="font-size:11px;color:#6b7280;font-weight:600">Desde</label>
-      <input type="date" name="desde" value="{{ request('desde') }}"
-             style="font-size:12px;padding:6px 10px;border:1px solid #d1d5db;border-radius:6px">
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-primary"><i class="bi bi-funnel"></i> Filtrar</button>
+      <a href="{{ route('revision.index') }}" class="btn btn-ghost">Limpiar</a>
     </div>
-    <div style="display:flex;flex-direction:column;gap:4px">
-      <label style="font-size:11px;color:#6b7280;font-weight:600">Hasta</label>
-      <input type="date" name="hasta" value="{{ request('hasta') }}"
-             style="font-size:12px;padding:6px 10px;border:1px solid #d1d5db;border-radius:6px">
-    </div>
-    <button type="submit" class="btn btn-primary" style="font-size:12px;padding:7px 14px">
-      🔎 Filtrar
-    </button>
-    <a href="{{ route('revision.index') }}" class="btn btn-ghost" style="font-size:12px;padding:7px 14px">
-      Limpiar
-    </a>
   </form>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Cliente</th><th>Cuenta / Operación</th><th>Ejecutivo</th><th>Carga</th><th>Validación automática</th><th>Estado</th><th></th></tr>
+      </thead>
+      <tbody>
+        @forelse($sustentos as $s)
+          @php
+            $docs = $s->documentos;
+            $conf = $docs->where('estado_validacion', 'conforme')->count();
+            $obs  = $docs->whereIn('estado_validacion', ['observado', 'rechazado'])->count();
+          @endphp
+          <tr>
+            <td><div class="cell-main">{{ $s->propuesta->cliente->nombre_cliente }}</div><div class="cell-sub">{{ $s->propuesta->tipo_negociacion_desc }}</div></td>
+            <td class="nowrap"><div>{{ $s->propuesta->cliente->cuenta }}</div><div class="cell-sub">{{ $s->propuesta->cliente->operacion }}</div></td>
+            <td>{{ $s->cargador->name ?? '—' }}</td>
+            <td class="nowrap">{{ $s->fecha_carga?->format('d/m/Y') ?? '—' }}</td>
+            <td>
+              @if($docs->count())
+                <span class="badge badge-ok">{{ $conf }} conforme(s)</span>
+                @if($obs)<span class="badge badge-pending">{{ $obs }} con observaciones</span>@endif
+              @else
+                <span class="cell-sub">Sin documentos</span>
+              @endif
+            </td>
+            <td><span class="badge {{ Estilo::badge($s->estado) }}">{{ $s->estado === 'Aprobado' ? 'Conforme' : $s->estado }}</span></td>
+            <td class="num">
+              <a href="{{ route('revision.show', $s->id) }}" class="btn {{ $s->puedeRevisarse() ? 'btn-primary' : 'btn-secondary' }} btn-sm">
+                {{ $s->puedeRevisarse() ? 'Revisar' : 'Ver detalle' }}
+              </a>
+            </td>
+          </tr>
+        @empty
+          <tr><td colspan="7" class="empty-state">
+            <i class="bi bi-inbox"></i><strong>Sin resultados</strong><span>No hay sustentos con los filtros aplicados.</span>
+          </td></tr>
+        @endforelse
+      </tbody>
+    </table>
+  </div>
+  {{ $sustentos->links() }}
 </div>
-
-{{-- Tabla --}}
-<div class="card">
-  <div class="card-title">Sustentos cargados</div>
-  <table>
-    <thead>
-      <tr>
-        <th>Cliente</th>
-        <th>Cuenta</th>
-        <th>Operación</th>
-        <th>Analista</th>
-        <th>Fecha carga</th>
-        <th>Docs</th>
-        <th>Estado</th>
-        <th>Acción</th>
-      </tr>
-    </thead>
-    <tbody>
-      @forelse($sustentos as $s)
-        @php
-          $badgeMap = [
-            'Pendiente'   => 'badge-pending',
-            'En revisión' => 'badge-info',
-            'Aprobado'    => 'badge-ok',
-            'Observado'   => 'badge-warn',
-            'Rechazado'   => 'badge-error',
-          ];
-          $badge    = $badgeMap[$s->estado] ?? 'badge-pending';
-          $docOk    = $s->documentos->where('estado_validacion','ok')->count();
-          $docWarn  = $s->documentos->where('estado_validacion','warn')->count();
-          $docErr   = $s->documentos->where('estado_validacion','error')->count();
-          $docTotal = $s->documentos->count();
-        @endphp
-        <tr>
-          <td><strong>{{ $s->propuesta->cliente->nombre_cliente }}</strong></td>
-          <td>{{ $s->propuesta->cliente->cuenta }}</td>
-          <td>{{ $s->propuesta->cliente->operacion }}</td>
-          <td style="font-size:12px">{{ $s->cargador->name ?? '—' }}</td>
-          <td style="font-size:12px">{{ $s->fecha_carga?->format('d/m/Y') ?? '—' }}</td>
-          <td style="font-size:11px">
-            @if($docTotal)
-              <span style="color:#065f46">✔ {{ $docOk }}</span>
-              @if($docWarn) <span style="color:#92400e"> ⚠ {{ $docWarn }}</span> @endif
-              @if($docErr)  <span style="color:#991b1b"> ✖ {{ $docErr }}</span>  @endif
-              <span style="color:#9ca3af">/ {{ $docTotal }}</span>
-            @else
-              <span style="color:#9ca3af">Sin docs</span>
-            @endif
-          </td>
-          <td><span class="badge {{ $badge }}">{{ $s->estado }}</span></td>
-          <td>
-            <a href="{{ route('revision.show', $s->id) }}"
-               class="btn btn-primary" style="font-size:12px;padding:7px 12px">
-              Ver detalle
-            </a>
-          </td>
-        </tr>
-      @empty
-        <tr>
-          <td colspan="8" style="text-align:center;padding:24px;color:#999">
-            No hay sustentos con los filtros aplicados.
-          </td>
-        </tr>
-      @endforelse
-    </tbody>
-  </table>
-
-  @if($sustentos->hasPages())
-    <div style="margin-top:16px">
-      {{ $sustentos->withQueryString()->links() }}
-    </div>
-  @endif
-</div>
-
 @endsection

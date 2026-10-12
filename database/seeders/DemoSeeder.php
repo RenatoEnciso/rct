@@ -31,6 +31,7 @@ class DemoSeeder extends Seeder
     private array $czrZona = [];        // zona_id => User
     private User $jefe;
     private int $docSeq = 0;
+    private string $ultimoHash = '';
 
     public function run(): void
     {
@@ -425,8 +426,11 @@ class DemoSeeder extends Seeder
                 'nombre_archivo'      => $nombre,
                 'ruta_archivo'        => $this->pdf('sustentos', $nombre, $tipo, $cli),
                 'size_bytes'          => mt_rand(120, 1500) * 1024,
-                'observaciones_carga' => [['t' => 'ok', 'tx' => 'Documento conforme. Firmas, formato y montos verificados.']],
-                'estado_validacion'   => 'ok',
+                'hash'                => $this->ultimoHash,
+                'estado_validacion'   => 'conforme',
+                'hallazgos'           => [],
+                'validado_en'         => $carga,
+                'modo_validacion'     => 'demo',
                 'estado_revision'     => match (true) {
                     $estado === 'Aprobado' => 'aprobado',
                     $i === $observado      => 'observado',
@@ -502,6 +506,11 @@ class DemoSeeder extends Seeder
                     'tipo_doc'       => $tipo,
                     'nombre_archivo' => $nombre,
                     'ruta_archivo'   => $this->pdf('gobierno', $nombre, $tipo, $cli),
+                    'hash'           => $this->ultimoHash,
+                    'estado_validacion' => 'conforme',
+                    'hallazgos'      => [],
+                    'validado_en'    => $registro,
+                    'modo_validacion'=> 'demo',
                     'cargado_en'     => $registro,
                 ]);
             }
@@ -607,6 +616,7 @@ class DemoSeeder extends Seeder
         $pdf .= "trailer\n<< /Size ".(count($objs) + 1)." /Root 1 0 R >>\nstartxref\n$xref\n%%EOF";
 
         Storage::disk('private')->put($ruta, $pdf);
+        $this->ultimoHash = hash('sha256', $pdf);
         return $ruta;
     }
 }

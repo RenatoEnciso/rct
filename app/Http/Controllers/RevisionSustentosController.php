@@ -15,14 +15,17 @@ class RevisionSustentosController extends Controller
             'propuesta.cliente',
             'documentos',
             'propuesta.aprobadoPor',
+            'cargador',
         ]);
 
         if ($request->filled('estado')) {
             $query->where('estado', $request->estado);
         }
-        if ($request->filled('cuenta')) {
+        if ($request->filled('q')) {
             $query->whereHas('propuesta.cliente', function ($q) use ($request) {
-                $q->where('cuenta', 'like', '%' . $request->cuenta . '%');
+                $q->where('cuenta', 'like', '%' . $request->q . '%')
+                  ->orWhere('operacion', 'like', '%' . $request->q . '%')
+                  ->orWhere('nombre_cliente', 'like', '%' . $request->q . '%');
             });
         }
         if ($request->filled('desde')) {
@@ -32,7 +35,9 @@ class RevisionSustentosController extends Controller
             $query->whereDate('fecha_carga', '<=', $request->hasta);
         }
 
-        $sustentos = $query->latest()->paginate(20)->withQueryString();
+        // Primero lo que espera revisión
+        $sustentos = $query->orderByRaw("FIELD(estado, 'En revisión', 'Observado', 'Pendiente', 'Aprobado', 'Rechazado')")
+            ->latest('fecha_carga')->latest('id')->paginate(15)->withQueryString();
 
         // Conteos para badges de estado en la barra de filtros
         $conteos = Sustento::selectRaw('estado, count(*) as total')
@@ -45,23 +50,35 @@ class RevisionSustentosController extends Controller
     // Vista de detalle para revisar un sustento específico
     public function show(Sustento $sustento)
     {
-        $sustento->load(['propuesta.cliente', 'documentos', 'propuesta.aprobadoPor']);
+        $sustento->load(['propuesta.cliente.tienda', 'propuesta.detalleCancelacion', 'documentos', 'historial',
+                         'propuesta.aprobadoPor', 'cargador', 'revisador']);
         return view('revision.show', compact('sustento'));
     }
 
     // Aprobar todo el sustento
     public function aprobar(Request $request, Sustento $sustento)
     {
-        $request->validate([
-            'comentario' => 'nullable|string|max:500',
-        ]);
-
         if (!$sustento->puedeRevisarse()) {
             return back()->with('error', "Este sustento ya fue revisado (estado: {$sustento->estado}).");
         }
 
-        // Marcar todos los documentos como aprobados
-        $sustento->documentos()->update(['estado_revision' => 'aprobado']);
+        // Si la validación automática observó algún documento, aprobar exige sustentar la conformidad
+        $conHallazgos = $sustento->documentos()->whereIn('estado_validacion', ['observado', 'rechazado'])->exists();
+        $request->validate([
+            'comentario' => ($conHallazgos ? 'required' : 'nullable').'|string|max:500',
+        ], [
+            'comentario.required' => 'Hay documentos con observaciones de la validación automática: indique el motivo de la conformidad manual.',
+        ]);
+
+        // Documentos con hallazgos automáticos quedan como "Conforme manual"
+        foreach ($sustento->documentos as $doc) {
+            $manual = $doc->tieneObservacionesCarga();
+            $doc->update([
+                'estado_revision'    => 'aprobado',
+                'conforme_manual'    => $manual,
+                'comentario_revisor' => $manual ? ($doc->comentario_revisor ?: $request->comentario) : $doc->comentario_revisor,
+            ]);
+        }
 
         $sustento->update([
             'estado'             => 'Aprobado',
@@ -105,12 +122,22 @@ class RevisionSustentosController extends Controller
                     if (empty($docData['comentario_revisor'])) continue;
                     $docData['estado_revision'] = 'observado';
                 }
-                SustentoDocumento::where('id', $docData['id'])
+                $doc = SustentoDocumento::where('id', $docData['id'])
                     ->where('sustento_id', $sustento->id) // seguridad extra
-                    ->update([
-                        'estado_revision'    => $docData['estado_revision'],
-                        'comentario_revisor' => $docData['comentario_revisor'] ?? null,
-                    ]);
+                    ->first();
+                if (!$doc) continue;
+
+                // Aprobar un documento que la validación automática observó = conformidad manual (con comentario)
+                $manual = $docData['estado_revision'] === 'aprobado' && $doc->tieneObservacionesCarga();
+                if ($manual && empty($docData['comentario_revisor'])) {
+                    return back()->withInput()->withErrors(['comentario' =>
+                        "Indique el motivo de la conformidad manual del documento «{$doc->tipo_doc}»."]);
+                }
+                $doc->update([
+                    'estado_revision'    => $docData['estado_revision'],
+                    'conforme_manual'    => $manual,
+                    'comentario_revisor' => $docData['comentario_revisor'] ?? null,
+                ]);
             }
         }
 

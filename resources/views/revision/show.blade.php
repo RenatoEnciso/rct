@@ -1,188 +1,187 @@
 @extends('layouts.app')
-@section('title', 'Detalle de Revisión')
+@section('title', 'Revisión de sustento')
+
+@use('App\Support\Estilo')
+@use('App\Services\Validacion\ResultadoValidacion')
 
 @section('content')
+@php
+  $fud = $sustento->propuesta;
+  $cli = $fud->cliente;
+  $conHallazgos = $sustento->documentos->filter->tieneObservacionesCarga()->count();
+@endphp
 
 <div class="page-head">
-  <div class="page-head-text">
-    <h2>🔍 Revisión de Sustento</h2>
-    <p>{{ $sustento->propuesta->cliente->nombre_cliente }} — {{ $sustento->propuesta->cliente->cuenta }}</p>
+  <div>
+    <div class="page-eyebrow"><a href="{{ route('revision.index') }}">Revisión de sustentos</a> / Detalle</div>
+    <h2>{{ $cli->nombre_cliente }}</h2>
+    <p>Cuenta {{ $cli->cuenta }} · Operación {{ $cli->operacion }} · {{ $fud->tipo_negociacion_desc }}</p>
+  </div>
+  <div class="page-head-actions">
+    <span class="badge badge-lg {{ Estilo::badge($sustento->estado) }}">
+      <i class="bi {{ Estilo::icono($sustento->estado) }}"></i> {{ $sustento->estado === 'Aprobado' ? 'Conforme' : $sustento->estado }}
+    </span>
   </div>
 </div>
 
-{{-- Info general --}}
-<div class="card" style="margin-bottom:16px">
-  <div class="card-title">Información del expediente</div>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;font-size:13px">
-    <div><span style="color:#6b7280;font-size:11px">Cliente</span><br><strong>{{ $sustento->propuesta->cliente->nombre_cliente }}</strong></div>
-    <div><span style="color:#6b7280;font-size:11px">Cuenta</span><br>{{ $sustento->propuesta->cliente->cuenta }}</div>
-    <div><span style="color:#6b7280;font-size:11px">Operación</span><br>{{ $sustento->propuesta->cliente->operacion }}</div>
-    <div><span style="color:#6b7280;font-size:11px">Analista</span><br>{{ $sustento->cargador->name ?? '—' }}</div>
-    <div><span style="color:#6b7280;font-size:11px">Fecha carga</span><br>{{ $sustento->fecha_carga?->format('d/m/Y') ?? '—' }}</div>
-    <div><span style="color:#6b7280;font-size:11px">Estado actual</span><br>
-      <span class="badge {{ $sustento->estado === 'Aprobado' ? 'badge-ok' : ($sustento->estado === 'Observado' ? 'badge-warn' : ($sustento->estado === 'Rechazado' ? 'badge-error' : 'badge-info')) }}">
-        {{ $sustento->estado }}
-      </span>
-    </div>
+<div class="card">
+  <div class="card-title"><i class="bi bi-info-circle"></i> Datos de la operación</div>
+  <div class="detail-grid">
+    <div><div class="detail-label">Tienda</div><div class="detail-value">{{ $cli->tienda->nombre ?? '—' }}</div></div>
+    <div><div class="detail-label">Saldo capital</div><div class="detail-value">{{ $cli->saldo_formateado }}</div></div>
+    <div><div class="detail-label">Monto aprobado</div><div class="detail-value">{{ Estilo::soles($fud->detalleCancelacion->monto_a_pagar ?? $cli->saldo_capital) }}</div></div>
+    <div><div class="detail-label">Aprobado por</div><div class="detail-value">{{ $fud->aprobadoPor->name ?? '—' }}</div></div>
+    <div><div class="detail-label">Ejecutivo</div><div class="detail-value">{{ $sustento->cargador->name ?? '—' }}</div></div>
+    <div><div class="detail-label">Fecha de carga</div><div class="detail-value">{{ $sustento->fecha_carga?->format('d/m/Y') ?? '—' }}</div></div>
   </div>
-
   @if($sustento->comentario_revision)
-    <div style="margin-top:14px;padding:12px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;font-size:12px">
-      <strong>Comentario anterior del revisor:</strong><br>
+    <div class="quote" style="margin-top:16px">
+      <div class="quote-label">Comentario de la revisión · {{ $sustento->revisador->name ?? '' }} {{ $sustento->fecha_revision?->format('d/m/Y H:i') }}</div>
       {{ $sustento->comentario_revision }}
-      <span style="color:#9ca3af;font-size:11px"> — {{ $sustento->revisador->name ?? '' }} {{ $sustento->fecha_revision?->format('d/m/Y H:i') }}</span>
     </div>
   @endif
 </div>
 
-{{-- Documentos --}}
-<div class="card" style="margin-bottom:16px">
-  <div class="card-title">Documentos cargados</div>
-  <div style="display:flex;flex-direction:column;gap:12px;margin-top:8px">
-    @foreach($sustento->documentos as $doc)
-      @php
-        $colorBorde = match($doc->estado_validacion) {
-          'ok'    => '#22c55e',
-          'warn'  => '#f59e0b',
-          'error' => '#ef4444',
-          default => '#d1d5db',
-        };
-        $bgDoc = match($doc->estado_validacion) {
-          'ok'    => '#f0fdf4',
-          'warn'  => '#fffbeb',
-          'error' => '#fff5f5',
-          default => '#f9fafb',
-        };
-      @endphp
-      <div style="border:1px solid #e5e7eb;border-left:4px solid {{ $colorBorde }};
-                  border-radius:9px;padding:14px;background:{{ $bgDoc }}">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-          <strong style="font-size:13px">{{ $doc->tipo_doc }}</strong>
-          <div style="display:flex;gap:8px;align-items:center">
-            @if($doc->estado_validacion === 'ok')
-              <span class="badge badge-ok">✔ Válido</span>
-            @elseif($doc->estado_validacion === 'warn')
-              <span class="badge badge-warn">⚠ Advertencia</span>
-            @elseif($doc->estado_validacion === 'error')
-              <span class="badge badge-error">✖ Con errores</span>
-            @endif
-            <a href="{{ route('sustentos.documento.descargar', $doc->id) }}"
-               class="btn btn-ghost" style="font-size:11px;padding:4px 10px">
-              ⬇ Descargar
-            </a>
-          </div>
+<div class="card">
+  <div class="card-head">
+    <div class="card-title"><i class="bi bi-files"></i> Documentos ({{ $sustento->documentos->count() }})</div>
+    @if($conHallazgos)
+      <span class="badge badge-pending"><i class="bi bi-exclamation-triangle"></i> {{ $conHallazgos }} con observaciones de la validación automática</span>
+    @endif
+  </div>
+
+  @forelse($sustento->documentos as $doc)
+    @php
+      $estadoVal = $doc->conforme_manual ? 'conforme manual' : $doc->estado_validacion;
+      $etiquetaVal = $doc->conforme_manual ? 'Conforme manual' : ResultadoValidacion::etiqueta($doc->estado_validacion);
+    @endphp
+    <div class="doc-review">
+      <div class="doc-review-head">
+        <div>
+          <div class="doc-slot-title"><i class="bi bi-file-earmark-text"></i>{{ Estilo::tipoDoc($doc->tipo_doc) }}</div>
+          <div class="doc-review-meta">{{ $doc->nombre_archivo }} · {{ Estilo::tamano($doc->size_bytes) }}
+            @if($doc->cargado_en) · cargado el {{ $doc->cargado_en->format('d/m/Y H:i') }} @endif</div>
         </div>
-
-        <div style="font-size:11px;color:#6b7280;margin-bottom:8px">
-          📄 {{ $doc->nombre_archivo }}
-          &nbsp;·&nbsp; {{ number_format($doc->size_bytes / 1024, 1) }} KB
-        </div>
-
-        {{-- Observaciones del sistema al momento de carga --}}
-        @if($doc->observaciones_carga)
-          <div style="margin-bottom:10px">
-            <div style="font-size:11px;font-weight:600;color:#374151;margin-bottom:4px">
-              Observaciones del sistema al cargar:
-            </div>
-            @foreach(is_array($doc->observaciones_carga) ? $doc->observaciones_carga : json_decode($doc->observaciones_carga, true) as $obs)
-              <div style="display:flex;align-items:flex-start;gap:6px;padding:4px 8px;border-radius:5px;font-size:11px;margin-bottom:3px;
-                          background:{{ $obs['t']==='ok' ? '#d1fae5' : ($obs['t']==='warn' ? '#fef3c7' : '#fee2e2') }};
-                          color:{{ $obs['t']==='ok' ? '#065f46' : ($obs['t']==='warn' ? '#92400e' : '#991b1b') }}">
-                <span>{{ $obs['t']==='ok' ? '✔' : ($obs['t']==='warn' ? '⚠' : '✖') }}</span>
-                <span>{{ strip_tags($obs['tx']) }}</span>
-              </div>
-            @endforeach
-          </div>
-        @endif
-
-        {{-- Comentario del revisor por documento --}}
-        <div style="margin-top:8px">
-          <label style="font-size:11px;font-weight:600;color:#374151">
-            Comentario del revisor para este documento:
-          </label>
-          <textarea name="docs[{{ $doc->id }}][comentario_revisor]"
-                    form="form-observar"
-                    placeholder="Ej: El prefijo no corresponde, adjuntar versión firmada..."
-                    style="width:100%;margin-top:4px;font-size:12px;padding:7px 10px;
-                           border:1px solid #d1d5db;border-radius:6px;resize:vertical;min-height:50px">{{ $doc->comentario_revisor }}</textarea>
-          <div style="display:flex;gap:8px;margin-top:6px">
-            <label style="font-size:11px;display:flex;align-items:center;gap:4px;cursor:pointer">
-              <input type="radio" name="docs[{{ $doc->id }}][estado_revision]"
-                     form="form-observar" value="aprobado"
-                     {{ $doc->estado_revision === 'aprobado' ? 'checked' : '' }}>
-              <span style="color:#065f46;font-weight:600">✔ Aprobar este doc</span>
-            </label>
-            <label style="font-size:11px;display:flex;align-items:center;gap:4px;cursor:pointer">
-              <input type="radio" name="docs[{{ $doc->id }}][estado_revision]"
-                     form="form-observar" value="observado"
-                     {{ $doc->estado_revision === 'observado' ? 'checked' : '' }}>
-              <span style="color:#92400e;font-weight:600">⚠ Observar este doc</span>
-            </label>
-          </div>
-          {{-- id oculto para el controller --}}
-          <input type="hidden" name="docs[{{ $doc->id }}][id]" value="{{ $doc->id }}" form="form-observar">
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <span class="badge {{ Estilo::badge($estadoVal) }}" title="Validación automática"><i class="bi bi-shield-check"></i> {{ $etiquetaVal }}</span>
+          @if($doc->estado_revision !== 'pendiente')
+            <span class="badge {{ $doc->estado_revision === 'aprobado' ? 'badge-ok' : 'badge-pending' }}">Revisor: {{ $doc->estado_revision === 'aprobado' ? 'aprobado' : 'observado' }}</span>
+          @endif
+          <a href="{{ route('sustentos.documento.descargar', $doc->id) }}" class="btn btn-secondary btn-sm"><i class="bi bi-download"></i> Descargar</a>
         </div>
       </div>
-    @endforeach
-  </div>
+
+      @if($doc->hallazgos)
+        <ul class="hallazgos">
+          @foreach($doc->hallazgos as $h)
+            <li class="{{ $h['severidad'] === 'rechazado' ? 'text-danger' : 'text-mostaza' }}">
+              <i class="bi {{ $h['severidad'] === 'rechazado' ? 'bi-x-circle' : 'bi-exclamation-circle' }}"></i><span>{{ $h['mensaje'] }}</span>
+            </li>
+          @endforeach
+        </ul>
+      @elseif($doc->estado_validacion === 'conforme')
+        <div class="fs-12 text-verde" style="margin-top:6px"><i class="bi bi-check-circle"></i> {{ ResultadoValidacion::MENSAJE_CONFORME }}</div>
+      @endif
+
+      @if($sustento->puedeRevisarse())
+        <div class="d-flex gap-3 flex-wrap align-items-start" style="margin-top:12px">
+          <div class="segmented" role="radiogroup" aria-label="Decisión sobre el documento">
+            <label><input type="radio" name="docs[{{ $doc->id }}][estado_revision]" form="form-observar" value="aprobado" @checked($doc->estado_revision === 'aprobado')>
+              <span class="opt-ok"><i class="bi bi-check-lg"></i> {{ $doc->tieneObservacionesCarga() ? 'Conforme manual' : 'Aprobar' }}</span></label>
+            <label><input type="radio" name="docs[{{ $doc->id }}][estado_revision]" form="form-observar" value="observado" @checked($doc->estado_revision === 'observado')>
+              <span class="opt-warn"><i class="bi bi-exclamation-lg"></i> Observar</span></label>
+          </div>
+          <div class="field" style="flex:1;min-width:240px">
+            <textarea name="docs[{{ $doc->id }}][comentario_revisor]" form="form-observar" rows="2" style="min-height:38px"
+                      placeholder="{{ $doc->tieneObservacionesCarga() ? 'Obligatorio si marca conforme manual: indique el motivo' : 'Comentario para el ejecutivo (opcional)' }}">{{ $doc->comentario_revisor }}</textarea>
+          </div>
+          <input type="hidden" name="docs[{{ $doc->id }}][id]" value="{{ $doc->id }}" form="form-observar">
+        </div>
+      @elseif($doc->comentario_revisor)
+        <div class="quote" style="margin-top:10px"><div class="quote-label">{{ $doc->conforme_manual ? 'Motivo de la conformidad manual' : 'Comentario del revisor' }}</div>{{ $doc->comentario_revisor }}</div>
+      @endif
+    </div>
+  @empty
+    <div class="empty-state"><i class="bi bi-file-earmark"></i><strong>Sin documentos</strong><span>El ejecutivo aún no ha cargado los sustentos.</span></div>
+  @endforelse
+
+  @if($sustento->historial->count())
+    <details style="margin-top:16px">
+      <summary class="fs-13 text-gris" style="cursor:pointer">Historial de documentos reemplazados ({{ $sustento->historial->count() }})</summary>
+      <div class="table-wrap" style="margin-top:10px">
+        <table>
+          <thead><tr><th>Documento</th><th>Archivo</th><th>Validación</th><th>Comentario</th><th>Cargado</th><th></th></tr></thead>
+          <tbody>
+            @foreach($sustento->historial as $h)
+              <tr>
+                <td>{{ Estilo::tipoDoc($h->tipo_doc) }}</td>
+                <td class="cell-sub">{{ $h->nombre_archivo }}</td>
+                <td><span class="badge {{ Estilo::badge($h->estado_validacion) }}">{{ ResultadoValidacion::etiqueta($h->estado_validacion) }}</span></td>
+                <td class="cell-sub">{{ $h->comentario_revisor ?? '—' }}</td>
+                <td class="nowrap cell-sub">{{ $h->cargado_en?->format('d/m/Y') }}</td>
+                <td class="num"><a href="{{ route('sustentos.documento.descargar', $h->id) }}" class="btn btn-ghost btn-sm"><i class="bi bi-download"></i></a></td>
+              </tr>
+            @endforeach
+          </tbody>
+        </table>
+      </div>
+    </details>
+  @endif
 </div>
 
-{{-- Acciones finales --}}
 @if($sustento->puedeRevisarse())
-<div class="card">
-  <div class="card-title">Decisión final</div>
+  <div class="card">
+    <div class="card-title"><i class="bi bi-check2-square"></i> Decisión de la revisión</div>
+    <div class="grid3">
+      <form action="{{ route('revision.aprobar', $sustento->id) }}" method="POST" class="card-plain" style="margin:0"
+            data-confirm="¿Confirma la conformidad de todos los documentos de este sustento?">
+        @csrf
+        <div class="form-section-title text-verde"><i class="bi bi-check-circle"></i> Dar conformidad</div>
+        <div class="field">
+          <textarea name="comentario" rows="3" placeholder="{{ $conHallazgos ? 'Obligatorio: motivo de la conformidad manual' : 'Comentario (opcional)' }}"
+                    {{ $conHallazgos ? 'required' : '' }}></textarea>
+          @if($conHallazgos)<span class="field-hint">Los documentos observados por la validación automática quedarán como conformidad manual.</span>@endif
+        </div>
+        <button type="submit" class="btn btn-success btn-block" style="margin-top:12px">Aprobar sustento</button>
+      </form>
 
-  {{-- Form aprobar --}}
-  <form action="{{ route('revision.aprobar', $sustento->id) }}" method="POST" style="margin-bottom:16px">
-    @csrf
-    <textarea name="comentario" placeholder="Comentario opcional al aprobar..."
-              style="width:100%;font-size:12px;padding:8px 10px;border:1px solid #d1d5db;
-                     border-radius:6px;resize:vertical;min-height:60px;margin-bottom:10px"></textarea>
-    <button type="submit" class="btn btn-primary"
-            onclick="return confirm('¿Confirma aprobar todos los sustentos?')">
-      ✅ Aprobar todo
-    </button>
-  </form>
+      <form id="form-observar" action="{{ route('revision.observar', $sustento->id) }}" method="POST" class="card-plain" style="margin:0"
+            data-confirm="El sustento volverá al ejecutivo para que corrija los documentos observados. ¿Continuar?">
+        @csrf
+        <div class="form-section-title text-mostaza"><i class="bi bi-arrow-return-left"></i> Observar</div>
+        <div class="field">
+          <textarea name="comentario" rows="3" required placeholder="Indique qué debe corregir el ejecutivo">{{ old('comentario') }}</textarea>
+          <span class="field-hint">Marque arriba los documentos a observar.</span>
+        </div>
+        <button type="submit" class="btn btn-warning btn-block" style="margin-top:12px">Devolver para corrección</button>
+      </form>
 
-  <hr style="border:none;border-top:1px solid #e5e7eb;margin:16px 0">
-
-  {{-- Form observar (usa los radios/textareas de arriba via form="form-observar") --}}
-  <form id="form-observar" action="{{ route('revision.observar', $sustento->id) }}" method="POST">
-    @csrf
-    <textarea name="comentario" placeholder="Comentario general de la observación (obligatorio)..."
-              style="width:100%;font-size:12px;padding:8px 10px;border:1px solid #d1d5db;
-                     border-radius:6px;resize:vertical;min-height:60px;margin-bottom:10px"
-              required></textarea>
-    <button type="submit" class="btn" style="background:#fef3c7;color:#92400e;border:1px solid #fde68a;font-size:13px;padding:8px 16px"
-            onclick="return confirm('¿Marcar como observado? El analista deberá corregir y recargar.')">
-      ⚠️ Marcar como observado
-    </button>
-  </form>
-
-  <hr style="border:none;border-top:1px solid #e5e7eb;margin:16px 0">
-
-  {{-- Form rechazar --}}
-  <form action="{{ route('revision.rechazar', $sustento->id) }}" method="POST">
-    @csrf
-    <textarea name="comentario" placeholder="Motivo del rechazo (obligatorio)..."
-              style="width:100%;font-size:12px;padding:8px 10px;border:1px solid #d1d5db;
-                     border-radius:6px;resize:vertical;min-height:60px;margin-bottom:10px"
-              required></textarea>
-    <button type="submit" class="btn" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;font-size:13px;padding:8px 16px"
-            onclick="return confirm('¿Rechazar definitivamente este sustento? Esta acción no se puede deshacer.')">
-      ❌ Rechazar
-    </button>
-  </form>
-</div>
+      <form action="{{ route('revision.rechazar', $sustento->id) }}" method="POST" class="card-plain" style="margin:0"
+            data-confirm="El rechazo es definitivo. ¿Desea rechazar este sustento?">
+        @csrf
+        <div class="form-section-title text-danger"><i class="bi bi-x-circle"></i> Rechazar</div>
+        <div class="field">
+          <textarea name="comentario" rows="3" required placeholder="Motivo del rechazo"></textarea>
+          <span class="field-hint">El rechazo es definitivo.</span>
+        </div>
+        <button type="submit" class="btn btn-danger btn-block" style="margin-top:12px">Rechazar sustento</button>
+      </form>
+    </div>
+  </div>
 @else
-<div class="notice" style="background:#f0fdf4;border-color:#6ee7b7;color:#065f46">
-  Este sustento ya fue procesado el {{ $sustento->fecha_revision?->format('d/m/Y H:i') }}
-  por {{ $sustento->revisador->name ?? '—' }}.
-</div>
+  <div class="notice-neutral notice">
+    <i class="bi bi-info-circle"></i>
+    <span>
+      @if($sustento->fecha_revision)
+        Revisado el {{ $sustento->fecha_revision->format('d/m/Y H:i') }} por {{ $sustento->revisador->name ?? '—' }}.
+      @else
+        Este sustento no está pendiente de revisión.
+      @endif
+    </span>
+  </div>
 @endif
 
-<div style="margin-top:16px">
-  <a href="{{ route('revision.index') }}" class="btn btn-ghost">← Volver a la lista</a>
+<div class="actions actions-start">
+  <a href="{{ route('revision.index') }}" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Volver al listado</a>
 </div>
-
 @endsection

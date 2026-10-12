@@ -11,6 +11,7 @@ use App\Http\Controllers\AsistenteController;
 use App\Http\Controllers\ReportesController;
 use App\Http\Controllers\RevisionSustentosController;
 use App\Http\Controllers\DashboardSustentosController;
+use App\Http\Controllers\ValidacionController;
 
 require __DIR__.'/auth.php';
 
@@ -72,6 +73,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/indicadores',         [IndicadoresController::class, 'index'])->name('indicadores.index');
         Route::get('/cartera/exclusiones', [CarteraController::class, 'exclusiones'])->name('cartera.exclusiones');
         Route::post('/cartera/gobierno',   [CarteraController::class, 'registrarGobierno'])->name('cartera.gobierno');
+        Route::get('/cartera/gobierno/{expediente}',            [CarteraController::class, 'show'])->name('cartera.gobierno.show');
+        Route::post('/cartera/gobierno/{expediente}/documento', [CarteraController::class, 'cargarDocumento'])->name('cartera.gobierno.documento');
+        Route::post('/cartera/gobierno/documento/{documento}/conforme', [CarteraController::class, 'conformeManual'])->name('cartera.gobierno.conforme');
+        Route::get('/cartera/gobierno/documento/{documento}/descargar', [CarteraController::class, 'descargar'])->name('cartera.gobierno.descargar');
         Route::get('/reportes/dashboard',  [ReportesController::class, 'dashboard'])->name('reportes.dashboard');
     });
 
@@ -85,6 +90,9 @@ Route::middleware('auth')->group(function () {
     Route::get('fud/adjunto/{adjunto}/download', [FudController::class, 'download'])->name('fud.download');
 
     Route::post('/asistente/chat', [AsistenteController::class, 'chat'])->name('asistente.chat');
+
+    // Validación automática de documentos antes de registrarlos
+    Route::post('/validacion/documento', [ValidacionController::class, 'documento'])->name('validacion.documento');
 
     
 });
