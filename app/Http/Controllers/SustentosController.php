@@ -8,9 +8,12 @@ class SustentosController extends Controller
 {
     public function index(Request $request)
     {
-        $sustentos = Sustento::with('propuesta.cliente')
+        // Pendientes de carga, observados (para corregir) y en revisión (solo informativo)
+        $sustentos = Sustento::with('propuesta.cliente', 'propuesta.aprobadoPor', 'documentos')
             ->where('cargado_por', $request->user()->id)
-            ->where('estado', 'Pendiente')
+            ->whereIn('estado', ['Pendiente', 'Observado', 'En revisión'])
+            ->orderByRaw("FIELD(estado, 'Observado', 'Pendiente', 'En revisión')")
+            ->latest()
             ->get();
 
         return view('sustentos.index', compact('sustentos'));
@@ -77,8 +80,8 @@ public function recargar(Request $request, Sustento $sustento)
 
     // Solo reemplaza los documentos observados
     foreach ($request->file('documentos') as $idx => $doc) {
-        $tipo  = $doc['tipo'];
         $extra = $request->input('documentos.' . $idx);
+        $tipo  = $extra['tipo'];
 
         // Elimina el documento anterior del mismo tipo (el observado)
         $anterior = $sustento->documentos()->where('tipo_doc', $tipo)->first();

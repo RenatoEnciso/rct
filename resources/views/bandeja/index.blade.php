@@ -149,14 +149,15 @@
         </div>
         <div style="display:flex;flex-wrap:wrap;gap:6px">
           @foreach($p->adjuntos as $adj)
-            <div style="display:flex;align-items:center;gap:5px;padding:5px 10px;
-                        background:#f0f0f0;border-radius:7px;font-size:11px">
+            <a href="{{ route('fud.download', $adj) }}"
+               style="display:flex;align-items:center;gap:5px;padding:5px 10px;
+                      background:#f0f0f0;border-radius:7px;font-size:11px;color:inherit;text-decoration:none">
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--rojo)" stroke-width="2">
                 <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
                 <polyline points="14 2 14 8 20 8"/>
               </svg>
               {{ $adj->nombre_archivo }}
-            </div>
+            </a>
           @endforeach
         </div>
       </div>

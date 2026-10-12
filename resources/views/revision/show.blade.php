@@ -100,7 +100,7 @@
           <label style="font-size:11px;font-weight:600;color:#374151">
             Comentario del revisor para este documento:
           </label>
-          <textarea name="docs[{{ $doc->id }}][comentario]"
+          <textarea name="docs[{{ $doc->id }}][comentario_revisor]"
                     form="form-observar"
                     placeholder="Ej: El prefijo no corresponde, adjuntar versión firmada..."
                     style="width:100%;margin-top:4px;font-size:12px;padding:7px 10px;

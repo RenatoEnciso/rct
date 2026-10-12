@@ -666,7 +666,7 @@ async function filtrarClientes() {
       const simbolo  = (c.moneda ?? 'PEN') === 'USD' ? 'US$' : 'S/';
       const saldo    = parseFloat(c.saldo_capital)
                         .toLocaleString('es-PE', { minimumFractionDigits: 2 });
-      const tipoNeg  = c.tipo_negociacion_campana ?? '—';
+      const tipoNeg  = ETIQUETAS_NEG[c.tipo_negociacion_campana] ?? c.tipo_negociacion_campana ?? '—';
       const autonomia = c.autonomia ?? '—';
 
       // Badge de disponibilidad
@@ -761,7 +761,7 @@ async function filtrarClientes() {
       (c.conc_operacion_mes_actual ?? 0) + ' veces';
 
     // ── Calculados por el sistema (readonly highlight) ──
-    const tipoNegTexto = c.tipo_negociacion_campana ?? '—';
+    const tipoNegTexto = ETIQUETAS_NEG[c.tipo_negociacion_campana] ?? c.tipo_negociacion_campana ?? '—';
     const lineamiento  = c.lineamiento_campana      ?? '—';
     const autonomia    = c.autonomia                ?? '—';
 
@@ -830,8 +830,18 @@ async function filtrarClientes() {
   }
 
   // ── Calcula el código interno a partir del texto del Excel ──
+  const ETIQUETAS_NEG = {
+    cuotas:        'Pago de Cuotas',
+    cancelacion:   'Cancelación Total',
+    extrajudicial: 'Cartera Extrajudicial / Judicial',
+    castigada:     'Cartera Castigada',
+    focmac:        'Cartera FOCMAC',
+  };
+
   function calcularCodigo(texto) {
     texto = (texto ?? '').toLowerCase();
+    // La cartera ya trae el código (cuotas, cancelacion, …)
+    if (ETIQUETAS_NEG[texto]) return texto;
     if (texto.includes('cancelacion total'))  return 'cancelacion';
     if (texto.includes('pago de cuotas'))     return 'cuotas';
     if (texto.includes('judicial'))           return 'extrajudicial';

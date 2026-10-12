@@ -125,7 +125,7 @@
       </a>
     @endif
 
-    @if($user->puedeAprobar())
+    @if($user->esAprobador())
     <a class="nav-btn {{ request()->routeIs('reportes.*') ? 'active' : '' }}"
    href="{{ route('reportes.dashboard') }}">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -143,10 +143,7 @@
         </svg>
         Bandeja de Aprobación
       </a>
-    @endif
-    {{-- @if(in_array(auth()->user()->rol->nombre, ['Revisor de Recuperaciones', 'Supervisor de Recuperaciones'])) --}}
-  </a>
-      <a class="nav-btn {{ request()->routeIs('revision.index') ? 'active' : '' }}"
+      <a class="nav-btn {{ request()->routeIs('revision.index', 'revision.show') ? 'active' : '' }}"
          href="{{ route('revision.index') }}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
           <circle cx="12" cy="12" r="10"/>
@@ -161,12 +158,8 @@
     <rect x="9" y="8" width="6" height="13" rx="1"/>
     <rect x="16" y="13" width="6" height="8" rx="1"/>
   </svg>
-        Reporte Conciliaciones 
+        Reporte Conciliaciones
       </a>
-
-{{-- @endif  --}}
-
-    @if($user->esAprobador())
       <a class="nav-btn {{ request()->routeIs('indicadores.*') ? 'active' : '' }}"
          href="{{ route('indicadores.index') }}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -187,6 +180,7 @@
       </a>
     @endif
 
+    @if($user->esGrupoFud())
     <a class="nav-btn {{ request()->routeIs('sustentos.*') ? 'active' : '' }}"
        href="{{ route('sustentos.index') }}">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -194,6 +188,7 @@
       </svg>
       Carga de Sustentos
     </a>
+    @endif
 
     <a class="nav-btn {{ request()->routeIs('seguimiento.*') ? 'active' : '' }}"
        href="{{ route('seguimiento.index') }}">
@@ -226,6 +221,13 @@
     @if(session('success'))
       <div class="alert alert-success alert-dismissible fade show" role="alert">
         ✅ {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    @endif
+
+    @if(session('warning'))
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        ⚠️ {{ session('warning') }}
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
       </div>
     @endif

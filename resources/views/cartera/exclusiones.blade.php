@@ -59,8 +59,8 @@
           </select>
         </div>
         <div class="field">
-          <label>Cuenta cliente</label>
-          <input name="cliente_cartera_id" placeholder="ID de cuenta" required>
+          <label>Cuenta u operación del crédito</label>
+          <input name="cliente_ref" value="{{ old('cliente_ref') }}" placeholder="Ej: 200012345 o 100045678" required>
         </div>
         <div class="field">
           <label>Responsable</label>

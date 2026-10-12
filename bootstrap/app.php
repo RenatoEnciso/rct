@@ -11,14 +11,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // 👇 AGREGA ESTO AQUÍ ADENTRO
+        // Un solo withMiddleware: una segunda llamada sobrescribe los alias.
         $middleware->alias([
             'grupo' => \App\Http\Middleware\CheckGrupo::class,
-        ]);
-    })
-    ->withMiddleware(function (Middleware $middleware) {
-        $middleware->alias([
-            'role' => \App\Http\Middleware\CheckRole::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

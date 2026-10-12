@@ -80,7 +80,8 @@
 
 {{-- Tabla --}}
 <div class="card">
-  <div class="card-title">Conciliaciones aprobadas – pendientes de sustentos</div>
+  <div class="card-title">Conciliaciones aprobadas – sustentos por cargar o corregir</div>
+  <div style="overflow-x:auto">
   <table>
     <thead>
       <tr>
@@ -90,22 +91,42 @@
     </thead>
     <tbody>
       @forelse($sustentos as $s)
+        @php
+          $cli = $s->propuesta->cliente;
+          $obsTipos = $s->documentos->where('estado_revision', 'observado')->pluck('tipo_doc')->values();
+          $args = [
+            $s->id, $cli->nombre_cliente, (string) $cli->transaccion,
+            $cli->esMayor3UIT(), $cli->estado_cartera === 'CASTIGADO',
+            $s->estaObservado() ? route('sustentos.recargar', $s) : route('sustentos.cargar', $s),
+            $s->estaObservado() ? $obsTipos : [],
+          ];
+        @endphp
         <tr>
-          <td><strong>{{ $s->propuesta->cliente->nombre_cliente }}</strong></td>
-          <td>{{ $s->propuesta->cliente->cuenta }}</td>
-          <td>{{ $s->propuesta->cliente->operacion }}</td>
+          <td><strong>{{ $cli->nombre_cliente }}</strong></td>
+          <td>{{ $cli->cuenta }}</td>
+          <td>{{ $cli->operacion }}</td>
           <td style="font-size:12px">{{ $s->propuesta->aprobadoPor->name ?? '—' }}</td>
-          <td><span class="badge badge-pending">Pendiente docs.</span></td>
           <td>
-            <button class="btn btn-primary" style="font-size:12px;padding:7px 12px"
-              onclick="abrirCarga(
-                {{ $s->id }},
-                '{{ $s->propuesta->cliente->nombre_cliente }}',
-                '{{ $s->propuesta->cliente->transaccion }}',
-                {{ $s->propuesta->cliente->saldo_capital > 15450 ? 'true' : 'false' }},
-                {{ $s->propuesta->cliente->estado_cartera === 'CASTIGADO' ? 'true' : 'false' }})">
-              Cargar sustentos
-            </button>
+            @if($s->estaObservado())
+              <span class="badge badge-warn">Observado</span>
+              @if($s->comentario_revision)
+                <div style="font-size:11px;color:#92400e;margin-top:4px;max-width:260px">{{ $s->comentario_revision }}</div>
+              @endif
+            @elseif($s->estado === 'En revisión')
+              <span class="badge badge-info">En revisión</span>
+            @else
+              <span class="badge badge-pending">Pendiente docs.</span>
+            @endif
+          </td>
+          <td>
+            @if($s->estado === 'En revisión')
+              <span style="font-size:12px;color:#888">Enviado el {{ $s->fecha_carga?->format('d/m/Y') }}</span>
+            @else
+              <button type="button" class="btn btn-primary" style="font-size:12px;padding:7px 12px"
+                onclick='abrirCarga(...@json($args))'>
+                {{ $s->estaObservado() ? 'Corregir documentos' : 'Cargar sustentos' }}
+              </button>
+            @endif
           </td>
         </tr>
       @empty
@@ -117,6 +138,7 @@
       @endforelse
     </tbody>
   </table>
+  </div>
 </div>
 
 {{-- Panel carga --}}
@@ -281,17 +303,24 @@ var REGLAS = {
   },
 };
 
+function _escHtml(t) {
+  return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
 var FOTOS_WARN = ['scan_','img_','dsc','photo','foto','cam','whatsapp','screenshot','captura'];
 var docsReq    = [];
 var valState   = {};
 
 /* ── Abrir panel ─────────────────────────────────────── */
-function abrirCarga(sustentoId, cliente, transaccion, mayor3UIT, castigado) {
+function abrirCarga(sustentoId, cliente, transaccion, mayor3UIT, castigado, accion, soloTipos) {
   docsReq = [];
   if (!castigado)            docsReq.push('Acuerdo de Pago');
   docsReq.push('Nota de Abono', 'Comprobante de Pago');
   if (transaccion !== '300/140') docsReq.push('Hoja de Convenio');
   if (mayor3UIT)             docsReq.push('Informe-Propuesta SK>3UIT');
+  // Corrección: solo se vuelven a cargar los documentos observados por el revisor
+  var esCorreccion = soloTipos && soloTipos.length;
+  if (esCorreccion) docsReq = soloTipos.slice();
 
   valState = {};
   for (var i = 0; i < docsReq.length; i++) {
@@ -299,8 +328,9 @@ function abrirCarga(sustentoId, cliente, transaccion, mayor3UIT, castigado) {
   }
 
   document.getElementById('carga-info').innerHTML =
-    '<strong>' + cliente + '</strong><br>' +
+    '<strong>' + _escHtml(cliente) + '</strong><br>' +
     '<small style="color:#666">' + (
+      esCorreccion               ? 'Corrección: vuelva a cargar solo los documentos observados por el revisor.' :
       transaccion === '300/140'  ? 'Transacción 300/140: no requiere Acuerdo de Pago.' :
       castigado                  ? 'Crédito castigado: no aplica Acuerdo de Pago.'     :
                                    'Cargue todos los documentos antes de registrar.'
@@ -343,7 +373,7 @@ function abrirCarga(sustentoId, cliente, transaccion, mayor3UIT, castigado) {
     })(k, docsReq[k]);
   }
 
-  document.getElementById('form-sustentos').action = '/sustentos/' + sustentoId;
+  document.getElementById('form-sustentos').action = accion;
   document.getElementById('btn-registrar').disabled = true;
   document.getElementById('resumen-obs').style.display = 'none';
   document.getElementById('card-carga').style.display = 'block';

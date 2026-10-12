@@ -31,8 +31,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('/fud/adjuntos/{adjunto}', [FudController::class, 'eliminarAdjunto'])->name('fud.adjunto.destroy');
     });
 
-    // ── Bandeja (aprobadores nivel >= 2) ────────────────────
-    Route::middleware('grupo:aprobador,2')->group(function () {
+    // ── Bandeja (aprobadores) ────────────────────────────────
+    Route::middleware('grupo:aprobador')->group(function () {
         Route::get('/bandeja',               [BandejaController::class, 'index'])->name('bandeja.index');
         Route::post('/bandeja/{fud}/decidir',[BandejaController::class, 'decidir'])->name('bandeja.decidir');
     });

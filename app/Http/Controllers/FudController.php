@@ -95,7 +95,10 @@ class FudController extends Controller
     public function edit(PropuestaFud $fud)
     {
         if ($fud->enviado_por !== auth()->id()) abort(403);
-        if ($fud->estaAprobado()) abort(403, 'No se puede editar un FUD aprobado.');
+        if (!$fud->estaObservado()) {
+            return redirect()->route('fud.show', $fud)
+                ->with('error', 'Solo se puede corregir un FUD observado.');
+        }
 
         $fud->load('cliente', 'adjuntos', 'detalleCuotas',
                     'detalleCancelacion', 'detalleJudicial');
@@ -111,7 +114,10 @@ class FudController extends Controller
     public function update(Request $request, PropuestaFud $fud)
     {
         if ($fud->enviado_por !== auth()->id()) abort(403);
-        if ($fud->estaAprobado()) abort(403, 'No se puede editar un FUD aprobado.');
+        if (!$fud->estaObservado()) {
+            return redirect()->route('fud.show', $fud)
+                ->with('error', 'Solo se puede corregir un FUD observado.');
+        }
 
         $request->validate([
             'motivo'       => 'required|min:20',
@@ -130,7 +136,20 @@ class FudController extends Controller
         ]);
 
         $this->guardarDetalle($request, $nuevoFud->id);
-        $this->guardarAdjuntos($request, $nuevoFud->id, $user->id);
+
+        // Los adjuntos de la versión anterior pasan a la nueva, salvo los que el ejecutivo quitó
+        $quitar = array_filter((array) $request->input('adjuntos_eliminar', []));
+        foreach ($fud->adjuntos()->whereNotIn('id', $quitar)->get() as $adj) {
+            FudAdjunto::create([
+                'propuesta_fud_id' => $nuevoFud->id,
+                'subido_por'       => $adj->subido_por,
+                'nombre_archivo'   => $adj->nombre_archivo,
+                'ruta_archivo'     => $adj->ruta_archivo,
+                'tipo_adjunto'     => $adj->tipo_adjunto,
+                'size_bytes'       => $adj->size_bytes,
+            ]);
+        }
+        $this->guardarAdjuntos($request, $nuevoFud->id, $user->id, $request->input('tipo_adjunto_nuevo'));
 
         // Marcar el FUD anterior como "Corregido" para que no aparezca activo
         $fud->update(['estado_fud' => 'Rechazado']);
@@ -249,8 +268,11 @@ class FudController extends Controller
         };
     }
 
-    private function guardarAdjuntos(Request $request, int $fudId, int $userId): void
+    private function guardarAdjuntos(Request $request, int $fudId, int $userId, ?string $tipo = null): void
     {
+        $tipos = ['Evidencia negociación', 'Captura sistema', 'Documento cliente', 'Otro'];
+        $tipo  = in_array($tipo, $tipos) ? $tipo : 'Evidencia negociación';
+
         if (!$request->hasFile('adjuntos')) return;
 
         foreach ($request->file('adjuntos') as $archivo) {
@@ -261,7 +283,7 @@ class FudController extends Controller
                 'subido_por'       => $userId,
                 'nombre_archivo'   => $archivo->getClientOriginalName(),
                 'ruta_archivo'     => $path,
-                'tipo_adjunto'     => 'Evidencia negociación',
+                'tipo_adjunto'     => $tipo,
                 'size_bytes'       => $archivo->getSize(),
             ]);
         }

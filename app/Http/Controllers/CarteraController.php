@@ -14,16 +14,26 @@ class CarteraController extends Controller
     public function registrarGobierno(Request $request)
     {
         $request->validate([
-            'cliente_cartera_id'  => 'required|exists:clientes_cartera,id',
-            'programa'            => 'required|string',
-            'motivo_habilitacion' => 'required|string',
-            'responsable'         => 'required|string',
+            'cliente_ref'         => 'required|string|max:30',
+            'programa'            => 'required|in:IMPULSA PERÚ,FAE-MYPE,Reactiva Perú,Otro',
+            'motivo_habilitacion' => 'required|in:Garantía rechazada por Cía. Seguros,Pérdida de eficacia de la garantía',
+            'responsable'         => 'required|string|max:120',
             'documentos'          => 'required|array|size:10',
             'documentos.*'        => 'required|file|max:10240',
+        ], [
+            'documentos.size'     => 'Debe adjuntar los 10 documentos obligatorios.',
         ]);
 
+        // El usuario conoce la cuenta o la operación, no el ID interno
+        $ref     = trim($request->cliente_ref);
+        $cliente = ClienteCartera::where('cuenta', $ref)->orWhere('operacion', $ref)->first();
+        if (!$cliente) {
+            return back()->withInput()
+                ->withErrors(['cliente_ref' => "No se encontró un crédito con cuenta u operación {$ref}."]);
+        }
+
         $expediente = ExpedienteGobierno::create([
-            'cliente_cartera_id'  => $request->cliente_cartera_id,
+            'cliente_cartera_id'  => $cliente->id,
             'registrado_por'      => $request->user()->id,
             'programa'            => $request->programa,
             'motivo_habilitacion' => $request->motivo_habilitacion,

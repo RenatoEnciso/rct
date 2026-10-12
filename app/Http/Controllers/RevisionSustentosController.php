@@ -56,7 +56,9 @@ class RevisionSustentosController extends Controller
             'comentario' => 'nullable|string|max:500',
         ]);
 
-        abort_unless($sustento->puedeRevisarse(), 422, 'Este sustento ya fue procesado.');
+        if (!$sustento->puedeRevisarse()) {
+            return back()->with('error', "Este sustento ya fue revisado (estado: {$sustento->estado}).");
+        }
 
         // Marcar todos los documentos como aprobados
         $sustento->documentos()->update(['estado_revision' => 'aprobado']);
@@ -87,15 +89,22 @@ class RevisionSustentosController extends Controller
             'comentario'                         => 'required|string|max:1000',
             'docs'                               => 'nullable|array',
             'docs.*.id'                          => 'required|exists:sustento_documentos,id',
-            'docs.*.estado_revision'             => 'required|in:aprobado,observado',
+            'docs.*.estado_revision'             => 'nullable|in:aprobado,observado',
             'docs.*.comentario_revisor'          => 'nullable|string|max:500',
         ]);
 
-        abort_unless($sustento->puedeRevisarse(), 422, 'Este sustento ya fue procesado.');
+        if (!$sustento->puedeRevisarse()) {
+            return back()->with('error', "Este sustento ya fue revisado (estado: {$sustento->estado}).");
+        }
 
         // Actualizar estado individual por documento
         if ($request->filled('docs')) {
             foreach ($request->docs as $docData) {
+                // Documento sin marcar: queda observado si tiene comentario, si no se deja igual
+                if (empty($docData['estado_revision'])) {
+                    if (empty($docData['comentario_revisor'])) continue;
+                    $docData['estado_revision'] = 'observado';
+                }
                 SustentoDocumento::where('id', $docData['id'])
                     ->where('sustento_id', $sustento->id) // seguridad extra
                     ->update([
@@ -131,7 +140,9 @@ class RevisionSustentosController extends Controller
             'comentario' => 'required|string|max:1000',
         ]);
 
-        abort_unless($sustento->puedeRevisarse(), 422, 'Este sustento ya fue procesado.');
+        if (!$sustento->puedeRevisarse()) {
+            return back()->with('error', "Este sustento ya fue revisado (estado: {$sustento->estado}).");
+        }
 
         $sustento->update([
             'estado'             => 'Rechazado',

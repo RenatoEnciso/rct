@@ -91,6 +91,23 @@ class PropuestaFud extends Model
         return $items;
     }
 
+    // Última corrección de la cadena (la versión vigente del expediente)
+    public function ultimaVersion(): self
+    {
+        $actual = $this;
+        while ($hija = $actual->versiones()->latest('id')->first()) {
+            $actual = $hija;
+        }
+        return $actual;
+    }
+
+    // Una versión reemplazada por una corrección se muestra como "Corregido", no como rechazo
+    public function estadoVisible(): string
+    {
+        if ($this->estado_fud === 'Rechazado' && $this->versiones()->exists()) return 'Corregido';
+        return $this->estado_fud;
+    }
+
     // ── Scopes ───────────────────────────────────────────────
     public function scopeEnRevision(Builder $q): Builder
     {
@@ -122,7 +139,8 @@ class PropuestaFud extends Model
 
     public function badgeClass(): string
     {
-        return match($this->estado_fud) {
+        return match($this->estadoVisible()) {
+            'Corregido'   => 'badge-gray',
             'Aprobado'    => 'badge-ok',
             'Observado',
             'Rechazado'   => 'badge-danger',

@@ -23,8 +23,16 @@ class BandejaController extends Controller
     {
         $request->validate([
             'decision'   => 'required|in:Aprobado,Rechazado,Observado',
-            'comentario' => 'nullable|string|max:1000',
+            'comentario' => 'nullable|required_unless:decision,Aprobado|string|max:1000',
+        ], [
+            'comentario.required_unless' => 'El comentario es obligatorio al observar o rechazar.',
         ]);
+
+        // Evita decidir dos veces el mismo FUD (doble clic, pestaña vieja, etc.)
+        if (!$fud->estaEnRevision()) {
+            return redirect()->route('bandeja.index')
+                ->with('error', "Este FUD ya fue {$fud->estado_fud} anteriormente; no se puede volver a decidir.");
+        }
 
         $user = $request->user();
 

@@ -19,7 +19,7 @@
       </span>
     @endif
     <span class="badge {{ $fud->badgeClass() }}" style="font-size:13px;padding:6px 14px">
-      {{ $fud->estado_fud }}
+      {{ $fud->estadoVisible() }}
     </span>
   </div>
 </div>
@@ -70,7 +70,7 @@
                 {{ $version->id === $fud->id ? '⟵ Versión actual' : 'Versión ' . $loop->iteration }}
               </span>
               <div style="display:flex;gap:6px;align-items:center">
-                <span class="badge {{ $version->badgeClass() }}">{{ $version->estado_fud }}</span>
+                <span class="badge {{ $version->badgeClass() }}">{{ $version->estadoVisible() }}</span>
                 <span style="font-size:11px;color:#999">{{ $version->fecha_envio->format('d/m/Y') }}</span>
               </div>
             </div>
@@ -298,7 +298,7 @@
     Volver a mis propuestas
   </a>
 
-  @if($fud->enviado_por === auth()->id() && !$fud->estaAprobado())
+  @if($fud->enviado_por === auth()->id() && $fud->estaObservado())
     <a href="{{ route('fud.edit', $fud) }}" class="btn btn-secondary">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>

@@ -43,7 +43,8 @@
     <tbody>
       @forelse($propuestas as $p)
         @php
-          $badge = match($p->estado_fud) {
+          $vig   = $p->ultimaVersion();
+          $badge = match($vig->estado_fud) {
             'Aprobado'  => 'badge-ok',
             'Observado','Rechazado' => 'badge-danger',
             default     => 'badge-pending',
@@ -56,22 +57,27 @@
           <td>{{ $p->cliente->operacion }}</td>
           <td style="font-size:12px">{{ $p->tipo_negociacion_desc ?? '—' }}</td>
           <td>{{ $p->cliente->saldo_formateado }}</td>
-          <td style="font-size:12px;color:#666">{{ $p->aprobador->name ?? '—' }}</td>
-          <td><span class="badge {{ $badge }}">{{ $p->estado_fud }}</span></td>
+          <td style="font-size:12px;color:#666">{{ $vig->aprobador->name ?? '—' }}</td>
+          <td>
+            <span class="badge {{ $badge }}">{{ $vig->estado_fud }}</span>
+            @if($vig->veces_observado > 0)
+              <div style="font-size:10px;color:#888;margin-top:3px">Corrección #{{ $vig->veces_observado }}</div>
+            @endif
+          </td>
           <td>
             <div style="display:flex;gap:6px;flex-wrap:wrap">
-              <a href="{{ route('fud.show', $p) }}"
+              <a href="{{ route('fud.show', $vig) }}"
                 class="btn btn-ghost btn-sm">
                 Ver Detalle
               </a>
-              @if(!$p->estaAprobado())
-                <a href="{{ route('fud.edit', $p) }}"
+              @if($vig->estaObservado())
+                <a href="{{ route('fud.edit', $vig) }}"
                   class="btn btn-secondary btn-sm">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
                     <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
                   </svg>
-                  Editar
+                  Corregir
                 </a>
               @endif
             </div>
