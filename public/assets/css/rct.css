@@ -1208,3 +1208,14 @@ body.modo-presentacion [data-modo-presentacion] { display: none; }
 .rv-regla ul.opc li .bi { color: var(--gris-claro); }
 @media (max-width: 1199.98px) { .rv-estados { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 767.98px) { .rv-estados { grid-template-columns: minmax(0, 1fr); } }
+
+/* Base matriz */
+.mx-kpis { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px; margin-bottom: 16px; }
+.mx-valor { font-size: 22px; }
+.cc .card.mx-filtros { display: flex; flex-direction: row; flex-wrap: wrap; gap: 12px; align-items: flex-end; padding: 16px 20px; margin-bottom: 16px; }
+.mx-filtros .field { min-width: 170px; }
+.mx-check { display: flex; align-items: center; gap: 6px; font-size: 13px; margin: 0 0 9px; }
+.mx-tabla .mx-grupos th { background: var(--sutil); color: var(--gris); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; text-align: center; border-bottom: 1px solid var(--borde); }
+.mx-total td { font-weight: 700; background: var(--sutil); border-top: 2px solid var(--borde-fuerte); }
+@media (max-width: 1599.98px) { .mx-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 767.98px) { .mx-kpis { grid-template-columns: minmax(0, 1fr); } }
