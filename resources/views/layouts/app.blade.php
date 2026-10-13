@@ -123,6 +123,9 @@
 
       @if($user->esGrupoFud())
         <div class="nav-section-label">Gestión de campaña</div>
+        <a class="nav-btn {{ request()->routeIs('prioridad.mia') ? 'active' : '' }}" href="{{ route('prioridad.mia') }}">
+          <i class="bi bi-bullseye"></i> Mi prioridad de hoy
+        </a>
         <a class="nav-btn {{ request()->routeIs('fud.create') ? 'active' : '' }}" href="{{ route('fud.create') }}">
           <i class="bi bi-file-earmark-plus"></i> Nueva propuesta FUD
         </a>
@@ -142,6 +145,9 @@
         <div class="nav-section-label">Analítica</div>
         <a class="nav-btn {{ request()->routeIs('centro-control') ? 'active' : '' }}" href="{{ route('centro-control') }}">
           <i class="bi bi-display"></i> Centro de control
+        </a>
+        <a class="nav-btn {{ request()->routeIs('priorizacion.*') ? 'active' : '' }}" href="{{ route('priorizacion.index') }}">
+          <i class="bi bi-bullseye"></i> Priorización de cartera
         </a>
 
         <div class="nav-section-label">Aprobación y control</div>

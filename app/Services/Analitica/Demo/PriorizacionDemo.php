@@ -106,13 +106,20 @@ class PriorizacionDemo implements ModeloPriorizacion
     private function motivos(array $c, ?string $siguiente, ?int $dias, ClienteCartera $cli, $hoy): array
     {
         $cand = [];
-        if ($siguiente && $c['umbral'] >= 0.6) $cand[] = [$c['umbral'] + 0.5, "Cerca de pasar a {$siguiente} ({$dias} días)"];
+        if ($siguiente && $c['umbral'] >= 0.6) {
+            // Si el crédito ya tiene esa calificación (o una peor), se menciona el umbral de días
+            $orden = ['NORMAL' => 0, 'CPP' => 1, 'DEFICIENTE' => 2, 'DUDOSO' => 3, 'PÉRDIDA' => 4];
+            $peor = ($orden[$cli->calificacion_rcc] ?? 0) >= ($orden[mb_strtoupper($siguiente)] ?? 9);
+            $limite = array_search($siguiente, self::UMBRALES);
+            $cand[] = [$c['umbral'] + 0.5, ($peor ? "Cerca de los {$limite} días de atraso" : "Cerca de pasar a {$siguiente}")
+                                           .' ('.$dias.($dias === 1 ? ' día)' : ' días)')];
+        }
         if ($c['historial'])                   $cand[] = [1.2, 'Cumplió última promesa'];
         if ($c['saldo'] >= 0.75)               $cand[] = [$c['saldo'], 'Saldo alto'];
         if ($c['provision'] >= 0.75)           $cand[] = [$c['provision'], 'Libera provisión'];
         if ($c['pago'] >= 0.65)                $cand[] = [$c['pago'], 'Alta probabilidad de pago'];
-        $cierre = $hoy->copy()->endOfMonth()->diffInDays($hoy);
-        if ($cierre <= 5)                      $cand[] = [0.9, 'Cierre de mes en '.max(1, (int) $cierre).' días'];
+        $cierre = (int) $hoy->copy()->startOfDay()->diffInDays($hoy->copy()->endOfMonth()->startOfDay());
+        if ($cierre <= 5)                      $cand[] = [0.9, $cierre === 0 ? 'Cierre de mes hoy' : 'Cierre de mes en '.$cierre.($cierre === 1 ? ' día' : ' días')];
         if ($cli->conc_operacion_12m == 0)     $cand[] = [0.3, 'Sin beneficios en 12 meses'];
         if ($cli->garante_celular)             $cand[] = [0.2, 'Garante contactable'];
         if (count($cand) < 2)                  $cand[] = [0.1, 'Datos de contacto vigentes'];

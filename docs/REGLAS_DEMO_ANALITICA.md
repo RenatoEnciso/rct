@@ -100,7 +100,8 @@ puntaje = 100 × (0.30·Pago + 0.25·Recuperable + 0.15·Provisión + 0.20·Umbr
 - **Probabilidad de pago** = Pago × 100 ± ajuste, entre 5 % y 95 %.
 - **Recupero esperado** = monto recuperable × probabilidad.
 - **Motivos (los 2 o 3 de mayor peso):**
-  - "Cerca de pasar a Deficiente/Dudoso/Pérdida (N días)"
+  - "Cerca de pasar a Deficiente/Dudoso/Pérdida (N días)". Si el crédito ya tiene esa calificación o una peor, dice
+    "Cerca de los 61 días de atraso (N días)"
   - "Cumplió última promesa"
   - "Saldo alto" (percentil ≥ 0.75)
   - "Libera provisión" (percentil ≥ 0.75)
@@ -114,6 +115,9 @@ puntaje = 100 × (0.30·Pago + 0.25·Recuperable + 0.15·Provisión + 0.20·Umbr
   3. Pago ≥ 0.7 → Llamar
   4. el resto → Ofrecer cancelación
 - **Mejor horario:** uno de 4 bloques, elegido por hash. Las personas jurídicas solo tienen bloques de mañana.
+- **Pantallas:** "Mi prioridad de hoy" (asesor) muestra los 20 créditos pendientes de su tienda con mayor puntaje; el
+  botón "Gestionar" abre Nueva propuesta con el cliente seleccionado (`/fud/crear?cliente=ID`). "Priorización de cartera"
+  (Jefatura y CZR) muestra el mapa de calor zona (o tienda) × segmento con créditos pendientes y recupero esperado.
 - **Cartera pendiente:** créditos sin propuesta desde el inicio de la campaña. La "cartera prioritaria" es la pendiente
   de segmento Alta o Media.
 

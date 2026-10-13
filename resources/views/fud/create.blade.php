@@ -85,6 +85,7 @@
     <div class="card-title"><span class="badge badge-rojo">Paso 2</span> Datos del cliente seleccionado</div>
     <span class="badge badge-gray"><i class="bi bi-lock"></i> Información del sistema</span>
   </div>
+  <div class="notice notice-prioridad" id="aviso-prioridad" hidden></div>
 
   <div class="detail-grid">
     @foreach([
@@ -227,6 +228,7 @@
     parseFloat(v || 0).toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const set = (id, v) => { document.getElementById(id).textContent = (v === null || v === undefined || v === '') ? '—' : v; };
   let clientes = [];
+  let clienteInicial = {{ $clienteInicial ?? 'null' }};
 
   // ── Adjuntos ───────────────────────────────────────────────
   let seleccion = new DataTransfer();
@@ -257,6 +259,7 @@
       zona_id: v('filtro-zona'), tienda_id: v('filtro-tienda'), estado: v('filtro-estado'),
       cuenta: v('filtro-cuenta'), operacion: v('filtro-operacion'), nombre: v('filtro-nombre'), documento: v('filtro-documento'),
     });
+    if (clienteInicial) params.set('id', clienteInicial);
     const tbody = document.getElementById('tabla-clientes');
     try {
       const res = await fetch(`${API_URL}?${params}`, { headers: { Accept: 'application/json' } });
@@ -285,6 +288,11 @@
         <td class="num"><button type="button" class="btn btn-primary btn-sm" onclick="seleccionar(${i})" ${bloq ? 'disabled title="Supera el límite de 4 conciliaciones en 12 meses"' : ''}>Seleccionar</button></td>
       </tr>`;
     }).join('');
+    if (clienteInicial) {
+      clienteInicial = null;
+      document.getElementById('match-count').textContent = 'Cliente seleccionado desde Mi prioridad de hoy';
+      if (clientes.length === 1) seleccionar(0);
+    }
   }
   const programar = () => { clearTimeout(timer); timer = setTimeout(filtrar, 300); };
   document.querySelectorAll('[data-filtro]').forEach(el => el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', programar));
@@ -326,6 +334,15 @@
     set('info-autonomia', c.autonomia);
     set('info-lineamiento', c.lineamiento_campana);
     set('resumen-aprobador', c.aprobador_asignado ?? 'Sin aprobador disponible para este nivel');
+
+    // Modelo de priorización
+    const pr = c.priorizacion, aviso = document.getElementById('aviso-prioridad');
+    aviso.hidden = !pr;
+    if (pr) {
+      aviso.innerHTML = `<i class="bi bi-bullseye"></i><span><strong>Modelo de priorización: puntaje ${pr.score} · prioridad ${rctEsc(pr.segmento.toLowerCase())}.</strong>
+        Acción sugerida: ${rctEsc(pr.accion_sugerida)} (mejor horario ${rctEsc(pr.mejor_horario)}). Probabilidad de pago ${Number(pr.probabilidad_pago).toFixed(1)}%.
+        ${(pr.motivos || []).map(m => `<span class="pr-chip">${rctEsc(m)}</span>`).join(' ')}</span>`;
+    }
 
     document.getElementById('input-cliente-id').value = c.id;
     document.getElementById('input-tipo-neg').value = codigo;

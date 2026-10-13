@@ -89,6 +89,10 @@ Route::middleware('auth')->group(function () {
     // ── Analítica ────────────────────────────────────────────
     Route::get('/centro-control', [\App\Http\Controllers\CentroControlController::class, 'index'])
         ->middleware('grupo:aprobador')->name('centro-control');
+    Route::get('/priorizacion', [\App\Http\Controllers\PriorizacionController::class, 'index'])
+        ->middleware('grupo:aprobador')->name('priorizacion.index');
+    Route::get('/mi-prioridad', [\App\Http\Controllers\PriorizacionController::class, 'mia'])
+        ->middleware('grupo:fud')->name('prioridad.mia');
 
     // ── Programas de gobierno: expedientes de honramiento ────
     Route::get('/gobierno',                       [GobiernoController::class, 'index'])->name('gobierno.index');

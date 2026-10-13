@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use App\Models\{AlertaControl, Campana, ExpedienteGobierno, MetaZona, PriorizacionCartera, PropuestaFud, Recupero, SeguimientoBeneficio, Zona};
+use App\Models\{AlertaControl, Campana, ExpedienteGobierno, MetaZona, PriorizacionCartera, Recupero, SeguimientoBeneficio, Zona};
 
 /** Centro de control: resumen ejecutivo de recuperaciones, programas y analítica. */
 class CentroControlController extends Controller
@@ -168,10 +168,6 @@ class CentroControlController extends Controller
 
     private function pendientes(?int $zonaId, Carbon $inicioCamp): Collection
     {
-        $gestionados = PropuestaFud::where('fecha_envio', '>=', $inicioCamp)->distinct()->pluck('cliente_cartera_id');
-        return PriorizacionCartera::with('cliente:id,credito_sicmact,zona_id')
-            ->whereNotIn('cliente_cartera_id', $gestionados)
-            ->when($zonaId, fn($q) => $q->whereHas('cliente', fn($c) => $c->where('zona_id', $zonaId)))
-            ->get();
+        return PriorizacionCartera::with('cliente:id,credito_sicmact,zona_id')->pendientes()->deZona($zonaId)->get();
     }
 }

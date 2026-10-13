@@ -43,6 +43,11 @@ class ClienteCartera extends Model
         return $this->hasMany(PropuestaFud::class, 'cliente_cartera_id');
     }
 
+    public function priorizacion()
+    {
+        return $this->hasOne(PriorizacionCartera::class, 'cliente_cartera_id');
+    }
+
     public function expedientesGobierno()
     {
         return $this->hasMany(ExpedienteGobierno::class, 'cliente_cartera_id');

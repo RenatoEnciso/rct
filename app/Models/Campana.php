@@ -21,4 +21,10 @@ class Campana extends Model
     {
         return self::where('activa', true)->latest()->first();
     }
+
+    /** Inicio de la campaña vigente (desde aquí un crédito con propuesta cuenta como gestionado). */
+    public static function inicioActual(): \Illuminate\Support\Carbon
+    {
+        return \Illuminate\Support\Carbon::parse(self::activa()?->fecha_inicio ?? '2026-09-01')->startOfDay();
+    }
 }

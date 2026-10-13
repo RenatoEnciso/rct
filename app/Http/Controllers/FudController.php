@@ -35,8 +35,10 @@ class FudController extends Controller
     public function create()
     {
         $zonas = \App\Models\Zona::with('tiendas')->get();
+        // Desde "Mi prioridad de hoy": el cliente llega seleccionado
+        $clienteInicial = request()->integer('cliente') ?: null;
 
-        return view('fud.create', compact('zonas'));
+        return view('fud.create', compact('zonas', 'clienteInicial'));
     }
 
     // ── Guardar nuevo FUD ────────────────────────────────────
@@ -193,6 +195,7 @@ class FudController extends Controller
     public function buscarClientes(Request $request)
     {
         $clientes = ClienteCartera::disponibles()
+            ->when($request->id,        fn($q) => $q->where('id', $request->id))
             ->when($request->zona_id,   fn($q) => $q->where('zona_id', $request->zona_id))
             ->when($request->tienda_id, fn($q) => $q->where('tienda_id', $request->tienda_id))
             ->when($request->estado,    fn($q) => $q->where('estado_cartera', $request->estado))
@@ -200,7 +203,7 @@ class FudController extends Controller
             ->when($request->operacion, fn($q) => $q->where('operacion', 'like', "%{$request->operacion}%"))
             ->when($request->nombre,    fn($q) => $q->where('nombre_cliente', 'like', "%{$request->nombre}%"))
             ->when($request->documento, fn($q) => $q->where('nro_documento', 'like', "%{$request->documento}%"))
-            ->with('zona','tienda')
+            ->with('zona', 'tienda', 'priorizacion')
             ->limit(50)
             ->get();
 

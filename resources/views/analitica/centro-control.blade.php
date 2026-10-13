@@ -173,7 +173,7 @@
           <div class="cc-tile-label">Cartera prioritaria pendiente</div>
           <div class="cc-tile-valor" data-contar="{{ $analitica['prioritaria'] }}" data-formato="num">{{ $analitica['prioritaria'] }}</div>
           <div class="cc-tile-sub">créditos · <strong>{{ $analitica['prioritaria_alta'] }}</strong> de prioridad alta</div>
-          <div class="cc-tile-pie">{{ Estilo::solesEntero($analitica['recuperable']) }} de recupero esperado</div>
+          <div class="cc-tile-pie">{{ Estilo::solesEntero($analitica['recuperable']) }} de recupero esperado · <a href="{{ route('priorizacion.index', array_filter(['zona_id' => $zonaFija ? null : $zonaId])) }}">Ver priorización</a></div>
         </div>
         <div class="cc-tile">
           <div class="cc-tile-label">Recuperación sostenida a 90 días</div>
