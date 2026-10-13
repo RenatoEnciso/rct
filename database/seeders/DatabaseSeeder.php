@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             DemoSeeder::class,
             HonramientoSeeder::class,
             AnaliticaSeeder::class,
+            ImpulsoSeeder::class,
         ]);
     }
 }
