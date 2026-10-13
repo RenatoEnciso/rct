@@ -99,6 +99,14 @@
         </select>
       </div>
       <div class="field">
+        <label for="honramiento">Honramiento</label>
+        <select id="honramiento" name="honramiento"><option value="">Todos</option>
+          @foreach(['Honrado' => 'Honrado por COFIDE', 'Solicitado' => 'En solicitud', 'No honrado' => 'No honrado'] as $v => $lbl)
+            <option value="{{ $v }}" @selected(request('honramiento') === $v)>{{ $lbl }}</option>
+          @endforeach
+        </select>
+      </div>
+      <div class="field">
         <label>Fecha de revisión</label>
         <div class="d-flex gap-2"><input type="date" name="desde" value="{{ request('desde') }}" aria-label="Desde"><input type="date" name="hasta" value="{{ request('hasta') }}" aria-label="Hasta"></div>
       </div>

@@ -61,6 +61,7 @@ class GobiernoController extends Controller
             ->when($request->lote_id,    fn($q, $v) => $q->where('lote_id', $v))
             ->when($request->estado,     fn($q, $v) => $q->where('estado', $v))
             ->when($request->tipo_persona, fn($q, $v) => $q->where('tipo_persona', $v))
+            ->when($request->honramiento, fn($q, $v) => $q->where('estado_honramiento', $v))
             ->when($request->desde, fn($q, $v) => $q->whereRaw('DATE(COALESCE(revisado_central_en, revisado_zona_en)) >= ?', [$v]))
             ->when($request->hasta, fn($q, $v) => $q->whereRaw('DATE(COALESCE(revisado_central_en, revisado_zona_en)) <= ?', [$v]))
             ->when($request->q, fn($q, $v) => $q->where(fn($w) => $w->where('dni', 'like', "%$v%")->orWhere('cliente', 'like', "%$v%")

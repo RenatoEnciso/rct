@@ -103,6 +103,7 @@ Route::middleware('auth')->group(function () {
 
     // ── Programas de gobierno · Impulso MyPerú ───────────────
     Route::post('/impulso/core/sincronizar', [\App\Http\Controllers\Impulso\CoreController::class, 'sincronizar'])->name('impulso.core.sincronizar');
+    Route::get('/gobierno/revision', [\App\Http\Controllers\Impulso\RevisionController::class, 'index'])->name('gobierno.revision');
     Route::prefix('impulso')->name('impulso.')->group(function () {
         $L = \App\Http\Controllers\Impulso\LotesController::class;
         Route::get('/candidatos',                    [$L, 'candidatos'])->name('candidatos');
