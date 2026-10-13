@@ -64,6 +64,8 @@ class GobiernoIndicadoresController extends Controller
             'porTienda'  => $this->agrupar($exps, fn($e) => ($e->tienda->nombre ?? '—').' · '.($e->zona->nombre ?? '')),
             'documentos' => $documentos,
             'avance'     => $this->avance($exps->pluck('id')),
+            // Impulso MyPerú: lotes, honramiento, pagos y devolución (revisión central)
+            'impulso'    => \App\Http\Controllers\Impulso\CoreController::esCentral($u) ? app(\App\Services\Impulso\Indicadores::class)->resumen() : null,
             'porEstado'  => $exps->groupBy('estado')->map->count(),
             'lotes'      => Lote::orderBy('codigo')->get(),
             'zonas'      => Zona::whereIn('id', $exps->pluck('zona_id')->unique())->orderBy('nombre')->get(),

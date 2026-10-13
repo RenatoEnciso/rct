@@ -36,6 +36,11 @@
   </div>
 </form>
 
+@if($impulso)
+  @include('impulso._indicadores')
+@endif
+
+
 <div class="section-title">Avance documentario</div>
 <div class="kpi-grid">
   <div class="kpi-card"><div class="kpi-label"><i class="bi bi-folder2"></i> Expedientes</div><div class="kpi-value">{{ $kpis['total'] }}</div><div class="kpi-sub">{{ $kpis['faltantes'] }} documentos exigidos faltantes</div></div>
@@ -128,9 +133,24 @@
 <script>
 (function () {
   var d = @json($avance);
+  var dias = {{ Js::from($impulso['por_dia'] ?? null) }};
   Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
   Chart.defaults.font.size = 11;
   Chart.defaults.color = '#5f6b7a';
+  if (dias && document.getElementById('chart-dias')) {
+    var maxDia = Math.max.apply(null, dias);
+    new Chart(document.getElementById('chart-dias'), {
+      type: 'bar',
+      data: { labels: dias.map(function (v, i) { return i + 1; }), datasets: [{ label: 'Capital pagado', data: dias,
+        // Una sola serie; se resaltan los últimos días del mes (cierre)
+        backgroundColor: dias.map(function (v, i) { return i >= 23 ? '#1f4e8c' : '#9db7dc'; }), borderRadius: { topLeft: 3, topRight: 3 }, borderSkipped: 'bottom' }] },
+      options: { responsive: true, maintainAspectRatio: false, animation: { duration: 900 },
+        plugins: { legend: { display: false }, tooltip: { callbacks: { title: function (c) { return 'Día ' + c[0].label; },
+          label: function (c) { return ' S/ ' + c.parsed.y.toLocaleString('es-PE', { minimumFractionDigits: 2 }); } } } },
+        scales: { x: { grid: { display: false }, ticks: { autoSkip: false, maxRotation: 0, callback: function (v, i) { return (i + 1) % 5 === 0 || i === 0 ? i + 1 : ''; } } },
+                  y: { beginAtZero: true, grid: { color: '#eef0f2' }, ticks: { callback: function (v) { return 'S/ ' + Math.round(v / 1000) + ' mil'; } } } } }
+    });
+  }
   new Chart(document.getElementById('chart-avance'), {
     type: 'bar',
     data: {
