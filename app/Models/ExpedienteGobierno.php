@@ -22,6 +22,8 @@ class ExpedienteGobierno extends Model
         'responsable', 'fecha_registro',
         // calculados por Checklist::recalcular()
         'estado', 'faltantes', 'revisado_zona_en', 'revisado_central_en',
+        // Impulso MyPerú: solicitud y honramiento (reporte de COFIDE)
+        'estado_honramiento', 'saldo_insoluto', 'interes_devengado', 'factor_cobertura', 'fecha_honramiento',
     ];
 
     protected $casts = [
@@ -30,7 +32,13 @@ class ExpedienteGobierno extends Model
         'monto_honrado'       => 'decimal:2',
         'revisado_zona_en'    => 'datetime',
         'revisado_central_en' => 'datetime',
+        'saldo_insoluto'      => 'decimal:2',
+        'interes_devengado'   => 'decimal:2',
+        'factor_cobertura'    => 'decimal:4',
+        'fecha_honramiento'   => 'date',
     ];
+
+    public function esHonrado(): bool { return $this->estado_honramiento === 'Honrado'; }
 
     public function gestion()     { return $this->belongsTo(Gestion::class, 'gestion_id'); }
     public function lote()        { return $this->belongsTo(Lote::class, 'lote_id'); }

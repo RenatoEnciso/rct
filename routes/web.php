@@ -103,6 +103,17 @@ Route::middleware('auth')->group(function () {
 
     // ── Programas de gobierno · Impulso MyPerú ───────────────
     Route::post('/impulso/core/sincronizar', [\App\Http\Controllers\Impulso\CoreController::class, 'sincronizar'])->name('impulso.core.sincronizar');
+    Route::prefix('impulso')->name('impulso.')->group(function () {
+        $L = \App\Http\Controllers\Impulso\LotesController::class;
+        Route::get('/candidatos',                    [$L, 'candidatos'])->name('candidatos');
+        Route::get('/lotes',                         [$L, 'index'])->name('lotes');
+        Route::post('/lotes',                        [$L, 'armar'])->name('lotes.armar');
+        Route::get('/lotes/{lote}',                  [$L, 'show'])->name('lotes.show');
+        Route::post('/lotes/{lote}/documentos',      [$L, 'documentos'])->name('lotes.documentos');
+        Route::get('/lotes/{lote}/descargar/{tipo}', [$L, 'descargar'])->name('lotes.descargar');
+        Route::post('/lotes/{lote}/firma',           [$L, 'firma'])->name('lotes.firma');
+        Route::post('/lotes/{lote}/confirmar',       [$L, 'confirmar'])->name('lotes.confirmar');
+    });
 
     // ── Programas de gobierno: expedientes de honramiento ────
     Route::get('/gobierno',                       [GobiernoController::class, 'index'])->name('gobierno.index');

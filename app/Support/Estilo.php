@@ -65,6 +65,13 @@ class Estilo
         return 'S/ '.number_format((float) $monto, 2);
     }
 
+    /** Monto con céntimos en formato peruano (S/ 2 500,00), usado en el módulo Impulso MyPerú. */
+    public static function solesPe($monto): string
+    {
+        $m = round((float) $monto, 2);
+        return ($m < 0 ? '−' : '').'S/ '.number_format(abs($m), 2, ',', "\u{00A0}");
+    }
+
     /** Monto entero con separador de miles por espacio, para tableros (S/ 1 234 567). */
     public static function solesEntero($monto): string
     {

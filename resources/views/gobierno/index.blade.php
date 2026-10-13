@@ -33,7 +33,7 @@
     @if(auth()->user()->esAprobador())
       <a href="{{ route('gobierno.indicadores') }}" class="btn btn-secondary"><i class="bi bi-bar-chart-line"></i> Indicadores</a>
     @endif
-    <a href="{{ route('gobierno.lotes') }}" class="btn btn-secondary"><i class="bi bi-collection"></i> Lotes y plazos</a>
+    <a href="{{ $esCentral ? route('impulso.lotes') : route('gobierno.lotes') }}" class="btn btn-secondary"><i class="bi bi-collection"></i> Lotes y plazos</a>
     @if($esCentral)
       <a href="{{ route('gobierno.importar') }}" class="btn btn-primary"><i class="bi bi-file-earmark-arrow-up"></i> Importar Excel</a>
     @endif

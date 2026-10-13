@@ -4,13 +4,51 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
-/** Lote de una solicitud formal de honramiento. Plazo: 30 días calendario desde la conformidad. */
+/**
+ * Lote de una solicitud de honramiento ante COFIDE (cada carga en la plataforma es un lote).
+ * Estados: En preparación → Pendiente de firma → Firmado → Cargado en COFIDE → Honrado (parcial o total) / Observado.
+ * Plazo de documentación: 30 días calendario desde el día siguiente a la conformidad.
+ */
 class Lote extends Model
 {
     public const PLAZO_DIAS = 30;
+    public const ESTADOS = ['En preparación', 'Pendiente de firma', 'Firmado', 'Cargado en COFIDE', 'Observado', 'Honrado parcial', 'Honrado'];
 
-    protected $fillable = ['codigo', 'programa', 'fecha_solicitud', 'fecha_conformidad'];
-    protected $casts = ['fecha_solicitud' => 'date', 'fecha_conformidad' => 'date'];
+    protected $fillable = [
+        'codigo', 'programa', 'fecha_solicitud', 'fecha_conformidad', 'fecha_corte', 'fecha_carga', 'estado',
+        'registros_rct', 'saldo_rct', 'registros_cofide', 'saldo_cofide', 'constancia_cofide', 'confirmado_en',
+        'firmas', 'documentos_generados_en', 'fecha_honramiento', 'reporte_importado_en', 'reporte_archivo',
+        'aviso_agencias_en', 'creado_por',
+    ];
+    protected $casts = [
+        'fecha_solicitud' => 'date', 'fecha_conformidad' => 'date', 'fecha_corte' => 'date', 'fecha_carga' => 'date',
+        'fecha_honramiento' => 'date', 'confirmado_en' => 'datetime', 'documentos_generados_en' => 'datetime',
+        'reporte_importado_en' => 'datetime', 'aviso_agencias_en' => 'datetime', 'firmas' => 'array',
+        'saldo_rct' => 'decimal:2', 'saldo_cofide' => 'decimal:2',
+    ];
+
+    public function creador() { return $this->belongsTo(User::class, 'creado_por'); }
+
+    /** La confirmación de COFIDE no coincide con lo calculado por RCT. */
+    public function tieneDiferencia(): bool
+    {
+        if ($this->registros_cofide === null) return false;
+        return (int) $this->registros_cofide !== (int) $this->registros_rct
+            || bccomp((string) $this->saldo_cofide, (string) $this->saldo_rct, 2) !== 0;
+    }
+
+    public function diferenciaSaldo(): string
+    {
+        return $this->saldo_cofide === null ? '0.00' : bcsub((string) $this->saldo_cofide, (string) $this->saldo_rct, 2);
+    }
+
+    public function firmasCompletas(): bool
+    {
+        $firmas = collect($this->firmas ?? []);
+        return collect(config('rct.impulso.representantes'))->every(fn($r) => $firmas->contains(fn($f) => $f['nombre'] === $r['nombre']));
+    }
+
+    public function esHonrado(): bool { return in_array($this->estado, ['Honrado', 'Honrado parcial']); }
 
     public function expedientes()
     {

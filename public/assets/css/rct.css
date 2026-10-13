@@ -1138,3 +1138,49 @@ body.modo-presentacion [data-modo-presentacion] { display: none; }
   border: 1px solid var(--borde); font-size: 12px; color: var(--gris); white-space: nowrap; }
 .im-core-punto { width: 8px; height: 8px; border-radius: 50%; background: var(--verde); box-shadow: 0 0 0 3px var(--verde-soft); }
 .im-core-punto.off { background: var(--gris-claro); box-shadow: none; }
+
+/* Lote de honramiento */
+.lt-pasos { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin-bottom: 18px; padding: 16px 20px;
+  background: var(--superficie); border: 1px solid #e9ecef; border-radius: 10px; box-shadow: var(--cc-sombra); }
+.lt-paso { display: flex; align-items: center; gap: 10px; position: relative; color: var(--gris-claro); font-size: 13px; }
+.lt-paso:not(:last-child)::after { content: ''; flex: 1; height: 2px; background: #e6e8ec; margin: 0 4px; border-radius: 2px; }
+.lt-paso.hecho:not(:last-child)::after { background: var(--verde); }
+.lt-paso-n { flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-weight: 700;
+  border: 2px solid #dfe3e8; background: #fff; font-size: 13px; }
+.lt-paso-t { font-weight: 600; white-space: nowrap; }
+.lt-paso.hecho { color: var(--verde); }
+.lt-paso.hecho .lt-paso-n { background: var(--verde); border-color: var(--verde); color: #fff; }
+.lt-paso.actual { color: var(--rojo); }
+.lt-paso.actual .lt-paso-n { border-color: var(--rojo); color: var(--rojo); box-shadow: 0 0 0 4px var(--rojo-soft); }
+.lt-paso.error { color: var(--peligro); }
+.lt-paso.error .lt-paso-n { background: var(--peligro); border-color: var(--peligro); color: #fff; }
+.lt-etapas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.lt-num { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; background: var(--rojo-soft); color: var(--rojo); font-size: 12px; font-weight: 700; }
+.lt-ok { display: flex; align-items: center; gap: 8px; color: var(--verde); font-weight: 600; font-size: 13px; }
+.lt-firmas { display: flex; flex-direction: column; gap: 10px; }
+.lt-firma { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--borde); border-radius: 8px; }
+.lt-firma > .bi { font-size: 20px; color: var(--gris-claro); }
+.lt-firma.ok { border-color: var(--verde-line); background: var(--verde-soft); }
+.lt-firma.ok > .bi { color: var(--verde); }
+.lt-firma-body { flex: 1; display: flex; flex-direction: column; font-size: 12.5px; line-height: 1.35; }
+.lt-firma-body strong { font-size: 13.5px; }
+.lt-firma-body span { color: var(--gris); }
+.lt-firma form { margin: 0; }
+.lt-comparacion { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; padding: 14px; border-radius: 8px; margin-bottom: 14px; }
+.lt-comparacion.ok { background: var(--verde-soft); border: 1px solid var(--verde-line); }
+.lt-comparacion.error { background: var(--peligro-soft); border: 1px solid var(--peligro-line); }
+.lt-comparacion div { display: flex; flex-direction: column; }
+.lt-comparacion span { font-size: 12px; color: var(--gris); }
+.lt-comparacion strong { font-size: 18px; font-variant-numeric: tabular-nums; }
+.lt-comparacion em { font-style: normal; font-size: 12px; color: var(--gris); }
+.lt-comparacion-res { grid-column: 1 / -1; flex-direction: row !important; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; }
+.lt-comparacion.ok .lt-comparacion-res { color: var(--verde); }
+.lt-comparacion.error .lt-comparacion-res { color: var(--peligro); }
+.lt-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; align-items: end; }
+.lt-form .btn { grid-column: 1 / -1; }
+@media (max-width: 1399.98px) { .lt-etapas { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+@media (max-width: 991.98px) {
+  .lt-etapas { grid-template-columns: minmax(0, 1fr); }
+  .lt-pasos { grid-template-columns: minmax(0, 1fr); }
+  .lt-paso::after { display: none; }
+}

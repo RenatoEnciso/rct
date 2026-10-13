@@ -11,7 +11,12 @@
     soles: function (n) { return (Math.round(n) < 0 ? '−S/ ' : 'S/ ') + miles(n); },
     pct:   function (n) { return n.toFixed(1) + '%'; },
     ratio: function (n) { return 'S/ ' + n.toFixed(2); },
-    num:   function (n) { return miles(n); }
+    num:   function (n) { return miles(n); },
+    // Formato peruano con céntimos: S/ 2 500,00
+    pe:    function (n) {
+      var neg = n < 0, p = Math.abs(n).toFixed(2).split('.');
+      return (neg ? '−' : '') + 'S/ ' + p[0].replace(/\B(?=(\d{3})+(?!\d))/g, NBSP) + ',' + p[1];
+    }
   };
   function corto(n) {
     if (Math.abs(n) >= 1e6) return 'S/ ' + (n / 1e6).toFixed(1) + ' M';

@@ -14,7 +14,7 @@ class DemoReset extends Command
     protected $signature = 'rct:demo-reset {--force : No pedir confirmación} {--sin-respaldo : Omitir el respaldo de la base}';
     protected $description = 'Respalda la base y regenera los datos de demostración (migrate:fresh --seed)';
 
-    private const CARPETAS = ['fud', 'sustentos', 'gobierno', 'importaciones', 'exportaciones'];
+    private const CARPETAS = ['fud', 'sustentos', 'gobierno', 'importaciones', 'exportaciones', 'impulso'];
 
     public function handle(): int
     {

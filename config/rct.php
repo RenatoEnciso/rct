@@ -82,6 +82,15 @@ return [
         'programa'       => 'IMPULSO MYPERÚ',
         'fuente_core'    => env('RCT_FUENTE_CORE', 'demo'),
         'margen_minutos' => 60,
+        'dias_candidato' => 90,              // días de atraso para ser candidato a honramiento
+        'codigo_ifi'     => '0109',          // código de la Caja ante COFIDE (supuesto)
+        // Factor de cobertura por monto desembolsado [hasta S/, factor] (supuesto; COFIDE lo confirma en su reporte)
+        'tramos_cobertura' => [[30000, 0.98], [90000, 0.95], [300000, 0.90], [null, 0.80]],
+        // Representantes ante COFIDE con firma digital (supuesto; nombres ficticios)
+        'representantes' => [
+            ['nombre' => 'Carlos Benites Alvarado', 'cargo' => 'Gerente de División de Negocios'],
+            ['nombre' => 'Rosa Elvira Campos Lázaro', 'cargo' => 'Gerente de Finanzas'],
+        ],
     ],
 
     /*
