@@ -209,9 +209,21 @@ class FudController extends Controller
 
         // Vista previa del aprobador que asignará el sistema
         $asignador = app(AsignadorAprobador::class);
-        $clientes->each(function ($c) use ($asignador, $request) {
+        // Análisis de recaída: beneficios anteriores del cliente (el más reciente primero)
+        $seguimientos = \App\Models\SeguimientoBeneficio::whereIn('cliente_cartera_id', $clientes->pluck('id'))
+            ->orderByDesc('fecha_beneficio')->get()->groupBy('cliente_cartera_id');
+        $clientes->each(function ($c) use ($asignador, $request, $seguimientos) {
             $apr = $asignador->asignar($c, $request->user()->id);
             $c->setAttribute('aprobador_asignado', $apr ? "{$apr->name} — {$apr->rol->nombre}" : null);
+
+            $hist = $seguimientos->get($c->id, collect());
+            $recaida = $hist->first(fn($s) => $s->fecha_recaida);
+            $c->setAttribute('recaida_previa', $recaida ? [
+                'ultimo'          => $recaida->is($hist->first()),
+                'dias'            => (int) $recaida->fecha_recaida->diffInDays(now()->startOfDay()),
+                'fecha_beneficio' => $recaida->fecha_beneficio->format('d/m/Y'),
+                'fecha_recaida'   => $recaida->fecha_recaida->format('d/m/Y'),
+            ] : null);
         });
 
         return response()->json($clientes);

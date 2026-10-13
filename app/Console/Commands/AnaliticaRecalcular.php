@@ -12,7 +12,8 @@ class AnaliticaRecalcular extends Command
     public function handle(GeneradorAnalitica $generador): int
     {
         $r = $generador->generar();
-        $this->table(['Recuperos', 'Metas', 'Priorizados', 'En seguimiento', 'Alertas'], [array_values($r)]);
+        $this->table(['Recuperos', 'Metas', 'Priorizados', 'En seguimiento', 'Alertas'],
+            [[$r['recuperos'], $r['metas'], $r['priorizacion'], $r['seguimiento'], $r['alertas']]]);
         return self::SUCCESS;
     }
 }

@@ -26,8 +26,8 @@ class GeneradorAnalitica
         return DB::transaction(fn() => [
             'recuperos'    => $this->recuperos(),
             'metas'        => $this->metas($hoy),
+            'seguimiento'  => $this->seguimiento($hoy),   // antes de priorizar: quien recayó no "cumplió su promesa"
             'priorizacion' => $this->priorizar($hoy),
-            'seguimiento'  => $this->seguimiento($hoy),
             'alertas'      => $this->alertas($hoy),
         ]);
     }
@@ -97,7 +97,8 @@ class GeneradorAnalitica
     {
         PriorizacionCartera::query()->delete();
         $cartera = ClienteCartera::disponibles()->get();
-        $cumplidos = Recupero::pluck('cliente_cartera_id')->flip()->map(fn() => true)->all();
+        $recayeron = SeguimientoBeneficio::whereNotNull('fecha_recaida')->pluck('cliente_cartera_id');
+        $cumplidos = Recupero::whereNotIn('cliente_cartera_id', $recayeron)->pluck('cliente_cartera_id')->flip()->map(fn() => true)->all();
 
         $ctx = [
             'saldos'      => $cartera->pluck('saldo_capital')->map(fn($v) => (float) $v)->sort()->values()->all(),

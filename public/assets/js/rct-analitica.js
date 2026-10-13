@@ -191,5 +191,40 @@
     actualizar();
   }
 
-  window.RCTAnalitica = { centroControl: centroControl, contadores: iniciarContadores, formato: formato };
+  /* ── Análisis de recaída: % al día a 30/60/90 días por mes del beneficio ── */
+  function recaida(d) {
+    baseChart();
+    var el = document.getElementById('chart-curva');
+    if (el) {
+      // Rampa ordinal de un solo tono: 30 días (claro) → 90 días (oscuro)
+      var series = [['d30', '30 días', '#8fb0dc'], ['d60', '60 días', '#4f7fc0'], ['d90', '90 días', '#1f4e8c']];
+      new Chart(el, {
+        type: 'line',
+        data: {
+          labels: d.curva.map(function (c) { return c.mes; }),
+          datasets: series.map(function (s) {
+            return { label: 'Al día a ' + s[1], data: d.curva.map(function (c) { return c[s[0]]; }), borderColor: s[2], backgroundColor: s[2],
+                     borderWidth: 2, pointRadius: 4, pointHoverRadius: 6, pointBorderColor: '#fff', pointBorderWidth: 2, tension: 0.25, spanGaps: false };
+          })
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          animation: { duration: 1100, easing: 'easeOutQuart' },
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { position: 'bottom' },
+            tooltip: { callbacks: { label: function (c) { return ' ' + c.dataset.label + ': ' + (c.parsed.y == null ? 'en curso' : c.parsed.y.toFixed(1) + '%'); } } }
+          },
+          scales: {
+            x: { grid: { display: false }, border: { color: '#cfd4da' } },
+            y: { min: 50, max: 100, border: { display: false }, grid: { color: COLOR.grid }, ticks: { callback: function (v) { return v + '%'; }, stepSize: 10 } }
+          }
+        }
+      });
+    }
+    iniciarContadores();
+    requestAnimationFrame(function () { document.body.classList.add('cc-listo'); });
+  }
+
+  window.RCTAnalitica = { centroControl: centroControl, recaida: recaida, contadores: iniciarContadores, formato: formato };
 })();

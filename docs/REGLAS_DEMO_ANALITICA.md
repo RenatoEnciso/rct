@@ -90,7 +90,7 @@ puntaje = 100 × (0.30·Pago + 0.25·Recuperable + 0.15·Provisión + 0.20·Umbr
 | Recuperable | percentil de (monto recuperable × Pago) dentro de la cartera |
 | Provisión | percentil de la provisión liberable |
 | Umbral | 1 si faltan 15 días o menos para pasar a la siguiente calificación (31, 61 y 121 días); baja a 0 en los 30 días siguientes |
-| Historial | 1 si ya cumplió un beneficio anterior (tiene un recupero) |
+| Historial | 1 si ya cumplió un beneficio anterior (tiene un recupero) y no recayó después |
 | ± 5 | ajuste determinista por crédito |
 
 - **Monto recuperable.** En pago de cuotas, el 25 % del saldo (las cuotas vencidas). En el resto, el saldo con el
@@ -148,6 +148,15 @@ probabilidad = base × multiplicador por calificación × (1.3 si tuvo 2 o más 
 - **Riesgo** = probabilidad × 100 (× 1.6 si tiene atraso leve) ± 5.
 - **Semáforo:** rojo si recayó o el riesgo es ≥ 40; ámbar si es ≥ 20; verde en el resto.
 - **Recuperación sostenida a 90 días** = beneficios que no recayeron / beneficios con 90 días cumplidos.
+- **Pantalla "Análisis de recaída"** (Jefatura y CZR):
+  - KPI de recuperación sostenida a 90 días;
+  - curva por mes del beneficio (% al día a 30, 60 y 90 días);
+  - % de recaída a 90 días por tipo de beneficio;
+  - los 10 beneficios de los últimos 90 días con mayor riesgo, con semáforo.
+- **Aviso en Nueva propuesta:** si el cliente recayó tras un beneficio, se muestra "Este cliente recayó tras su último
+  beneficio (hace N días)", con la fecha del pago y la de la recaída.
+- El análisis de recaída se calcula **antes** que la priorización, para que un cliente que recayó no figure con el
+  motivo "Cumplió última promesa".
 
 ### 4.5 Alertas de control (`AnomaliasDemo`)
 

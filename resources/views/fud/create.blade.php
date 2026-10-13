@@ -85,6 +85,7 @@
     <div class="card-title"><span class="badge badge-rojo">Paso 2</span> Datos del cliente seleccionado</div>
     <span class="badge badge-gray"><i class="bi bi-lock"></i> Información del sistema</span>
   </div>
+  <div class="notice-warning notice-recaida" id="aviso-recaida" role="alert" hidden></div>
   <div class="notice notice-prioridad" id="aviso-prioridad" hidden></div>
 
   <div class="detail-grid">
@@ -334,6 +335,15 @@
     set('info-autonomia', c.autonomia);
     set('info-lineamiento', c.lineamiento_campana);
     set('resumen-aprobador', c.aprobador_asignado ?? 'Sin aprobador disponible para este nivel');
+
+    // Análisis de recaída: el cliente ya recayó tras un beneficio
+    const rec = c.recaida_previa, avisoRec = document.getElementById('aviso-recaida');
+    avisoRec.hidden = !rec;
+    if (rec) {
+      avisoRec.innerHTML = `<i class="bi bi-arrow-repeat"></i><span><strong>Este cliente recayó tras ${rec.ultimo ? 'su último beneficio' : 'un beneficio anterior'}
+        (hace ${rec.dias} ${rec.dias === 1 ? 'día' : 'días'}).</strong> Pagó su beneficio el ${rec.fecha_beneficio} y volvió a atrasarse el ${rec.fecha_recaida}.
+        Evalúe si una nueva negociación logrará normalizarlo antes de otorgar otro beneficio.</span>`;
+    }
 
     // Modelo de priorización
     const pr = c.priorizacion, aviso = document.getElementById('aviso-prioridad');

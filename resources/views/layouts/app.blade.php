@@ -149,6 +149,9 @@
         <a class="nav-btn {{ request()->routeIs('priorizacion.*') ? 'active' : '' }}" href="{{ route('priorizacion.index') }}">
           <i class="bi bi-bullseye"></i> Priorización de cartera
         </a>
+        <a class="nav-btn {{ request()->routeIs('recaida.*') ? 'active' : '' }}" href="{{ route('recaida.index') }}">
+          <i class="bi bi-arrow-repeat"></i> Análisis de recaída
+        </a>
 
         <div class="nav-section-label">Aprobación y control</div>
         <a class="nav-btn {{ request()->routeIs('bandeja.*') ? 'active' : '' }}" href="{{ route('bandeja.index') }}">

@@ -180,7 +180,7 @@
           @if($analitica['sostenida'] !== null)
             <div class="cc-tile-valor" data-contar="{{ $analitica['sostenida'] }}" data-formato="pct">{{ number_format($analitica['sostenida'], 1) }}%</div>
             <div class="cc-tile-sub">de clientes al día tras el beneficio</div>
-            <div class="cc-tile-pie">Análisis de recaída · {{ $analitica['seguimiento'] }} beneficios con 90 días</div>
+            <div class="cc-tile-pie">{{ $analitica['seguimiento'] }} beneficios con 90 días · <a href="{{ route('recaida.index', array_filter(['zona_id' => $zonaFija ? null : $zonaId])) }}">Ver análisis de recaída</a></div>
           @else
             <div class="cc-tile-valor text-gris">En curso</div>
             <div class="cc-tile-sub">Los beneficios aún no cumplen 90 días</div>

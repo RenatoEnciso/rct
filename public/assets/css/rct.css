@@ -1022,3 +1022,33 @@ body.modo-presentacion [data-modo-presentacion] { display: none; }
 .notice-prioridad .pr-chip { margin: 4px 2px 0 0; }
 .cc .card.cc-card.card-flush { padding: 0; }
 .cc .card.cc-card.card-flush > .card-head { padding: 20px 24px 4px; margin: 0; }
+
+/* ═══════════════════════════════════════════════════════════════
+   Analítica · Análisis de recaída
+═══════════════════════════════════════════════════════════════ */
+.rc-fila-1-2 { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); }
+.rc-hero { justify-content: center; background: linear-gradient(160deg, #fff 0%, #f6faf7 100%); }
+.rc-hero-label { font-size: 14px; font-weight: 600; color: var(--gris); }
+.rc-hero-valor { font-size: 72px; font-weight: 700; letter-spacing: -.03em; line-height: 1.05; color: var(--verde); margin: 8px 0 6px; font-variant-numeric: tabular-nums; }
+.rc-hero-texto { font-size: 15px; color: var(--tinta); margin: 0 0 16px; max-width: 360px; }
+.rc-hero-barra { height: 12px; margin-bottom: 22px; }
+.rc-hero-datos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 18px; padding-top: 16px; border-top: 1px solid var(--borde); }
+.rc-hero-datos div { display: flex; flex-direction: column; }
+.rc-hero-datos strong { font-size: 20px; font-variant-numeric: tabular-nums; }
+.rc-hero-datos span { font-size: 12px; color: var(--gris); }
+.rc-tipos { display: flex; flex-direction: column; gap: 16px; }
+.cc-barra-fill.rc-recaida { background: var(--rojo); }
+.rc-lectura { display: flex; gap: 10px; align-items: flex-start; margin-top: 20px; padding: 12px 14px; border-radius: 8px; background: var(--azul-soft); border: 1px solid var(--azul-line); font-size: 13px; line-height: 1.45; }
+.rc-lectura .bi { color: var(--azul); font-size: 16px; }
+.rc-semaforo { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.rc-semaforo.rojo  { background: var(--peligro-soft); color: var(--peligro); }
+.rc-semaforo.ambar { background: var(--ambar-soft); color: var(--ambar); }
+.rc-semaforo.verde { background: var(--verde-soft); color: var(--verde); }
+.notice-recaida { margin: 0 0 16px; }
+@media (max-width: 1499.98px) {
+  .rc-fila-1-2 { grid-template-columns: minmax(0, 1fr); }
+  .rc-hero-datos { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 767.98px) {
+  .rc-hero-datos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
