@@ -45,6 +45,18 @@ class Avisos
 
     // ── Eventos ──────────────────────────────────────────────
 
+    /** Expediente observado: correo a la tienda responsable (la campana ya muestra el aviso). */
+    public function expedienteObservado(\App\Models\ExpedienteGobierno $e, \App\Models\ExpedienteGobiernoDoc $doc, string $comentario): void
+    {
+        $tienda = User::with('rol')->where('tienda_id', $e->tienda_id)->get()->filter(fn($u) => $u->esGrupoFud());
+        $this->enviar($tienda, [
+            'evento' => 'expediente_observado', 'titulo' => 'Expediente de honramiento observado: '.$e->cliente,
+            'mensaje' => '«'.($doc->tipo->nombre ?? $doc->tipo_doc).'» observado: '.$comentario.' Corríjalo y vuelva a cargarlo en PDF.',
+            'url' => route('gobierno.show', $e), 'campana' => false, 'correo' => true,
+            'detalle' => [['ID', $e->id_externo], ['Crédito', $e->credito_sicmact], ['Documento', $doc->tipo->nombre ?? $doc->tipo_doc]],
+        ]);
+    }
+
     /** Pago detectado en el core para un crédito del programa. */
     public function pagoSincronizado(\App\Models\PagoPrograma $pago): void
     {

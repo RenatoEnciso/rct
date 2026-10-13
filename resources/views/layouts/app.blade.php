@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="csrf-token" content="{{ csrf_token() }}">
+<meta name="rct-avisos-url" content="{{ route('notificaciones.recientes') }}">
+<meta name="rct-avisos-desde" content="{{ now()->toIso8601String() }}">
 <title>@yield('title', 'Inicio') · RCT Recuperaciones · Caja Trujillo</title>
 
 <link href="{{ asset('vendor/inter/inter.css') }}" rel="stylesheet">
@@ -113,7 +115,7 @@
       <a class="nav-btn {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
         <i class="bi bi-grid"></i> Mi panel
       </a>
-      <a class="nav-btn {{ request()->routeIs('notificaciones.*') ? 'active' : '' }}" href="{{ route('notificaciones.index') }}">
+      <a class="nav-btn {{ request()->routeIs('notificaciones.*') ? 'active' : '' }}" href="{{ route('notificaciones.index') }}" id="nav-notif">
         <i class="bi bi-bell"></i> Notificaciones
         @if($notifNoLeidas->count()) <span class="nav-count">{{ $notifNoLeidas->count() }}</span> @endif
       </a>

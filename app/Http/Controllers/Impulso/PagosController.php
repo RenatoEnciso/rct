@@ -51,6 +51,16 @@ class PagosController extends Controller
         ]);
     }
 
+    /** Demo: inserta un pago en el core y sincroniza; el aviso llega a la pantalla sin recargar. */
+    public function simular(Request $request, \App\Services\Impulso\SimuladorCore $simulador)
+    {
+        abort_unless(self::esAdministrador($request->user()), 403);
+        $r = $simulador->simularPago(null, null, $request->boolean('honrado', true), $request->user()->id);
+        $p = PagoPrograma::with('expediente')->where('id_core', $r['pago']->id_core)->first();
+        return response()->json(['ok' => true, 'mensaje' => 'Pago '.$r['pago']->id_core.' de '.($p?->expediente?->cliente ?? $r['pago']->credito_sicmact)
+            .' sincronizado desde el core: '.$p?->estado.'.']);
+    }
+
     /** Administrador de la demo (config rct.impulso.administradores): puede simular pagos del core. */
     public static function esAdministrador($u): bool
     {

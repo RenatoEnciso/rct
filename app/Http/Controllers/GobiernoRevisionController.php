@@ -40,6 +40,7 @@ class GobiernoRevisionController extends Controller
             $e->forceFill(['revisado_zona_en' => null, 'revisado_central_en' => null])->saveQuietly();
         }
         $e->recalcularEstado();
+        if ($request->resultado === 'observado') app(\App\Services\Impulso\Avisos::class)->expedienteObservado($e, $documento, (string) $request->comentario);
 
         $nombre = $documento->tipo->nombre_corto ?? $documento->tipo_doc;
         return back()->with($request->resultado === 'conforme' ? 'success' : 'warning',

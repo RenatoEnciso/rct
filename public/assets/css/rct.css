@@ -917,7 +917,7 @@ a.file-chip:hover { border-color: var(--borde-fuerte); background: var(--sutil);
 body.modo-presentacion .rct-header,
 body.modo-presentacion .rct-sidebar,
 body.modo-presentacion #asistente-widget,
-body.modo-presentacion .toast-rct { display: none !important; }
+body.modo-presentacion .toast-rct:not(.en-vivo) { display: none !important; }
 body.modo-presentacion .rct-main { margin-left: 0; padding: 36px 48px 48px; zoom: 1.08; }
 body.modo-presentacion .rct-layout { padding-top: 0; }
 body.modo-presentacion .cc { max-width: none; }
@@ -1224,3 +1224,11 @@ body.modo-presentacion [data-modo-presentacion] { display: none; }
 .pg-solo-lectura { display: flex; align-items: center; gap: 10px; padding: 11px 16px; margin-bottom: 16px; border-radius: 8px;
   background: var(--azul-soft); border: 1px solid var(--azul-line); color: #1d3f6e; font-size: 13px; }
 .pg-solo-lectura .bi { font-size: 16px; }
+
+/* Avisos en vivo (pagos sincronizados, honramiento, cruce TXT) */
+.toast-rct.en-vivo { box-shadow: 0 10px 30px rgba(16, 24, 40, .18); }
+.toast-rct.en-vivo .toast-body strong { font-size: 14px; }
+.toast-rct.en-vivo .toast-body span { font-size: 13px; color: var(--tinta); }
+body.modo-presentacion .toasts { top: 18px; }
+.notif-count.pulso, .nav-count.pulso { animation: notif-pulso .9s ease 2; }
+@keyframes notif-pulso { 50% { transform: scale(1.35); } }

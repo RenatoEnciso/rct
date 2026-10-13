@@ -96,3 +96,20 @@
   </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+(function () {
+  var b = document.getElementById('btn-simular');
+  if (!b) return;
+  b.addEventListener('click', function () {
+    b.disabled = true;
+    b.innerHTML = '<span class="spinner"></span> Sincronizando con el core…';
+    fetch(b.dataset.url, { method: 'POST', headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content } })
+      .then(function (r) { return r.json(); })
+      .then(function () { return window.rctRevisarAvisos && window.rctRevisarAvisos(); })
+      .finally(function () { b.disabled = false; b.innerHTML = '<i class="bi bi-lightning-charge"></i> Simular pago del core'; });
+  });
+})();
+</script>
+@endpush

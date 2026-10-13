@@ -250,4 +250,59 @@
     if (e.key === 'Escape' && document.body.classList.contains('modo-presentacion')) modoPresentacion(false);
   });
   if (document.body.classList.contains('modo-presentacion')) modoPresentacion(true);
+
+  /* ── Avisos en vivo: consulta cada 10 s, sin recargar (pagos sincronizados, honramiento, cruce TXT) ── */
+  var urlAvisos = (document.querySelector('meta[name=rct-avisos-url]') || {}).content;
+  var desdeAvisos = (document.querySelector('meta[name=rct-avisos-desde]') || {}).content;
+  function contador(el, n, clase) {
+    if (!el) return;
+    var c = el.querySelector('.' + clase);
+    if (!n) { c && c.remove(); return; }
+    if (!c) { c = document.createElement('span'); c.className = clase; el.appendChild(c); }
+    c.textContent = n > 99 ? '99+' : n;
+    c.classList.remove('pulso'); void c.offsetWidth; c.classList.add('pulso');
+  }
+  function toastEnVivo(n) {
+    var cont = document.getElementById('toasts');
+    if (!cont) { cont = document.createElement('div'); cont.id = 'toasts'; cont.className = 'toasts'; cont.setAttribute('aria-live', 'polite'); document.body.appendChild(cont); }
+    var t = document.createElement('div');
+    t.className = 'toast-rct en-vivo ' + esc(n.color);
+    t.innerHTML = '<span class="notif-ico ' + esc(n.color) + '"><i class="bi ' + esc(n.icono) + '"></i></span>'
+      + '<a href="' + esc(n.url) + '" class="toast-body" data-clave="' + esc(n.clave) + '"><strong>' + esc(n.titulo) + '</strong><span>' + esc(n.mensaje) + '</span></a>'
+      + '<button type="button" class="toast-close" aria-label="Cerrar"><i class="bi bi-x-lg"></i></button><span class="toast-bar"></span>';
+    cont.prepend(t);
+    var cerrar = function () { t.classList.add('saliendo'); setTimeout(function () { t.remove(); }, 300); };
+    t.querySelector('.toast-close').addEventListener('click', cerrar);
+    setTimeout(cerrar, 9000);
+  }
+  function agregarALaCampana(n) {
+    var lista = document.querySelector('#notif-panel .notif-list');
+    if (!lista) return;
+    var vacio = lista.querySelector('.empty-state'); vacio && vacio.remove();
+    var a = document.createElement('a');
+    a.href = n.url; a.className = 'notif-item unread'; a.setAttribute('data-clave', n.clave); a.setAttribute('data-cat', n.categoria);
+    a.innerHTML = '<span class="notif-ico ' + esc(n.color) + '"><i class="bi ' + esc(n.icono) + '"></i></span><span class="notif-body"><span class="notif-title">'
+      + esc(n.titulo) + '</span><span class="notif-msg">' + esc(n.mensaje) + '</span><span class="notif-time">hace instantes</span></span>';
+    lista.prepend(a);
+  }
+  function revisarAvisos() {
+    if (!urlAvisos || document.hidden && !revisarAvisos.forzar) return Promise.resolve();
+    revisarAvisos.forzar = false;
+    return fetch(urlAvisos + '?desde=' + encodeURIComponent(desdeAvisos), { headers: { 'Accept': 'application/json' } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (!d) return;
+        desdeAvisos = d.ahora;
+        d.nuevas.forEach(function (n, i) {
+          agregarALaCampana(n);
+          if (n.toast) setTimeout(function () { toastEnVivo(n); }, i * 400);
+        });
+        if (d.no_leidas !== null) {
+          contador(document.getElementById('notif-btn'), d.no_leidas, 'notif-count');
+          contador(document.getElementById('nav-notif'), d.no_leidas, 'nav-count');
+        }
+      }).catch(function () {});
+  }
+  window.rctRevisarAvisos = function () { revisarAvisos.forzar = true; return revisarAvisos(); };
+  if (urlAvisos) setInterval(revisarAvisos, 10000);
 })();

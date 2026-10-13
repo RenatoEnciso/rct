@@ -19,6 +19,25 @@ class NotificacionesController extends Controller
         return view('notificaciones.index', compact('notificaciones', 'conteo', 'todas'));
     }
 
+    /** Avisos nuevos desde un momento dado (consulta periódica de la página, sin recargar). */
+    public function recientes(Request $request, Notificaciones $servicio)
+    {
+        $u = $request->user();
+        try { $desde = \Illuminate\Support\Carbon::parse((string) $request->input('desde')); } catch (\Throwable) { $desde = now()->subMinute(); }
+        $lista = $u->notifications()->where('created_at', '>', $desde)->oldest()->limit(5)->get();
+        $nuevas = $lista->map(fn($n) => [
+                'clave' => 'n-'.$n->id, 'titulo' => $n->data['titulo'] ?? 'Aviso', 'mensaje' => $n->data['mensaje'] ?? '',
+                'url' => $n->data['url'] ?? route('notificaciones.index'), 'icono' => $n->data['icono'] ?? 'bi-bell',
+                'color' => $n->data['color'] ?? 'info', 'toast' => (bool) ($n->data['toast'] ?? false),
+                'categoria' => $n->data['categoria'] ?? 'gobierno', 'fecha' => $n->created_at->format('d/m/Y H:i'),
+            ]);
+        return response()->json([
+            'ahora' => ($lista->last()?->created_at ?? $desde)->toIso8601String(),
+            'nuevas' => $nuevas->values(),
+            'no_leidas' => $nuevas->isNotEmpty() ? $servicio->noLeidas($u) : null,
+        ]);
+    }
+
     // Marca como leída y devuelve el destino (tomado de la propia notificación, nunca del request)
     public function leer(Request $request, Notificaciones $servicio)
     {

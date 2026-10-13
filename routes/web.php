@@ -38,6 +38,7 @@ Route::middleware('auth')->group(function () {
     // Notificaciones
     Route::get('/notificaciones', [NotificacionesController::class, 'index'])->name('notificaciones.index');
     Route::post('/notificaciones/leer', [NotificacionesController::class, 'leer'])->name('notificaciones.leer');
+    Route::get('/notificaciones/recientes', [NotificacionesController::class, 'recientes'])->name('notificaciones.recientes');
     Route::post('/notificaciones/leer-todas', [NotificacionesController::class, 'leerTodas'])->name('notificaciones.leer-todas');
 
     // ── FUD (grupo fud) ──────────────────────────────────────
@@ -115,6 +116,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/lotes/{lote}/firma',           [$L, 'firma'])->name('lotes.firma');
         Route::post('/lotes/{lote}/confirmar',       [$L, 'confirmar'])->name('lotes.confirmar');
         Route::get('/pagos',           [\App\Http\Controllers\Impulso\PagosController::class, 'index'])->name('pagos');
+        Route::post('/pagos/simular',  [\App\Http\Controllers\Impulso\PagosController::class, 'simular'])->name('pagos.simular');
         Route::get('/matriz',          [\App\Http\Controllers\Impulso\BaseMatrizController::class, 'index'])->name('matriz');
         Route::get('/matriz/exportar', [\App\Http\Controllers\Impulso\BaseMatrizController::class, 'exportar'])->name('matriz.exportar');
         $H = \App\Http\Controllers\Impulso\HonramientoController::class;
