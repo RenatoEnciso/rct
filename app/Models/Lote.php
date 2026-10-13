@@ -48,6 +48,13 @@ class Lote extends Model
         return collect(config('rct.impulso.representantes'))->every(fn($r) => $firmas->contains(fn($f) => $f['nombre'] === $r['nombre']));
     }
 
+    /** Nombre para mensajes: "Lote 011" (el código del área ya incluye la palabra Lote). */
+    public function nombre(): string
+    {
+        $n = preg_replace('/\D/', '', (string) $this->codigo);
+        return $n !== '' ? 'Lote '.$n : (string) $this->codigo;
+    }
+
     public function esHonrado(): bool { return in_array($this->estado, ['Honrado', 'Honrado parcial']); }
 
     public function expedientes()

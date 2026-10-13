@@ -23,7 +23,7 @@ class Notificaciones
     {
         if (isset(self::$cache[$u->id])) return self::$cache[$u->id];
 
-        $items = $u->esGrupoFud() ? $this->ejecutivo($u) : $this->aprobador($u);
+        $items = ($u->esGrupoFud() ? $this->ejecutivo($u) : $this->aprobador($u))->merge($this->guardadas($u));
 
         $leidas = DB::table('notificacion_lecturas')->where('user_id', $u->id)
             ->whereIn('clave', $items->pluck('clave'))->pluck('clave')->flip();
@@ -234,6 +234,15 @@ class Notificaciones
     }
 
     // ── Utilidades ───────────────────────────────────────────
+
+    /** Avisos enviados con el sistema de notificaciones de Laravel (canal database), p. ej. los de Impulso MyPerú. */
+    private function guardadas(User $u): Collection
+    {
+        return $u->notifications()->where('created_at', '>=', now()->subDays($this->ventana()))->latest()->limit(60)->get()
+            ->map(fn($n) => $this->item('n-'.$n->id, $n->data['categoria'] ?? 'gobierno', $n->created_at,
+                $n->data['url'] ?? route('gobierno.index'), $n->data['titulo'] ?? 'Aviso', $n->data['mensaje'] ?? '',
+                $n->data['icono'] ?? 'bi-bank', $n->data['color'] ?? 'info'));
+    }
 
     private function item(string $clave, string $categoria, $fecha, string $url, string $titulo, string $mensaje, string $icono, string $color): array
     {

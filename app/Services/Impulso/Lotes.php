@@ -72,7 +72,7 @@ class Lotes
             }
             $this->recalcularTotales($lote);
             Seguimiento::registrar($usuario->id, 'Lote de honramiento', 'En preparación', null, null, $lote->codigo,
-                "Lote {$lote->codigo} armado con {$lote->registros_rct} créditos (corte {$corte->format('d/m/Y')}).");
+                "{$lote->nombre()} armado con {$lote->registros_rct} créditos (corte {$corte->format('d/m/Y')}).");
             return $lote;
         });
     }
@@ -103,7 +103,7 @@ class Lotes
         if ($lote->firmasCompletas() && in_array($lote->estado, ['En preparación', 'Pendiente de firma'])) $lote->estado = 'Firmado';
         $lote->save();
         Seguimiento::registrar($usuario->id, 'Firma digital de lote', $lote->estado, null, null, $lote->codigo,
-            "{$rep['nombre']} ({$rep['cargo']}) autorizó el uso de su firma digital para el lote {$lote->codigo}.");
+            "{$rep['nombre']} ({$rep['cargo']}) autorizó el uso de su firma digital para el {$lote->nombre()}.");
     }
 
     /**
@@ -123,8 +123,9 @@ class Lotes
         $lote->save();
 
         Seguimiento::registrar($usuario->id, 'Confirmación COFIDE', $lote->estado, null, null, $lote->codigo, $ok
-            ? "COFIDE confirmó {$registros} registros y el saldo insoluto del lote {$lote->codigo}: coincide con RCT."
+            ? "COFIDE confirmó {$registros} registros y el saldo insoluto del {$lote->nombre()}: coincide con RCT."
             : "COFIDE confirmó {$registros} registros (RCT: {$lote->registros_rct}) y saldo {$saldo} (RCT: {$lote->saldo_rct}): hay diferencias.");
+        if (!$ok) app(Avisos::class)->loteConDiferencia($lote);
         return $ok;
     }
 

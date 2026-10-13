@@ -46,7 +46,7 @@ class DocumentosLote
         $s->addText('CORPORACIÓN FINANCIERA DE DESARROLLO S.A. – COFIDE', ['bold' => true]);
         $s->addText('Gerencia de Programas de Garantía');
         $s->addTextBreak();
-        $s->addText('Asunto: Solicitud de honramiento de garantías – Programa '.ucwords(mb_strtolower($lote->programa ?? 'Impulso MyPerú')).' – '.$lote->codigo, ['bold' => true]);
+        $s->addText('Asunto: Solicitud de honramiento de garantías – Programa '.ucwords(mb_strtolower($lote->programa ?? 'Impulso MyPerú')).' – '.$lote->nombre(), ['bold' => true]);
         $s->addTextBreak();
         $s->addText('De nuestra consideración:');
         $s->addText('Por medio de la presente, en el marco del Programa '.($lote->programa ?? 'IMPULSO MYPERÚ').', solicitamos el honramiento de las '

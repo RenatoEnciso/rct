@@ -86,6 +86,11 @@ return [
         'codigo_ifi'     => '0109',          // código de la Caja ante COFIDE (supuesto)
         // Factor de cobertura por monto desembolsado [hasta S/, factor] (supuesto; COFIDE lo confirma en su reporte)
         'tramos_cobertura' => [[30000, 0.98], [90000, 0.95], [300000, 0.90], [null, 0.80]],
+        // Destinatarios de los avisos (sección 5): el revisor de programas hoy es la Jefatura de Recuperaciones
+        'revisores'      => ['jefe@cajatrujillo.pe'],
+        'contabilidad'   => ['contabilidad@cajatrujillo.pe'],
+        // Nombre de archivo que se comunica a las agencias (supuesto)
+        'formato_archivo' => '{N° CRÉDITO}_{DOCUMENTO}.pdf',
         // Representantes ante COFIDE con firma digital (supuesto; nombres ficticios)
         'representantes' => [
             ['nombre' => 'Carlos Benites Alvarado', 'cargo' => 'Gerente de División de Negocios'],

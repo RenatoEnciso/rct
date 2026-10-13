@@ -32,7 +32,7 @@ class LotesController extends Controller
         } catch (\DomainException $e) {
             return back()->with('error', $e->getMessage());
         }
-        return redirect()->route('impulso.lotes.show', $lote)->with('success', "Lote {$lote->codigo} armado con {$lote->registros_rct} créditos.");
+        return redirect()->route('impulso.lotes.show', $lote)->with('success', "{$lote->nombre()} armado con {$lote->registros_rct} créditos.");
     }
 
     public function index(Request $request)

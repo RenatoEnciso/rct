@@ -113,6 +113,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/lotes/{lote}/descargar/{tipo}', [$L, 'descargar'])->name('lotes.descargar');
         Route::post('/lotes/{lote}/firma',           [$L, 'firma'])->name('lotes.firma');
         Route::post('/lotes/{lote}/confirmar',       [$L, 'confirmar'])->name('lotes.confirmar');
+        $H = \App\Http\Controllers\Impulso\HonramientoController::class;
+        Route::post('/lotes/{lote}/honramiento',           [$H, 'previsualizar'])->name('honramiento.previsualizar');
+        Route::post('/lotes/{lote}/honramiento/confirmar', [$H, 'confirmar'])->name('honramiento.confirmar');
+        Route::get('/lotes/{lote}/honramiento/ejemplo',    [$H, 'ejemplo'])->name('honramiento.ejemplo');
+        Route::post('/lotes/{lote}/honramiento/avisar',    [$H, 'avisar'])->name('honramiento.avisar');
     });
 
     // ── Programas de gobierno: expedientes de honramiento ────

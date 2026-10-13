@@ -12,6 +12,7 @@
   $firmas = collect($lote->firmas ?? [])->keyBy('nombre');
   $montoHonrar = Calculos::sumar($expedientes->pluck('monto_honrado'));
   $badge = ['Solicitado' => 'badge-info', 'Honrado' => 'badge-ok', 'No honrado' => 'badge-danger'];
+  $nj = $expedientes->where('tipo_persona', 'juridica')->count();
 @endphp
 <div class="cc">
   <div class="page-head cc-head">
@@ -36,7 +37,7 @@
   <div class="cc-kpis pr-kpis">
     <div class="cc-kpi cc-aparece" style="--i:1"><div class="cc-kpi-ico azul"><i class="bi bi-list-ol"></i></div>
       <div class="cc-kpi-label">Registros (RCT)</div><div class="cc-kpi-valor">{{ $lote->registros_rct }}</div>
-      <div class="cc-kpi-sub">@php $nj = $expedientes->where('tipo_persona', 'juridica')->count(); @endphp{{ $nj }} {{ $nj === 1 ? 'persona jurídica' : 'personas jurídicas' }}</div></div>
+      <div class="cc-kpi-sub">{{ $nj }} {{ $nj === 1 ? 'persona jurídica' : 'personas jurídicas' }}</div></div>
     <div class="cc-kpi cc-aparece" style="--i:2"><div class="cc-kpi-ico rojo"><i class="bi bi-cash-stack"></i></div>
       <div class="cc-kpi-label">Saldo insoluto total (RCT)</div><div class="cc-kpi-valor">{{ Estilo::solesPe($lote->saldo_rct) }}</div>
       <div class="cc-kpi-sub">Σ saldo insoluto de los créditos</div></div>
