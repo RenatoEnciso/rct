@@ -2,7 +2,7 @@
 namespace App\Services\Analitica\Demo;
 
 use App\Contracts\Analitica\DetectorAnomalias;
-use App\Models\{ExpedienteGobierno, PropuestaFud, SustentoDocumento, Tienda, User, Zona};
+use App\Models\{PropuestaFud, SustentoDocumento, Tienda, User, Zona};
 use App\Services\Analitica\Determinista;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -29,9 +29,7 @@ class AnomaliasDemo implements DetectorAnomalias
             $this->aprobacionEnMinutos($fuds),
             $this->excepcionesPorTienda($fuds),
             $this->beneficiosConsecutivos($fuds),
-            $this->mismaFirma(),
             $this->cargaFueraDeHorario(),
-            $this->honramientoVencido(),
         );
     }
 
@@ -115,7 +113,7 @@ class AnomaliasDemo implements DetectorAnomalias
                 ->map(fn($x, $id) => ['etiqueta' => $tiendas[$id]->nombre, 'valor' => round($share($x) * 100, 1), 'destacar' => $id == $tid])
                 ->sortByDesc('valor')->values()->all();
 
-            $out[] = $this->alerta('excepciones_tienda', $obs >= 0.3 ? 'Alta' : 'Media', 'tienda', $t->id, $t->nombre, $t->zona_id,
+            $out[] = $this->alerta('excepciones_tienda', $obs >= 0.4 ? 'Alta' : 'Media', 'tienda', $t->id, $t->nombre, $t->zona_id,
                 "Excepciones concentradas en {$t->nombre}",
                 "{$k} de las {$c->count()} propuestas de la tienda {$t->nombre} se tramitaron como excepción (operación especial), "
                 .'frente a '.$this->pct($refOtras).' en el resto de tiendas. Revisar el sustento de las excepciones.',
@@ -131,43 +129,21 @@ class AnomaliasDemo implements DetectorAnomalias
         $candidatos = $fuds->where('estado_fud', 'Aprobado')->groupBy('cliente_cartera_id')
             ->filter(fn($c) => $c->count() >= 2
                 && Carbon::parse($c->min('fecha_envio'))->diffInDays(Carbon::parse($c->max('fecha_envio'))) >= 60)
-            ->sortByDesc(fn($c) => $c->first()->cliente->saldo_capital)->take(5);
+            ->sortByDesc(fn($c) => $c->first()->cliente->saldo_capital)->take(2);
 
         $out = [];
         foreach ($candidatos as $cid => $c) {
             $cli = $c->first()->cliente;
             $n = $c->count();
             $lista = $c->sortBy('fecha_envio')->map(fn($f) => Carbon::parse($f->fecha_envio)->format('d/m/Y').' ('.$f->tipo_negociacion_desc.')')->implode(', ');
-            $out[] = $this->alerta('beneficios_consecutivos', $n >= 3 ? 'Alta' : 'Media', 'cliente', $cli->id, $cli->nombre_cliente, $cli->zona_id,
+            // Dos beneficios siguen dentro del límite de 4 en 12 meses: severidad baja; tres o más, media
+            $out[] = $this->alerta('beneficios_consecutivos', $n >= 3 ? 'Media' : 'Baja', 'cliente', $cli->id, $cli->nombre_cliente, $cli->zona_id,
                 'Cliente con beneficios en campañas consecutivas',
                 "El crédito {$cli->credito_sicmact} recibió {$n} beneficios aprobados: {$lista}. "
                 .'Evaluar si el beneficio está logrando normalizar al cliente antes de otorgar uno nuevo.',
                 'Beneficios aprobados en 12 meses', $n, 1, 'beneficios',
                 ['tipo' => 'linea_tiempo', 'items' => $c->sortBy('fecha_envio')->map(fn($f) => [
                     'fecha' => Carbon::parse($f->fecha_envio)->format('d/m/Y'), 'detalle' => $f->tipo_negociacion_desc, 'fud' => $f->id,
-                ])->values()->all()]);
-        }
-        return $out;
-    }
-
-    private function mismaFirma(): array
-    {
-        $docs = SustentoDocumento::whereNotNull('hash')->with('sustento.propuesta.cliente')->get()
-            ->filter(fn($d) => $d->sustento?->propuesta?->cliente);
-        $out = [];
-        foreach ($docs->groupBy('hash') as $grupo) {
-            $clientes = $grupo->map(fn($d) => $d->sustento->propuesta->cliente)->unique('id')->values();
-            if ($clientes->count() < 2) continue;
-            [$a, $b] = [$clientes[0], $clientes[1]];
-            $tipo = $grupo->first()->tipo_doc;
-            $out[] = $this->alerta('misma_firma', 'Alta', 'cliente', $b->id, $b->nombre_cliente, $b->zona_id,
-                'Documentos con la misma firma en clientes distintos',
-                "El documento \"{$tipo}\" cargado para {$b->nombre_cliente} ({$b->credito_sicmact}) tiene la misma firma digital que el de "
-                ."{$a->nombre_cliente} ({$a->credito_sicmact}). Verificar la autenticidad de ambos sustentos.",
-                'Clientes que comparten el mismo documento', $clientes->count(), 1, 'clientes',
-                ['tipo' => 'documentos', 'items' => $grupo->map(fn($d) => [
-                    'cliente' => $d->sustento->propuesta->cliente->nombre_cliente, 'archivo' => $d->nombre_archivo,
-                    'fecha' => $d->cargado_en?->format('d/m/Y H:i'), 'fud' => $d->sustento->propuesta_fud_id,
                 ])->values()->all()]);
         }
         return $out;
@@ -191,7 +167,7 @@ class AnomaliasDemo implements DetectorAnomalias
             $zona = $u->tienda?->zona_id;
             $otros = $cargas->filter(fn($x) => $x->usuario != $uid && $this->zonaDe($x->usuario) === $zona);
             $ejemplo = $propias->filter($fuera)->sortByDesc('fecha')->first()->fecha;
-            $out[] = $this->alerta('carga_fuera_horario', 'Media', 'asesor', $u->id, $u->name, $zona,
+            $out[] = $this->alerta('carga_fuera_horario', $share($propias) >= 0.4 ? 'Media' : 'Baja', 'asesor', $u->id, $u->name, $zona,
                 'Carga de sustentos fuera del horario de atención',
                 "{$u->name} cargó {$k} de sus {$propias->count()} sustentos fuera del horario de atención (la más reciente el "
                 .$ejemplo->format('d/m/Y').' a las '.$ejemplo->format('H:i').'). En su zona el promedio es '.$this->pct($share($otros)).'.',
@@ -200,32 +176,6 @@ class AnomaliasDemo implements DetectorAnomalias
         }
         return $out;
     }
-
-    private function honramientoVencido(): array
-    {
-        $vencidos = ExpedienteGobierno::with('lote', 'tienda')->where('estado', 'Pendiente')->whereNotNull('tienda_id')->get()
-            ->filter(fn($e) => $e->situacionPlazo() === 'vencido');
-        $porTienda = $vencidos->groupBy('tienda_id');
-        $ref = $porTienda->count() ? $vencidos->count() / max(1, Tienda::count()) : 0;
-
-        $out = [];
-        foreach ($porTienda->sortByDesc(fn($c) => $c->count())->take(3) as $tid => $c) {
-            if ($c->count() < 2) continue;
-            $t = $c->first()->tienda;
-            $monto = $c->sum('monto_honrado');
-            $out[] = $this->alerta('honramiento_vencido', $c->count() >= 4 ? 'Media' : 'Baja', 'tienda', $t->id, $t->nombre, $t->zona_id,
-                "Expedientes de honramiento vencidos sin documentos en {$t->nombre}",
-                "{$c->count()} expedientes de programas de gobierno de la tienda {$t->nombre} superaron el plazo de 30 días sin cargar ningún documento "
-                .'(monto honrado S/ '.number_format($monto, 0, '.', ' ').'). Coordinar con el administrador de tienda.',
-                'Expedientes vencidos sin documentos', $c->count(), round($ref, 1), 'expedientes',
-                ['tipo' => 'barras', 'titulo' => 'Expedientes vencidos sin documentos por tienda',
-                 'items' => $porTienda->map(fn($x, $id) => ['etiqueta' => $x->first()->tienda->nombre, 'valor' => $x->count(), 'destacar' => $id == $tid])
-                    ->sortByDesc('valor')->take(8)->values()->all()]);
-        }
-        return $out;
-    }
-
-    // ── Utilidades ───────────────────────────────────────────
 
     private function alerta(string $tipo, string $sev, string $entTipo, int $entId, string $entNombre, ?int $zona, string $titulo,
                             string $desc, string $metrica, float $obs, float $ref, string $unidad, array $serie): array

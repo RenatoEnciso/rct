@@ -25,7 +25,6 @@ class AnaliticaSeeder extends Seeder
         $this->descuentoAlTope(['ejecutivo3@cajatrujillo.pe', 'senior2@cajatrujillo.pe']);
         $this->aprobacionEnMinutos(['ejecutivo4@cajatrujillo.pe', 'senior3@cajatrujillo.pe']);
         $this->excepciones(['Pucallpa' => 0.55, 'Bagua Chica' => 0.4]);
-        $this->mismaFirma(3);
         $this->fueraDeHorario(['ejecutivo7@cajatrujillo.pe' => 0.6, 'ejecutivo10@cajatrujillo.pe' => 0.45]);
 
         $r = app(GeneradorAnalitica::class)->generar();
@@ -76,18 +75,6 @@ class AnaliticaSeeder extends Seeder
                 $f->timestamps = false;
                 $f->update(['tipo_operacion' => 'ESPECIAL']);
             }
-        }
-    }
-
-    /** Mismo documento (misma firma digital) cargado en sustentos de clientes distintos. */
-    private function mismaFirma(int $pares): void
-    {
-        $docs = SustentoDocumento::where('tipo_doc', 'Acuerdo de Pago')->where('cargado_en', '>=', now()->subDays(60))
-            ->with('sustento.propuesta')->orderBy('id')->get()->values();
-        for ($i = 0; $i < $pares && $i * 7 + 3 < $docs->count(); $i++) {
-            [$a, $b] = [$docs[$i * 7], $docs[$i * 7 + 3]];
-            if ($a->sustento->propuesta->cliente_cartera_id === $b->sustento->propuesta->cliente_cartera_id) continue;
-            $b->update(['hash' => $a->hash]);
         }
     }
 

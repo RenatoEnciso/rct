@@ -164,13 +164,11 @@ Cada regla compara a la persona o tienda con el promedio de su zona o del resto.
 
 | Tipo | Regla | Severidad |
 | --- | --- | --- |
-| Descuento al tope | ≥ 5 propuestas de cuotas o cancelación, ≥ 60 % con el descuento máximo y ≥ 2 veces el promedio de la zona | Alta si ≥ 85 % |
+| Descuento al tope | ≥ 5 propuestas de cuotas o cancelación, ≥ 60 % con el descuento máximo y ≥ 2 veces el promedio de la zona | Alta si ≥ 85 %, si no Media |
 | Aprobación en minutos | ≥ 4 aprobaciones de un mismo asesor con promedio ≤ 15 min, y el aprobador demora ≥ 4 veces más con el resto | Alta |
-| Excepciones por tienda | ≥ 4 propuestas "ESPECIAL" y ≥ 3 veces el % del resto de tiendas | Alta si ≥ 30 % |
-| Beneficios consecutivos | ≥ 2 beneficios aprobados con ≥ 60 días de diferencia (5 de mayor saldo) | Alta si son ≥ 3 |
-| Misma firma | El mismo documento (hash) en sustentos de clientes distintos | Alta |
-| Carga fuera de horario | ≥ 3 cargas antes de las 7:00, desde las 21:00 o en domingo, que son ≥ 30 % de sus cargas | Media |
-| Honramiento vencido | ≥ 2 expedientes de gobierno Pendiente con el plazo de 30 días vencido (3 tiendas con más casos) | Media si son ≥ 4 |
+| Excepciones por tienda | ≥ 4 propuestas "ESPECIAL" y ≥ 3 veces el % del resto de tiendas | Alta si ≥ 40 %, si no Media |
+| Beneficios consecutivos | ≥ 2 beneficios aprobados con ≥ 60 días de diferencia (los 2 clientes de mayor saldo) | Baja con 2 (dentro del límite de 4), Media con 3 o más |
+| Carga fuera de horario | ≥ 3 cargas antes de las 7:00, desde las 21:00 o en domingo, que son ≥ 30 % de sus cargas | Media si ≥ 40 %, si no Baja |
 
 `AnaliticaSeeder` **siembra** estos patrones en los datos de la demo, para que las reglas los detecten y cuadren
 con lo que se ve en otras pantallas:
@@ -180,9 +178,15 @@ con lo que se ve en otras pantallas:
 | Descuento máximo en todos sus FUD | ejecutivo3 (Piura), senior2 (Villa El Salvador) |
 | Aprobación por el CZR en 3–9 minutos | ejecutivo4 (Tarapoto), senior3 (Centro Oriente) |
 | Excepciones concentradas | Pucallpa y Bagua Chica |
-| Mismo documento en clientes distintos | 3 pares de Acuerdos de Pago recientes |
 | Sustentos cargados de noche | ejecutivo7 (San Juan de Lurigancho), ejecutivo10 (Huánuco) |
 | Beneficios consecutivos | Clientes con FUD reciente que también tuvieron un beneficio entre enero y junio |
+
+Resultado con los datos de la demo: unas 11 alertas (4 de severidad alta, 4 media y 3 baja).
+
+**Pantallas (solo Jefatura y Gerencia, nivel ≥ 2):** bandeja "Alertas de control" con contador por severidad y filtros por
+estado, tipo y zona; detalle con la comparación "esta persona/tienda vs. promedio", gráfico (mensual para asesores, por
+asesor para aprobadores, por tienda para excepciones, línea de tiempo para clientes) y cambio de estado con comentario
+obligatorio, que se guarda en el historial de la alerta y en la bitácora.
 
 También deja algunas alertas gestionadas por la Jefatura (En revisión, Descartada o Confirmada, con comentario e
 historial). En la aplicación, el cambio de estado de una alerta se guarda de verdad.

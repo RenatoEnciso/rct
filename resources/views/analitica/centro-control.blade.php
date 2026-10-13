@@ -194,6 +194,9 @@
             <span class="cc-sev-item media"><i class="bi bi-exclamation-triangle"></i> {{ $analitica['alertas']['Media'] }} media</span>
             <span class="cc-sev-item baja"><i class="bi bi-info-circle"></i> {{ $analitica['alertas']['Baja'] }} baja</span>
           </div>
+          @if(auth()->user()->nivel() >= 2)
+            <div class="cc-tile-pie"><a href="{{ route('alertas.index', array_filter(['zona_id' => $zonaId])) }}">Ver alertas de control</a></div>
+          @endif
         </div>
       </div>
 

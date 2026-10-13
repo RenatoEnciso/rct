@@ -144,7 +144,10 @@ class GeneradorAnalitica
             $alerta->fill($a)->save();
             $vigentes[] = $alerta->id;
         }
-        AlertaControl::whereNotIn('id', $vigentes)->where('estado', 'Nueva')->delete();
+        // Se retiran las alertas nuevas que dejaron de cumplirse y las de reglas que ya no se aplican
+        $tipos = collect($detectadas)->pluck('tipo')->unique()->all();
+        AlertaControl::whereNotIn('id', $vigentes)
+            ->where(fn($q) => $q->where('estado', 'Nueva')->orWhereNotIn('tipo', $tipos))->delete();
         return count($detectadas);
     }
 }

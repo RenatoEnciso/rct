@@ -226,5 +226,49 @@
     requestAnimationFrame(function () { document.body.classList.add('cc-listo'); });
   }
 
-  window.RCTAnalitica = { centroControl: centroControl, recaida: recaida, contadores: iniciarContadores, formato: formato };
+  /* ── Detalle de alerta: esta persona / tienda frente a su referencia ── */
+  function alerta(d) {
+    requestAnimationFrame(function () { document.body.classList.add('cc-listo'); });
+    var el = document.getElementById('chart-alerta'), s = d.serie || {};
+    if (!el || !window.Chart) return;
+    baseChart();
+    var fmt = function (v) {
+      if (v == null) return 'sin datos';
+      if (d.unidad === 'min') return v >= 120 ? (v / 60).toFixed(1) + ' horas' : Math.round(v) + ' min';
+      return d.unidad === '%' ? v.toFixed(1) + '%' : String(v);
+    };
+    var ejeY = { beginAtZero: true, border: { display: false }, grid: { color: COLOR.grid },
+                 ticks: { callback: function (v) { return d.unidad === '%' ? v + '%' : (d.unidad === 'min' && v >= 120 ? Math.round(v / 60) + ' h' : v); } } };
+
+    if (s.tipo === 'mensual') {
+      // Dos series: la entidad (rojo institucional) y su referencia (gris neutro)
+      new Chart(el, {
+        type: 'bar',
+        data: { labels: s.etiquetas, datasets: [
+          { label: s.series[0].nombre, data: s.series[0].valores, backgroundColor: COLOR.prioridad, borderRadius: { topLeft: 4, topRight: 4 }, borderSkipped: 'bottom', maxBarThickness: 28 },
+          { label: s.series[1].nombre, data: s.series[1].valores, backgroundColor: '#b9c0ca', borderRadius: { topLeft: 4, topRight: 4 }, borderSkipped: 'bottom', maxBarThickness: 28 }
+        ] },
+        options: { responsive: true, maintainAspectRatio: false, animation: { duration: 1000, easing: 'easeOutQuart' },
+          datasets: { bar: { categoryPercentage: 0.66, barPercentage: 0.88 } },
+          interaction: { mode: 'index', intersect: false },
+          plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: function (c) { return ' ' + c.dataset.label + ': ' + fmt(c.parsed.y); } } } },
+          scales: { x: { grid: { display: false }, border: { color: '#cfd4da' } }, y: ejeY } }
+      });
+    } else if (s.tipo === 'barras') {
+      // Una sola serie: se resalta la entidad y el resto queda en gris
+      new Chart(el, {
+        type: 'bar',
+        data: { labels: s.items.map(function (i) { return i.etiqueta; }), datasets: [{
+          label: s.titulo || '', data: s.items.map(function (i) { return i.valor; }),
+          backgroundColor: s.items.map(function (i) { return i.destacar ? COLOR.prioridad : '#c9ced6'; }),
+          borderRadius: { topRight: 4, bottomRight: 4 }, borderSkipped: 'left', maxBarThickness: 26 }] },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, animation: { duration: 1000, easing: 'easeOutQuart' },
+          layout: { padding: { left: 4, right: 12 } },
+          plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (c) { return ' ' + fmt(c.parsed.x); } } } },
+          scales: { x: Object.assign({}, ejeY, { grid: { color: COLOR.grid } }), y: { grid: { display: false }, border: { color: '#cfd4da' }, afterFit: function (a) { a.width = Math.max(a.width, 170); } } } }
+      });
+    }
+  }
+
+  window.RCTAnalitica = { centroControl: centroControl, recaida: recaida, alerta: alerta, contadores: iniciarContadores, formato: formato };
 })();

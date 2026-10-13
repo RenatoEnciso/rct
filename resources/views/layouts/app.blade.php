@@ -152,6 +152,13 @@
         <a class="nav-btn {{ request()->routeIs('recaida.*') ? 'active' : '' }}" href="{{ route('recaida.index') }}">
           <i class="bi bi-arrow-repeat"></i> Análisis de recaída
         </a>
+        @if($user->nivel() >= 2)
+          @php $alertasAbiertas = \App\Models\AlertaControl::abiertas()->count(); @endphp
+          <a class="nav-btn {{ request()->routeIs('alertas.*') ? 'active' : '' }}" href="{{ route('alertas.index') }}">
+            <i class="bi bi-shield-exclamation"></i> Alertas de control
+            @if($alertasAbiertas) <span class="nav-count">{{ $alertasAbiertas }}</span> @endif
+          </a>
+        @endif
 
         <div class="nav-section-label">Aprobación y control</div>
         <a class="nav-btn {{ request()->routeIs('bandeja.*') ? 'active' : '' }}" href="{{ route('bandeja.index') }}">

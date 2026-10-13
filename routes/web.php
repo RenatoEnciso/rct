@@ -91,6 +91,11 @@ Route::middleware('auth')->group(function () {
         ->middleware('grupo:aprobador')->name('centro-control');
     Route::get('/priorizacion', [\App\Http\Controllers\PriorizacionController::class, 'index'])
         ->middleware('grupo:aprobador')->name('priorizacion.index');
+    Route::middleware('grupo:aprobador')->group(function () {
+        Route::get('/alertas',                  [\App\Http\Controllers\AlertasController::class, 'index'])->name('alertas.index');
+        Route::get('/alertas/{alerta}',         [\App\Http\Controllers\AlertasController::class, 'show'])->name('alertas.show');
+        Route::post('/alertas/{alerta}/estado', [\App\Http\Controllers\AlertasController::class, 'estado'])->name('alertas.estado');
+    });
     Route::get('/recaida', [\App\Http\Controllers\RecaidaController::class, 'index'])
         ->middleware('grupo:aprobador')->name('recaida.index');
     Route::get('/mi-prioridad', [\App\Http\Controllers\PriorizacionController::class, 'mia'])
