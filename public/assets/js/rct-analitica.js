@@ -275,5 +275,61 @@
     }
   }
 
-  window.RCTAnalitica = { centroControl: centroControl, recaida: recaida, alerta: alerta, contadores: iniciarContadores, formato: formato };
+  /* ── Devolución a COFIDE: animación del cruce TXT (filas en secuencia y diferencia que llega a su valor final) ── */
+  function cruce() {
+    iniciarContadores();
+    var hero = document.getElementById('dv-hero');
+    if (!hero || hero.getAttribute('data-animar') !== '1' || reducido) return;
+    var filas = [].slice.call(document.querySelectorAll('.dv-fila'));
+    var card = document.getElementById('dv-diferencia'), val = document.getElementById('dv-dif-val'), est = document.getElementById('dv-dif-estado');
+    var prog = document.getElementById('dv-progreso'), barra = prog.querySelector('.dv-progreso-barra span'), ptxt = prog.querySelector('.dv-progreso-txt');
+    var inicio = parseFloat(val.getAttribute('data-inicio')) || 0, final = parseFloat(val.getAttribute('data-final')) || 0;
+    var claseFinal = card.classList.contains('cuadra') ? 'cuadra' : 'error', estadoFinal = est.innerHTML;
+
+    // Estado inicial: todo por cruzar
+    card.classList.remove('cuadra', 'error'); card.classList.add('cruzando');
+    est.innerHTML = '<span class="spinner"></span> Cruzando crédito por crédito…';
+    val.textContent = formato.pe(inicio);
+    var originales = filas.map(function (f) {
+      var sem = f.querySelector('.dv-sem'), dif = f.querySelector('.dv-dif-celda');
+      var o = { sem: sem.outerHTML, dif: dif.innerHTML, clase: f.getAttribute('data-clase') };
+      f.classList.remove('ok', 'error'); f.classList.add('pend');
+      sem.outerHTML = '<span class="dv-sem pend"><i class="bi bi-three-dots"></i> Por cruzar</span>';
+      dif.innerHTML = '—';
+      return o;
+    });
+    prog.hidden = false;
+
+    var dur = Math.min(3200, Math.max(1600, filas.length * 70)), t0 = null, n = filas.length;
+    function paso(t) {
+      if (!t0) t0 = t;
+      var k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+      var hasta = Math.floor(k * n);
+      for (var i = 0; i < hasta; i++) {
+        if (filas[i].classList.contains('pend')) {
+          filas[i].querySelector('.dv-sem').outerHTML = originales[i].sem;
+          filas[i].querySelector('.dv-dif-celda').innerHTML = originales[i].dif;
+          filas[i].classList.remove('pend'); filas[i].classList.add(originales[i].clase, 'recien');
+        }
+      }
+      val.textContent = formato.pe(inicio + (final - inicio) * e);
+      barra.style.width = (k * 100) + '%';
+      ptxt.textContent = 'Cruzando ' + Math.min(n, hasta) + ' de ' + n + ' créditos';
+      if (k < 1) { requestAnimationFrame(paso); return; }
+      filas.forEach(function (f, i) {
+        if (f.classList.contains('pend')) {
+          f.querySelector('.dv-sem').outerHTML = originales[i].sem;
+          f.querySelector('.dv-dif-celda').innerHTML = originales[i].dif;
+          f.classList.remove('pend'); f.classList.add(originales[i].clase);
+        }
+      });
+      val.textContent = formato.pe(final);
+      card.classList.remove('cruzando'); card.classList.add(claseFinal, 'pop');
+      est.innerHTML = estadoFinal;
+      setTimeout(function () { prog.hidden = true; }, 600);
+    }
+    setTimeout(function () { requestAnimationFrame(paso); }, 700);
+  }
+
+  window.RCTAnalitica = { centroControl: centroControl, recaida: recaida, alerta: alerta, cruce: cruce, contadores: iniciarContadores, formato: formato };
 })();

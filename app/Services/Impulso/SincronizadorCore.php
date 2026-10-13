@@ -61,6 +61,7 @@ class SincronizadorCore
                 $this->avisos->candidatos($candidatos->map(fn($c) => (object) ['credito_sicmact' => $c->credito_sicmact, 'dias_atraso' => $c->dias_atraso]));
                 $candidatos->each->update(['notificado_en' => now()]);
                 foreach ($this->procesados as $pago) $this->avisos->pagoSincronizado($pago);
+                app(Devoluciones::class)->avisarPorVencer();
             }
         } catch (\Throwable $e) {
             $reg->fill(['finalizado_en' => now(), 'estado' => 'error', 'mensaje' => $e->getMessage()])->save();

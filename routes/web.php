@@ -115,6 +115,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/lotes/{lote}/descargar/{tipo}', [$L, 'descargar'])->name('lotes.descargar');
         Route::post('/lotes/{lote}/firma',           [$L, 'firma'])->name('lotes.firma');
         Route::post('/lotes/{lote}/confirmar',       [$L, 'confirmar'])->name('lotes.confirmar');
+        $D = \App\Http\Controllers\Impulso\DevolucionesController::class;
+        Route::get('/devoluciones',                        [$D, 'index'])->name('devoluciones');
+        Route::post('/devoluciones',                       [$D, 'generar'])->name('devoluciones.generar');
+        Route::get('/devoluciones/{devolucion}',           [$D, 'show'])->name('devoluciones.show');
+        Route::post('/devoluciones/{devolucion}/cruzar',   [$D, 'cruzar'])->name('devoluciones.cruzar');
+        Route::post('/devoluciones/{devolucion}/cerrar',   [$D, 'cerrar'])->name('devoluciones.cerrar');
+        Route::get('/devoluciones/{devolucion}/txt-ejemplo', [$D, 'txtEjemplo'])->name('devoluciones.txt-ejemplo');
+        Route::get('/devoluciones/{devolucion}/txt',       [$D, 'txt'])->name('devoluciones.txt');
         Route::get('/pagos',           [\App\Http\Controllers\Impulso\PagosController::class, 'index'])->name('pagos');
         Route::post('/pagos/simular',  [\App\Http\Controllers\Impulso\PagosController::class, 'simular'])->name('pagos.simular');
         Route::get('/matriz',          [\App\Http\Controllers\Impulso\BaseMatrizController::class, 'index'])->name('matriz');

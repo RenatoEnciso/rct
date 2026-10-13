@@ -57,6 +57,31 @@ class Avisos
         ]);
     }
 
+    /** Cruce TXT con diferencias: pantalla, campana y correo al revisor y al Jefe. */
+    public function cruceConDiferencias(\App\Models\DevolucionCofide $dev): void
+    {
+        $this->enviar($this->revisores()->merge($this->jefes()), [
+            'evento' => 'cruce_diferencias', 'titulo' => 'Cruce TXT de '.$dev->nombrePeriodo().': '.$dev->n_diferencias.' diferencias',
+            'mensaje' => 'La notificación de COFIDE no cuadra con lo calculado por RCT. Diferencia: '.Estilo::solesPe($dev->diferencia)
+                .'. Resuélvalas antes de devolver.',
+            'url' => route('impulso.devoluciones.show', $dev), 'icono' => 'bi-x-octagon', 'color' => 'danger', 'toast' => true, 'correo' => true,
+            'detalle' => [['Calculado por RCT', Estilo::solesPe($dev->monto_calculado)], ['Notificado por COFIDE', Estilo::solesPe($dev->monto_notificado)],
+                          ['Diferencia', Estilo::solesPe($dev->diferencia)], ['Créditos con diferencia', (string) $dev->n_diferencias]],
+        ]);
+    }
+
+    /** Devolución próxima a vencer: campana y correo al revisor, al Jefe y a Contabilidad. */
+    public function devolucionPorVencer(\App\Models\DevolucionCofide $dev): void
+    {
+        $dias = $dev->diasParaVencer();
+        $this->enviar($this->revisores()->merge($this->jefes()), [
+            'evento' => 'devolucion_por_vencer', 'titulo' => 'Devolución a COFIDE de '.$dev->nombrePeriodo().($dias >= 0 ? ' vence en '.$dias.' días' : ' vencida'),
+            'mensaje' => 'Monto a devolver: '.Estilo::solesPe($dev->monto_calculado).'. Fecha límite: '.$dev->fecha_limite->format('d/m/Y').'.',
+            'url' => route('impulso.devoluciones.show', $dev), 'icono' => 'bi-alarm', 'color' => 'warn', 'correo' => true,
+            'detalle' => [['Periodo', $dev->nombrePeriodo()], ['Monto', Estilo::solesPe($dev->monto_calculado)], ['Fecha límite', $dev->fecha_limite->format('d/m/Y')], ['Estado', $dev->estado]],
+        ], (array) config('rct.impulso.contabilidad', []));
+    }
+
     /** Pago detectado en el core para un crédito del programa. */
     public function pagoSincronizado(\App\Models\PagoPrograma $pago): void
     {

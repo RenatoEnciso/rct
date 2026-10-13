@@ -89,6 +89,11 @@ return [
         // Destinatarios de los avisos (sección 5): el revisor de programas hoy es la Jefatura de Recuperaciones
         'revisores'      => ['jefe@cajatrujillo.pe'],
         'contabilidad'   => ['contabilidad@cajatrujillo.pe'],
+        // Devolución a COFIDE: día límite del mes siguiente y aviso previo (supuestos)
+        'dia_limite_devolucion'  => 15,
+        'dias_aviso_vencimiento' => 5,
+        // Formato del TXT de COFIDE (supuesto): separador y separador decimal
+        'txt' => ['separador' => '|', 'decimal' => '.'],
         // Administradores de la demo: ven el botón "Simular pago del core"
         'administradores' => ['jefe@cajatrujillo.pe'],
         // Nombre de archivo que se comunica a las agencias (supuesto)
