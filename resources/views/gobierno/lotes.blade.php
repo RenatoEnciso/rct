@@ -2,6 +2,7 @@
 @section('title', 'Lotes y plazos')
 
 @section('content')
+@include('gobierno._modulo')
 <div class="page-head">
   <div>
     <div class="page-eyebrow"><a href="{{ route('gobierno.index') }}">Expedientes de honramiento</a> / Lotes</div>

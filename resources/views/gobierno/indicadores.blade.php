@@ -4,6 +4,7 @@
 @use('App\Support\Estilo')
 
 @section('content')
+@include('gobierno._modulo')
 @php
   $pct = fn($a, $b) => $b ? round($a / $b * 100, 1) : 0;
   $barra = fn($p) => $p >= 70 ? 'ok' : ($p >= 40 ? 'warn' : 'danger');

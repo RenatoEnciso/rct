@@ -70,6 +70,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Impulso MyPerú: honramiento y devolución a COFIDE
+    |--------------------------------------------------------------------------
+    | Supuestos documentados en docs/REGLAS_DEMO_IMPULSO.md (preguntas abiertas
+    | de docs/PROCESO_IMPULSO_MYPERU.md §6). Cambiarlos aquí, no en el código.
+    | fuente_core: demo → App\Services\Core\FuenteCoreDemo (tablas espejo).
+    | margen_minutos: cada sincronización relee este margen anterior a la última
+    | (los pagos ya procesados se descartan por id_core).
+    */
+    'impulso' => [
+        'programa'       => 'IMPULSO MYPERÚ',
+        'fuente_core'    => env('RCT_FUENTE_CORE', 'demo'),
+        'margen_minutos' => 60,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Regeneración de la demo (rct:demo-reset)
     |--------------------------------------------------------------------------
     | mysqldump: ejecutable para el respaldo previo (storage/backups).

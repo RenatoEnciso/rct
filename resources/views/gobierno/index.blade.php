@@ -19,6 +19,7 @@
 @endpush
 
 @section('content')
+@include('gobierno._modulo')
 @php $total = $conteo->sum(); @endphp
 <div class="page-head">
   <div>

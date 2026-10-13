@@ -101,6 +101,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/mi-prioridad', [\App\Http\Controllers\PriorizacionController::class, 'mia'])
         ->middleware('grupo:fud')->name('prioridad.mia');
 
+    // ── Programas de gobierno · Impulso MyPerú ───────────────
+    Route::post('/impulso/core/sincronizar', [\App\Http\Controllers\Impulso\CoreController::class, 'sincronizar'])->name('impulso.core.sincronizar');
+
     // ── Programas de gobierno: expedientes de honramiento ────
     Route::get('/gobierno',                       [GobiernoController::class, 'index'])->name('gobierno.index');
     Route::get('/gobierno/exportar',                [GobiernoController::class, 'exportar'])->name('gobierno.exportar');

@@ -24,6 +24,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(\App\Contracts\Analitica\ModeloPriorizacion::class, \App\Services\Analitica\Demo\PriorizacionDemo::class);
         $this->app->bind(\App\Contracts\Analitica\ModeloRecaida::class, \App\Services\Analitica\Demo\RecaidaDemo::class);
         $this->app->bind(\App\Contracts\Analitica\DetectorAnomalias::class, \App\Services\Analitica\Demo\AnomaliasDemo::class);
+
+        // Core financiero: tablas espejo en demo; FuenteCoreReal cuando exista la conexión con el core
+        $this->app->bind(\App\Contracts\FuenteCore::class, \App\Services\Core\FuenteCoreDemo::class);
     }
 
     /**

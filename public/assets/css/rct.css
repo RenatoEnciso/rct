@@ -1122,3 +1122,19 @@ body.modo-presentacion [data-modo-presentacion] { display: none; }
 @media (max-width: 767.98px) {
   .al-sev, .al-comparacion { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   Programas de gobierno · Impulso MyPerú
+═══════════════════════════════════════════════════════════════ */
+.im-nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  margin: -6px 0 20px; padding-bottom: 10px; border-bottom: 1px solid var(--borde); }
+.im-tabs { display: flex; gap: 2px; flex-wrap: wrap; }
+.im-tabs a { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 7px; font-size: 13px; font-weight: 500; color: var(--gris); }
+.im-tabs a:hover { background: var(--sutil); color: var(--tinta); }
+.im-tabs a.active { background: var(--rojo-soft); color: var(--rojo); font-weight: 600; }
+.im-core { display: flex; align-items: center; gap: 6px; }
+.im-core form { margin: 0; }
+.im-core-chip { display: inline-flex; align-items: center; gap: 7px; padding: 5px 11px; border-radius: 999px; background: var(--superficie);
+  border: 1px solid var(--borde); font-size: 12px; color: var(--gris); white-space: nowrap; }
+.im-core-punto { width: 8px; height: 8px; border-radius: 50%; background: var(--verde); box-shadow: 0 0 0 3px var(--verde-soft); }
+.im-core-punto.off { background: var(--gris-claro); box-shadow: none; }
