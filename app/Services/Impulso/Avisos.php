@@ -45,6 +45,30 @@ class Avisos
 
     // ── Eventos ──────────────────────────────────────────────
 
+    /** Pago detectado en el core para un crédito del programa. */
+    public function pagoSincronizado(\App\Models\PagoPrograma $pago): void
+    {
+        $cliente = $pago->expediente->cliente ?? $pago->credito_sicmact;
+        if ($pago->estado === 'Agregado') {
+            $this->enviar($this->revisores()->merge($this->jefes()), [
+                'evento' => 'pago_honrado', 'titulo' => 'Pago detectado: '.$cliente,
+                'mensaje' => Estilo::solesPe($pago->capital).' a capital → Reversión COFIDE '.Estilo::solesPe($pago->reversion),
+                'url' => route('impulso.pagos', ['q' => $pago->credito_sicmact]), 'icono' => 'bi-cash-coin', 'color' => 'ok',
+                'toast' => true, 'correo' => true,
+                'detalle' => [['Cliente', $cliente], ['Crédito', $pago->credito_sicmact], ['Fecha del pago', $pago->fecha_pago->format('d/m/Y H:i')],
+                              ['Monto pagado', Estilo::solesPe($pago->monto_total)], ['Capital', Estilo::solesPe($pago->capital)],
+                              ['Factor de cobertura', number_format($pago->factor_cobertura * 100, 2, ',', '').'%'],
+                              ['Reversión a COFIDE', Estilo::solesPe($pago->reversion)], ['Canal', $pago->canal ?? '—']],
+            ]);
+        } else {
+            $this->enviar($this->revisores(), [
+                'evento' => 'pago_sin_reversion', 'titulo' => 'Pago sin reversión: '.$cliente,
+                'mensaje' => Estilo::solesPe($pago->capital).' a capital. '.$pago->motivo.'.',
+                'url' => route('impulso.pagos', ['q' => $pago->credito_sicmact]), 'icono' => 'bi-cash', 'color' => 'info', 'toast' => true,
+            ]);
+        }
+    }
+
     /** Créditos que llegaron a 90 días: campana y correo al revisor. */
     public function candidatos(Collection $nuevos): void
     {

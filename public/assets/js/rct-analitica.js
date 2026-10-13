@@ -15,7 +15,7 @@
     // Formato peruano con céntimos: S/ 2 500,00
     pe:    function (n) {
       var neg = n < 0, p = Math.abs(n).toFixed(2).split('.');
-      return (neg ? '−' : '') + 'S/ ' + p[0].replace(/\B(?=(\d{3})+(?!\d))/g, NBSP) + ',' + p[1];
+      return (neg ? '−' : '') + 'S/' + NBSP + p[0].replace(/\B(?=(\d{3})+(?!\d))/g, NBSP) + ',' + p[1];
     }
   };
   function corto(n) {

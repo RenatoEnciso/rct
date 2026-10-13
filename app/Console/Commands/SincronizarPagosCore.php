@@ -11,7 +11,7 @@ class SincronizarPagosCore extends Command
 
     public function handle(SincronizadorCore $sincronizador): int
     {
-        $r = $sincronizador->ejecutar($this->option('origen'));
+        $r = $sincronizador->ejecutar($this->option('origen'))->refresh();
         $this->table(['Créditos del programa', 'Pagos leídos', 'Nuevos', 'Del programa', 'Agregados', 'Sin reversión', 'Candidatos nuevos'],
             [[$r->creditos_leidos, $r->pagos_leidos, $r->pagos_nuevos, $r->pagos_programa, $r->agregados, $r->sin_reversion, $r->candidatos_nuevos]]);
         $this->info('Sincronización '.$r->id.' finalizada '.$r->finalizado_en->format('d/m/Y H:i:s'));

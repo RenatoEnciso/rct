@@ -89,6 +89,8 @@ return [
         // Destinatarios de los avisos (sección 5): el revisor de programas hoy es la Jefatura de Recuperaciones
         'revisores'      => ['jefe@cajatrujillo.pe'],
         'contabilidad'   => ['contabilidad@cajatrujillo.pe'],
+        // Administradores de la demo: ven el botón "Simular pago del core"
+        'administradores' => ['jefe@cajatrujillo.pe'],
         // Nombre de archivo que se comunica a las agencias (supuesto)
         'formato_archivo' => '{N° CRÉDITO}_{DOCUMENTO}.pdf',
         // Representantes ante COFIDE con firma digital (supuesto; nombres ficticios)

@@ -69,7 +69,7 @@ class Estilo
     public static function solesPe($monto): string
     {
         $m = round((float) $monto, 2);
-        return ($m < 0 ? '−' : '').'S/ '.number_format(abs($m), 2, ',', "\u{00A0}");
+        return ($m < 0 ? '−' : '')."S/\u{00A0}".number_format(abs($m), 2, ',', "\u{00A0}");
     }
 
     /** Monto entero con separador de miles por espacio, para tableros (S/ 1 234 567). */

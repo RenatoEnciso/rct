@@ -114,6 +114,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/lotes/{lote}/descargar/{tipo}', [$L, 'descargar'])->name('lotes.descargar');
         Route::post('/lotes/{lote}/firma',           [$L, 'firma'])->name('lotes.firma');
         Route::post('/lotes/{lote}/confirmar',       [$L, 'confirmar'])->name('lotes.confirmar');
+        Route::get('/pagos',           [\App\Http\Controllers\Impulso\PagosController::class, 'index'])->name('pagos');
         Route::get('/matriz',          [\App\Http\Controllers\Impulso\BaseMatrizController::class, 'index'])->name('matriz');
         Route::get('/matriz/exportar', [\App\Http\Controllers\Impulso\BaseMatrizController::class, 'exportar'])->name('matriz.exportar');
         $H = \App\Http\Controllers\Impulso\HonramientoController::class;
