@@ -46,4 +46,36 @@ return [
         'numero'     => '+51 944 120 300',
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Analítica (priorización, recaída y alertas de control)
+    |--------------------------------------------------------------------------
+    | modo: demo → App\Services\Analitica\Demo\* (fórmulas fijas y deterministas,
+    |       documentadas en docs/REGLAS_DEMO_ANALITICA.md). Los resultados se
+    |       precalculan en tablas con `php artisan rct:analitica-recalcular`.
+    | tasas_provision: tasa de provisión por calificación (referencial SBS).
+    | segmentos: puntaje mínimo de los segmentos Alta y Media.
+    */
+    'analitica' => [
+        'modo' => env('RCT_ANALITICA_MODO', 'demo'),
+        'tasas_provision' => [
+            'NORMAL'     => 0.01,
+            'CPP'        => 0.05,
+            'DEFICIENTE' => 0.25,
+            'DUDOSO'     => 0.60,
+            'PÉRDIDA'    => 1.00,
+        ],
+        'segmentos' => ['Alta' => 55, 'Media' => 35],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Regeneración de la demo (rct:demo-reset)
+    |--------------------------------------------------------------------------
+    | mysqldump: ejecutable para el respaldo previo (storage/backups).
+    */
+    'demo' => [
+        'mysqldump' => env('RCT_MYSQLDUMP', 'E:/laragon/bin/mysql/mysql-8.4.3-winx64/bin/mysqldump.exe'),
+    ],
+
 ];

@@ -65,6 +65,12 @@ class Estilo
         return 'S/ '.number_format((float) $monto, 2);
     }
 
+    /** Monto entero con separador de miles por espacio, para tableros (S/ 1 234 567). */
+    public static function solesEntero($monto): string
+    {
+        return 'S/ '.number_format(round((float) $monto), 0, '.', "\u{00A0}");
+    }
+
     /** Monto abreviado para indicadores (S/ 1.25 M, S/ 845.3 mil). */
     public static function solesCorto($monto): string
     {

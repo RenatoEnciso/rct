@@ -6,14 +6,14 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <title>@yield('title', 'Inicio') · RCT Recuperaciones · Caja Trujillo</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="{{ asset('vendor/inter/inter.css') }}" rel="stylesheet">
+<link href="{{ asset('vendor/bootstrap/bootstrap.min.css') }}" rel="stylesheet">
+<link href="{{ asset('vendor/bootstrap-icons/bootstrap-icons.min.css') }}" rel="stylesheet">
 <link rel="stylesheet" href="{{ asset('assets/css/rct.css') }}?v={{ filemtime(public_path('assets/css/rct.css')) }}">
 @stack('styles')
 </head>
 <body>
+<script>try { if (localStorage.getItem('rct.presentacion') === '1') document.body.classList.add('modo-presentacion'); } catch (e) {}</script>
 @php
   $user = auth()->user();
   $pendBandeja = $user->esAprobador()
@@ -139,6 +139,11 @@
       @endif
 
       @if($user->esAprobador())
+        <div class="nav-section-label">Analítica</div>
+        <a class="nav-btn {{ request()->routeIs('centro-control') ? 'active' : '' }}" href="{{ route('centro-control') }}">
+          <i class="bi bi-display"></i> Centro de control
+        </a>
+
         <div class="nav-section-label">Aprobación y control</div>
         <a class="nav-btn {{ request()->routeIs('bandeja.*') ? 'active' : '' }}" href="{{ route('bandeja.index') }}">
           <i class="bi bi-inbox"></i> Bandeja de aprobación

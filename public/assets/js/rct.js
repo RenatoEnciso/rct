@@ -227,4 +227,27 @@
     });
     return r;
   };
+
+  /* ── Modo presentación: sin menú, tipografía mayor, pantalla limpia para capturas ── */
+  var CLAVE_PRES = 'rct.presentacion';
+  function modoPresentacion(activar) {
+    document.body.classList.toggle('modo-presentacion', activar);
+    try { localStorage.setItem(CLAVE_PRES, activar ? '1' : '0'); } catch (e) {}
+    var salir = document.getElementById('salir-presentacion');
+    if (activar && !salir) {
+      salir = document.createElement('button');
+      salir.type = 'button'; salir.id = 'salir-presentacion'; salir.className = 'salir-presentacion';
+      salir.innerHTML = '<i class="bi bi-fullscreen-exit"></i> Salir del modo presentación';
+      salir.addEventListener('click', function () { modoPresentacion(false); });
+      document.body.appendChild(salir);
+    }
+    if (!activar && salir) salir.remove();
+  }
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('[data-modo-presentacion]')) modoPresentacion(!document.body.classList.contains('modo-presentacion'));
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && document.body.classList.contains('modo-presentacion')) modoPresentacion(false);
+  });
+  if (document.body.classList.contains('modo-presentacion')) modoPresentacion(true);
 })();

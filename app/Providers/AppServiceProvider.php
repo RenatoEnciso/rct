@@ -19,6 +19,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ValidadorDocumentos::class, fn() =>
             config('rct.validacion.modo') === 'demo' ? new ValidadorDemo() : new ValidadorReal()
         );
+
+        // Analítica: modelos demo (fórmulas fijas) hasta conectar modelos reales con la misma interfaz
+        $this->app->bind(\App\Contracts\Analitica\ModeloPriorizacion::class, \App\Services\Analitica\Demo\PriorizacionDemo::class);
+        $this->app->bind(\App\Contracts\Analitica\ModeloRecaida::class, \App\Services\Analitica\Demo\RecaidaDemo::class);
+        $this->app->bind(\App\Contracts\Analitica\DetectorAnomalias::class, \App\Services\Analitica\Demo\AnomaliasDemo::class);
     }
 
     /**

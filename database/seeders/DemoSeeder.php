@@ -33,6 +33,7 @@ class DemoSeeder extends Seeder
     private User $jefe;
     private int $docSeq = 0;
     private string $ultimoHash = '';
+    private array $recientes = [];      // clientes con FUD en los últimos 3 meses
 
     public function run(): void
     {
@@ -51,7 +52,7 @@ class DemoSeeder extends Seeder
 
         $this->crearTiendas();
         $this->crearUsuarios();
-        $clientes = $this->crearCartera(175);
+        $clientes = $this->crearCartera(1467);   // + los casos fijos de ClienteCarteraSeeder ≈ 1 500 créditos
         $this->crearFuds($clientes);
         // Los expedientes de Programas de Gobierno los crea HonramientoSeeder
 
@@ -246,7 +247,8 @@ class DemoSeeder extends Seeder
         shuffle($elegibles);
 
         foreach ($elegibles as $idx => $cli) {
-            if ($idx >= 165) break;
+            if ($idx >= 340) break;
+            $this->recientes[] = $cli;
 
             // Más actividad reciente: la campaña empezó el 01/09
             $hace   = (int) floor(92 * pow(mt_rand(0, 1000) / 1000, 1.3));
@@ -292,6 +294,50 @@ class DemoSeeder extends Seeder
             } elseif ($dec) {
                 $this->log($apr, 'Decisión FUD', $res, $fud, $dec, $comentario);
             }
+        }
+
+        $this->crearHistorial(array_slice($elegibles, 340, 210), $motivos, $obsAprobador, $rechazos);
+    }
+
+    /**
+     * Historial cerrado de enero a junio de 2026 (antes de la campaña): FUD decididos y,
+     * si se aprobaron, pagados con su sustento revisado. Algunos clientes con FUD reciente
+     * también tuvieron un beneficio anterior.
+     */
+    private function crearHistorial(array $clientes, array $motivos, array $obsAprobador, array $rechazos): void
+    {
+        foreach (array_values(array_filter($this->recientes, fn($c, $i) => $i % 12 === 5, ARRAY_FILTER_USE_BOTH)) as $c) {
+            $clientes[] = $c;
+        }
+        $inicio = Carbon::parse('2026-01-05');
+        $dias   = Carbon::parse('2026-06-27')->diffInDays($inicio, true);
+
+        foreach ($clientes as $cli) {
+            $envio = $inicio->copy()->addDays(mt_rand(0, (int) $dias));
+            if ($envio->isSunday()) $envio->addDay();
+            $envio->setTime(mt_rand(8, 17), mt_rand(0, 59));
+            $ejec  = $this->ejecutivoDe($cli);
+            $nivel = $this->asignador->nivelRequerido($cli);
+            $apr   = $this->asignador->asignar($cli, $ejec->id);
+            $tipo  = $cli->tipo_negociacion_campana;
+            $res   = $this->elegirPonderado([[80, 'Aprobado'], [11, 'Rechazado'], [9, 'Corregido-Aprobado']])[1];
+
+            if ($res === 'Corregido-Aprobado') {
+                $dec1 = $this->despues($envio, 20, 72);
+                $v1 = $this->fud($cli, $ejec, $apr, $nivel, $tipo, $envio, $motivos, 'Rechazado', $dec1, $obsAprobador[mt_rand(0, count($obsAprobador) - 1)]);
+                $this->log($apr, 'Decisión FUD', 'Observado', $v1, $dec1, $v1->comentario_aprobador);
+                $envio2 = $this->despues($dec1, 2, 40);
+                $dec2 = $this->despues($envio2, 2, 40);
+                $v2 = $this->fud($cli, $ejec, $apr, $nivel, $tipo, $envio2, $motivos, 'Aprobado', $dec2, null, $v1);
+                $this->log($ejec, 'Corrección de FUD', 'En revisión', $v2, $envio2, 'Corrección #1 enviada tras observación.');
+                $this->aprobar($v2, $apr, $cli, $dec2, true);
+                continue;
+            }
+
+            $dec = $this->despues($envio, 2, 96);
+            $comentario = $res === 'Rechazado' ? $rechazos[mt_rand(0, count($rechazos) - 1)] : null;
+            $fud = $this->fud($cli, $ejec, $apr, $nivel, $tipo, $envio, $motivos, $res, $dec, $comentario);
+            $res === 'Aprobado' ? $this->aprobar($fud, $apr, $cli, $dec, true) : $this->log($apr, 'Decisión FUD', $res, $fud, $dec, $comentario);
         }
     }
 
@@ -354,7 +400,8 @@ class DemoSeeder extends Seeder
                 'etapa_procesal'   => $tipo === 'extrajudicial'
                     ? ['Pre-judicial', 'Ejecución de garantías', 'Medidas cautelares', 'Etapa de remate'][mt_rand(0, 3)]
                     : 'Pre-judicial',
-                'beneficio_pct_sk' => ['extrajudicial' => 70, 'castigada' => [70, 80][mt_rand(0, 1)], 'focmac' => 90][$tipo],
+                // Beneficio sobre el saldo capital dentro del tope del lineamiento
+                'beneficio_pct_sk' => ['extrajudicial' => [20, 30, 40, 50, 60], 'castigada' => [40, 50, 60, 70], 'focmac' => [60, 70, 80]][$tipo][mt_rand(0, $tipo === 'castigada' ? 3 : ($tipo === 'focmac' ? 2 : 4))],
             ]),
         };
 
@@ -377,15 +424,17 @@ class DemoSeeder extends Seeder
         return $fud;
     }
 
-    private function aprobar(PropuestaFud $fud, User $apr, ClienteCartera $cli, Carbon $dec): void
+    private function aprobar(PropuestaFud $fud, User $apr, ClienteCartera $cli, Carbon $dec, bool $historico = false): void
     {
         $this->log($apr, 'Decisión FUD', 'Aprobado', $fud, $dec, $fud->comentario_aprobador);
         $cli->increment('veces_conciliado');
 
         $diasDesde = $dec->diffInDays($this->ahora);
-        $estado = $diasDesde < 3
+        $estado = $historico
+            ? $this->elegirPonderado([[93, 'Aprobado'], [7, 'Rechazado']])[1]
+            : ($diasDesde < 3
             ? $this->elegirPonderado([[60, 'Pendiente'], [40, 'En revisión']])[1]
-            : $this->elegirPonderado([[58, 'Aprobado'], [12, 'En revisión'], [14, 'Observado'], [11, 'Pendiente'], [5, 'Rechazado']])[1];
+            : $this->elegirPonderado([[72, 'Aprobado'], [10, 'En revisión'], [9, 'Observado'], [6, 'Pendiente'], [3, 'Rechazado']])[1]);
 
         $carga    = $estado === 'Pendiente' ? null : $this->despues($dec, 2, 60);
         $revision = in_array($estado, ['Aprobado', 'Observado', 'Rechazado']) ? $this->despues($carga, 1, 40) : null;

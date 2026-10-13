@@ -86,8 +86,12 @@ Route::middleware('auth')->group(function () {
         Route::post('/{sustento}/rechazar', [RevisionSustentosController::class, 'rechazar'])->name('rechazar');
     });
 
+    // ── Analítica ────────────────────────────────────────────
+    Route::get('/centro-control', [\App\Http\Controllers\CentroControlController::class, 'index'])
+        ->middleware('grupo:aprobador')->name('centro-control');
+
     // ── Programas de gobierno: expedientes de honramiento ────
-    Route::get('/gobierno',                         [GobiernoController::class, 'index'])->name('gobierno.index');
+    Route::get('/gobierno',                       [GobiernoController::class, 'index'])->name('gobierno.index');
     Route::get('/gobierno/exportar',                [GobiernoController::class, 'exportar'])->name('gobierno.exportar');
     Route::get('/gobierno/lotes',                   [GobiernoController::class, 'lotes'])->name('gobierno.lotes');
     Route::get('/gobierno/indicadores',             [\App\Http\Controllers\GobiernoIndicadoresController::class, 'index'])->name('gobierno.indicadores');

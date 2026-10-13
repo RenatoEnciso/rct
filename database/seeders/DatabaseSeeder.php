@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             ClienteCarteraSeeder::class,
             DemoSeeder::class,
             HonramientoSeeder::class,
+            AnaliticaSeeder::class,
         ]);
     }
 }

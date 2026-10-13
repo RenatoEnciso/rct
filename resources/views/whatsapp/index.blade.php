@@ -6,9 +6,8 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <meta name="theme-color" content="#008069">
 <title>Caja Trujillo · Recuperaciones</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="{{ asset('vendor/inter/inter.css') }}" rel="stylesheet">
+<link href="{{ asset('vendor/bootstrap-icons/bootstrap-icons.min.css') }}" rel="stylesheet">
 <style>
   :root {
     --wa-verde: #008069; --wa-verde-2: #00a884; --wa-fondo: #efeae2; --wa-mio: #d9fdd3; --wa-otro: #ffffff;
