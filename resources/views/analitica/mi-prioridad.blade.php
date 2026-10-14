@@ -8,7 +8,6 @@
 <div class="cc">
   <div class="page-head cc-head">
     <div>
-      <div class="page-eyebrow">Modelo de priorización</div>
       <h2>Mi prioridad de hoy</h2>
       <p>{{ ucfirst($hoy->translatedFormat('l d \d\e F')) }} · Tienda {{ $tienda->nombre ?? '' }} · Los 20 créditos pendientes con mayor puntaje</p>
     </div>
@@ -23,7 +22,7 @@
     </div>
   </div>
 
-  <div class="pr-resumen cc-aparece" style="--i:0">
+  <div class="pr-resumen">
     <div class="pr-dato">
       <span class="pr-dato-valor" data-contar="{{ $resumen['pendientes'] }}" data-formato="num">{{ $resumen['pendientes'] }}</span>
       <span class="pr-dato-label">créditos pendientes en su cartera</span>
@@ -53,7 +52,7 @@
           $seg = strtolower($p->segmento);
           $circ = 2 * M_PI * 26;
         @endphp
-        <article class="pr-card cc-aparece" style="--i:{{ min($i + 1, 12) }}">
+        <article class="pr-card">
           <header class="pr-card-head">
             <div class="pr-anillo {{ $seg }}" role="img" aria-label="Puntaje {{ $p->score }} de 100">
               <svg viewBox="0 0 64 64" aria-hidden="true">

@@ -9,7 +9,6 @@
 <div class="cc">
   <div class="page-head cc-head">
     <div>
-      <div class="page-eyebrow">Impulso MyPerú · Etapa 6</div>
       <h2>Devoluciones a COFIDE</h2>
       <p>Cada mes se devuelven las reversiones agregadas del mes anterior. Se cruzan con la notificación TXT de COFIDE: la diferencia debe ser S/ 0,00.</p>
     </div>
@@ -24,14 +23,14 @@
   </div>
 
   <div class="dv-lista">
-    <div class="dv-item en-curso cc-aparece" style="--i:0">
+    <div class="dv-item en-curso">
       <div class="dv-item-head"><span class="dv-mes">{{ ucfirst($enCurso['periodo']->translatedFormat('F Y')) }}</span><span class="badge badge-pending">En curso</span></div>
       <div class="dv-item-monto">{{ Estilo::solesPe($enCurso['monto']) }}</div>
       <div class="dv-item-sub">Reversiones agregadas hasta hoy · {{ $enCurso['creditos'] }} créditos, {{ $enCurso['pagos'] }} pagos</div>
       <div class="dv-item-pie"><i class="bi bi-calendar-event"></i> Se calcula al inicio de {{ $enCurso['periodo']->copy()->addMonth()->translatedFormat('F') }}</div>
     </div>
     @foreach($devoluciones as $i => $d)
-      <a href="{{ route('impulso.devoluciones.show', $d) }}" class="dv-item {{ $d->cerrada() ? 'cerrada' : ($d->estado === 'Con diferencias' ? 'error' : '') }} cc-aparece" style="--i:{{ $i + 1 }}">
+      <a href="{{ route('impulso.devoluciones.show', $d) }}" class="dv-item {{ $d->cerrada() ? 'cerrada' : ($d->estado === 'Con diferencias' ? 'error' : '') }}">
         <div class="dv-item-head"><span class="dv-mes">{{ $d->nombrePeriodo() }}</span><span class="badge {{ $badge[$d->estado] ?? 'badge-gray' }}">{{ $d->estado }}</span></div>
         <div class="dv-item-monto">{{ Estilo::solesPe($d->monto_calculado) }}</div>
         <div class="dv-item-sub">{{ $d->creditos }} créditos · {{ $d->pagos }} pagos</div>

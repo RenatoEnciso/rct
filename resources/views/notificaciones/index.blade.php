@@ -42,7 +42,7 @@
   @forelse($notificaciones as $n)
     <a href="{{ $n['url'] }}" class="notif-item {{ $n['leida'] ? '' : 'unread' }}" data-clave="{{ $n['clave'] }}" style="padding:14px 20px">
       <span class="notif-ico {{ $n['color'] }}"><i class="bi {{ $n['icono'] }}"></i></span>
-      <span class="notif-body" style="flex:1">
+      <span class="notif-body flex-grow-1">
         <span class="notif-title">{{ $n['titulo'] }}</span>
         <span class="notif-msg">{{ $n['mensaje'] }}</span>
       </span>

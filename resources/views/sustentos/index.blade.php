@@ -17,7 +17,41 @@
   Cada documento se valida automáticamente al cargarlo.</span>
 </div>
 
-<div class="card card-flush">
+{{-- Panel de carga --}}
+<div class="card" id="panel-carga" hidden>
+  <div class="card-head">
+    <div>
+      <div class="card-title" id="carga-titulo"><i class="bi bi-upload"></i> Carga de documentos</div>
+      <div class="cell-sub" id="carga-sub"></div>
+    </div>
+    <button type="button" class="btn btn-ghost btn-sm" onclick="cerrarCarga()"><i class="bi bi-x-lg"></i> Cerrar</button>
+  </div>
+
+  <div id="carga-observacion" class="notice-warning" hidden><i class="bi bi-chat-left-text"></i><span></span></div>
+
+  <form id="form-sustentos" method="POST" enctype="multipart/form-data"
+        data-validar-url="{{ route('validacion.documento') }}" data-contexto="sustento">
+    @csrf
+    <div class="doc-grid" id="carga-docs"></div>
+
+    <div class="form-section">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+        <strong class="fs-13" id="carga-resumen">0 de 0 documentos cargados</strong>
+        <span class="cell-sub" id="carga-detalle"></span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="carga-progreso" style="width:0%"></div></div>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn btn-secondary" onclick="cerrarCarga()">Cancelar</button>
+      <button type="submit" class="btn btn-primary" id="btn-registrar" disabled>
+        <i class="bi bi-send"></i> Registrar sustentos
+      </button>
+    </div>
+  </form>
+</div>
+
+<div class="card card-flush tabla-patio">
   <div class="card-head">
     <div class="card-title"><i class="bi bi-list-check"></i> Operaciones por documentar</div>
   </div>
@@ -85,39 +119,6 @@
   </div>
 </div>
 
-{{-- Panel de carga --}}
-<div class="card" id="panel-carga" hidden>
-  <div class="card-head">
-    <div>
-      <div class="card-title" id="carga-titulo"><i class="bi bi-upload"></i> Carga de documentos</div>
-      <div class="cell-sub" id="carga-sub"></div>
-    </div>
-    <button type="button" class="btn btn-ghost btn-sm" onclick="cerrarCarga()"><i class="bi bi-x-lg"></i> Cerrar</button>
-  </div>
-
-  <div id="carga-observacion" class="notice-warning" hidden><i class="bi bi-chat-left-text"></i><span></span></div>
-
-  <form id="form-sustentos" method="POST" enctype="multipart/form-data"
-        data-validar-url="{{ route('validacion.documento') }}" data-contexto="sustento">
-    @csrf
-    <div class="doc-grid" id="carga-docs"></div>
-
-    <div class="form-section">
-      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
-        <strong class="fs-13" id="carga-resumen">0 de 0 documentos cargados</strong>
-        <span class="cell-sub" id="carga-detalle"></span>
-      </div>
-      <div class="progress-bar"><div class="progress-fill" id="carga-progreso" style="width:0%"></div></div>
-    </div>
-
-    <div class="actions">
-      <button type="button" class="btn btn-secondary" onclick="cerrarCarga()">Cancelar</button>
-      <button type="submit" class="btn btn-primary" id="btn-registrar" disabled>
-        <i class="bi bi-send"></i> Registrar sustentos
-      </button>
-    </div>
-  </form>
-</div>
 @endsection
 
 @push('scripts')
@@ -148,7 +149,7 @@
         '<label class="doc-drop"><i class="bi bi-cloud-arrow-up"></i>' +
         '<span class="doc-file-name">Seleccionar archivo</span>' +
         '<input type="file" name="documentos[' + i + '][archivo]" accept=".pdf,.jpg,.jpeg,.png"></label>' +
-        '<div class="field-hint" style="margin-top:6px">PDF, JPG o PNG · máximo 10 MB</div>' +
+        '<div class="field-hint mt-2">PDF, JPG o PNG · máximo 10 MB</div>' +
         '<div class="val-result"></div></div>';
     }).join('');
 

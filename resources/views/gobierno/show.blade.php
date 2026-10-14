@@ -43,13 +43,13 @@
   <div class="card">
     <div class="card-title"><i class="bi bi-clipboard-data"></i> Avance y plazo</div>
     <div class="metric-item-head"><span>Documentos exigidos por COFIDE</span><span>{{ $okExig }} de {{ $nExig }}</span></div>
-    <div class="bar-track" style="margin-bottom:14px"><div class="bar-fill {{ $okExig === $nExig ? 'ok' : 'warn' }}" style="width:{{ $nExig ? round($okExig / $nExig * 100) : 0 }}%"></div></div>
+    <div class="bar-track mb-3"><div class="bar-fill {{ $okExig === $nExig ? 'ok' : 'warn' }}" style="width:{{ $nExig ? round($okExig / $nExig * 100) : 0 }}%"></div></div>
     <div class="detail-grid">
       <div><div class="detail-label">Faltantes (COFIDE)</div><div class="detail-value lg {{ $e->faltantes ? 'text-rojo' : 'text-verde' }}">{{ $e->faltantes }}</div></div>
       <div><div class="detail-label">Conformidad de la solicitud</div><div class="detail-value">{{ $e->lote?->fecha_conformidad?->format('d/m/Y') ?? 'Sin registrar' }}</div></div>
       <div><div class="detail-label">Límite de regularización</div><div class="detail-value">{{ $limite?->format('d/m/Y') ?? '—' }}</div></div>
     </div>
-    @if(!$limite)<div class="field-hint" style="margin-top:8px">Registre la fecha de conformidad del lote en <a href="{{ route('gobierno.lotes') }}">Lotes y plazos</a> para controlar los 30 días.</div>@endif
+    @if(!$limite)<div class="field-hint mt-2">Registre la fecha de conformidad del lote en <a href="{{ route('gobierno.lotes') }}">Lotes y plazos</a> para controlar los 30 días.</div>@endif
   </div>
 </div>
 
@@ -82,10 +82,10 @@
           </div>
 
           @if($d)
-            <div class="cell-sub" style="margin-bottom:6px">{{ $origenes[$d->origen] ?? '' }}
+            <div class="cell-sub mb-2">{{ $origenes[$d->origen] ?? '' }}
               @if($d->cargado_en) · {{ $d->cargado_en->format('d/m/Y H:i') }}@endif @if($d->cargador) · {{ $d->cargador->name }}@endif</div>
             @if($d->tieneArchivo())
-              <div class="d-flex gap-2 flex-wrap" style="margin-bottom:6px">
+              <div class="d-flex gap-2 flex-wrap mb-2">
                 <a href="{{ route('gobierno.documento.ver', $d) }}" target="_blank" class="file-chip"><i class="bi bi-file-earmark-pdf"></i><span>{{ $d->nombre_archivo }}</span></a>
                 <a href="{{ route('gobierno.documento.descargar', $d) }}" class="btn btn-ghost btn-sm btn-icon" title="Descargar"><i class="bi bi-download"></i></a>
               </div>
@@ -96,7 +96,7 @@
               @endif
             @endif
             @if($est === 'no_disponible' && $d->motivo_no_disponible)
-              <div class="quote" style="margin-top:6px"><div class="quote-label">Motivo de la tienda</div>{{ $d->motivo_no_disponible }}</div>
+              <div class="quote mt-2"><div class="quote-label">Motivo de la tienda</div>{{ $d->motivo_no_disponible }}</div>
             @endif
             @if($d->comentario_revisor)
               <div class="quote" style="margin-top:6px;border-left-color:{{ $est === 'observado' ? '#d08a1e' : 'var(--verde)' }}">
@@ -105,7 +105,7 @@
           @endif
 
           @if($puedeRevisarDocs && $d && in_array($est, ['cargado', 'conforme', 'observado']) && $e->estado !== 'Conforme')
-            <div class="d-flex gap-2" style="margin-top:10px">
+            <div class="d-flex gap-2 mt-2">
               @if($est !== 'conforme')
                 <form method="POST" action="{{ route('gobierno.revision.documento', $d) }}">@csrf
                   <input type="hidden" name="resultado" value="conforme">
@@ -131,7 +131,7 @@
             </form>
           @endif
           @if($puedeCargar && $item['exigido'] && $est === 'falta')
-            <button type="button" class="btn btn-ghost btn-sm" style="margin-top:6px" data-modal-open="modal-nd" data-tipo-id="{{ $t->id }}" data-tipo-nombre="{{ $t->nombre }}">
+            <button type="button" class="btn btn-ghost btn-sm mt-2" data-modal-open="modal-nd" data-tipo-id="{{ $t->id }}" data-tipo-nombre="{{ $t->nombre }}">
               <i class="bi bi-slash-circle"></i> No se cuenta con el documento
             </button>
           @endif
@@ -174,7 +174,7 @@
   </div>
 @endif
 
-<div class="grid2" style="margin-bottom:20px">
+<div class="grid2 mb-4">
   <div class="card">
     <div class="card-title"><i class="bi bi-clock-history"></i> Historial de revisiones</div>
     @if($e->revisiones->count())

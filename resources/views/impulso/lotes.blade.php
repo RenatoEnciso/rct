@@ -12,7 +12,6 @@
 <div class="cc">
   <div class="page-head cc-head">
     <div>
-      <div class="page-eyebrow">Impulso MyPerú · Etapas 1 y 2</div>
       <h2>Lotes de honramiento</h2>
       <p>Cada carga en la plataforma de COFIDE es un lote: corte, documentos, firma digital, confirmación y honramiento.</p>
     </div>
@@ -57,7 +56,6 @@
         </tbody>
       </table>
     </div>
-    <div style="height:8px"></div>
   </div>
 </div>
 @endsection

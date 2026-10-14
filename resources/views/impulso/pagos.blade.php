@@ -12,7 +12,6 @@
 <div class="cc">
   <div class="page-head cc-head">
     <div>
-      <div class="page-eyebrow">Impulso MyPerú · Etapa 5</div>
       <h2>Pagos sincronizados desde el core</h2>
       <p>Llegan solos cada 30 minutos: reversión = capital × factor de cobertura si el crédito estaba honrado a la fecha del pago.</p>
     </div>
@@ -23,23 +22,23 @@
     </div>
   </div>
 
-  <div class="pg-solo-lectura cc-aparece" style="--i:0">
+  <div class="pg-solo-lectura">
     <i class="bi bi-lock"></i>
     <span><strong>Solo lectura.</strong> RCT no registra pagos a mano: los lee del core en cada sincronización
       @if($ultima) (última sincronización: {{ $ultima->finalizado_en->format('d/m/Y H:i') }})@endif.</span>
   </div>
 
-  <div class="cc-kpis pr-kpis" style="grid-template-columns:repeat(5,minmax(0,1fr))">
-    <div class="cc-kpi cc-aparece" style="--i:1"><div class="cc-kpi-ico azul"><i class="bi bi-receipt"></i></div>
+  <div class="cc-kpis">
+    <div class="cc-kpi"><div class="cc-kpi-ico azul"><i class="bi bi-receipt"></i></div>
       <div class="cc-kpi-label">Pagos {{ $mes ? 'de '.mb_strtolower($nombreMes($mes)) : 'encontrados' }}</div><div class="cc-kpi-valor">{{ $kpis['pagos'] }}</div>
       <div class="cc-kpi-sub">Monto total {{ Estilo::solesPe($kpis['monto']) }}</div></div>
-    <div class="cc-kpi cc-aparece" style="--i:2"><div class="cc-kpi-ico verde"><i class="bi bi-cash-coin"></i></div>
+    <div class="cc-kpi"><div class="cc-kpi-ico verde"><i class="bi bi-cash-coin"></i></div>
       <div class="cc-kpi-label">Capital pagado</div><div class="cc-kpi-valor mx-valor">{{ Estilo::solesPe($kpis['capital']) }}</div><div class="cc-kpi-sub">Base de la reversión</div></div>
-    <div class="cc-kpi cc-aparece" style="--i:3"><div class="cc-kpi-ico rojo"><i class="bi bi-arrow-left-right"></i></div>
+    <div class="cc-kpi"><div class="cc-kpi-ico rojo"><i class="bi bi-arrow-left-right"></i></div>
       <div class="cc-kpi-label">Reversión a COFIDE</div><div class="cc-kpi-valor mx-valor">{{ Estilo::solesPe($kpis['reversion']) }}</div><div class="cc-kpi-sub">Agregada (pari passu)</div></div>
-    <div class="cc-kpi cc-aparece" style="--i:4"><div class="cc-kpi-ico ambar"><i class="bi bi-dash-circle"></i></div>
+    <div class="cc-kpi"><div class="cc-kpi-ico ambar"><i class="bi bi-dash-circle"></i></div>
       <div class="cc-kpi-label">Pagos sin reversión</div><div class="cc-kpi-valor">{{ $kpis['sin'] }}</div><div class="cc-kpi-sub">Crédito no honrado a la fecha</div></div>
-    <div class="cc-kpi cc-aparece" style="--i:5"><div class="cc-kpi-ico verde"><i class="bi bi-arrow-repeat"></i></div>
+    <div class="cc-kpi"><div class="cc-kpi-ico verde"><i class="bi bi-arrow-repeat"></i></div>
       <div class="cc-kpi-label">Última sincronización</div><div class="cc-kpi-valor mx-valor">{{ $ultima?->finalizado_en->format('H:i') ?? '—' }}</div>
       <div class="cc-kpi-sub">{{ $ultima ? $ultima->finalizado_en->format('d/m/Y').' · automática cada 30 min' : 'Sin sincronizaciones' }}</div></div>
   </div>

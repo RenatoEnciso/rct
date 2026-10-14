@@ -59,7 +59,7 @@
   <div class="kpi-card rojo"><div class="kpi-label"><i class="bi bi-slash-circle"></i> Incompleto definitivo</div><div class="kpi-value">{{ Estilo::solesCorto($kpis['monto_definitivo']) }}</div><div class="kpi-sub">No regularizable</div></div>
 </div>
 
-<div class="grid2" style="margin-bottom:20px">
+<div class="grid2 mb-4">
   <div class="card">
     <div class="card-title"><i class="bi bi-graph-up"></i> Avance de revisiones · últimas 12 semanas</div>
     <div style="position:relative;height:240px"><canvas id="chart-avance" role="img" aria-label="Conformidades por semana"></canvas></div>
@@ -72,7 +72,7 @@
       @foreach($documentos->take(10) as $d)
         <div>
           <div class="metric-item-head">
-            <span>{{ $d['tipo']->nombre_corto }} @if($d['exigido_en'])<span class="badge badge-rojo" style="margin-left:4px">COFIDE</span>@endif</span>
+            <span>{{ $d['tipo']->nombre_corto }} @if($d['exigido_en'])<span class="badge badge-rojo ms-2">COFIDE</span>@endif</span>
             <span>{{ $d['faltan'] }} de {{ $d['aplica'] }} · {{ $pct($d['faltan'], $d['aplica']) }}%</span>
           </div>
           <div class="bar-track"><div class="bar-fill {{ $d['exigido_en'] ? 'danger' : 'warn' }}" style="width:{{ round($d['faltan'] / $max * 100) }}%"></div></div>
@@ -124,7 +124,6 @@
       </tbody>
     </table>
   </div>
-  <div style="height:12px"></div>
 </div>
 @endsection
 

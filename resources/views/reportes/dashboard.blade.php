@@ -107,7 +107,7 @@
   </div>
 </div>
 
-<div class="grid2" style="margin-bottom:20px">
+<div class="grid2 mb-4">
   <div class="card card-flush">
     <div class="card-head"><div class="card-title"><i class="bi bi-geo-alt"></i> Aprobación por zona</div></div>
     <div class="table-wrap">
@@ -164,7 +164,7 @@
   </div>
 </div>
 
-<div class="grid3" style="margin-bottom:20px">
+<div class="grid3 mb-4">
   <div class="card">
     <div class="card-title"><i class="bi bi-shop"></i> Tiendas con menor aprobación</div>
     <div class="metric-list">
@@ -260,7 +260,7 @@
     <div class="timeline">
       @forelse($actividadReciente as $fud)
         <div class="timeline-item {{ ['Aprobado' => 'ok', 'Observado' => 'warn', 'Rechazado' => 'danger'][$fud->estado_fud] ?? '' }}">
-          <div class="timeline-title">{{ $fud->cliente->nombre_cliente }} <span class="badge {{ Estilo::badge($fud->estado_fud) }}" style="margin-left:4px">{{ $fud->estado_fud }}</span></div>
+          <div class="timeline-title">{{ $fud->cliente->nombre_cliente }} <span class="badge {{ Estilo::badge($fud->estado_fud) }} ms-2">{{ $fud->estado_fud }}</span></div>
           <div class="timeline-meta">{{ $fud->tipo_negociacion_desc }} · {{ $fud->cliente->saldo_formateado }} · {{ $fud->aprobadoPor->name ?? $fud->enviador->name }} · {{ $fud->fecha_decision?->format('d/m/Y') }}</div>
         </div>
       @empty

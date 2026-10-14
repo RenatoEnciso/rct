@@ -129,7 +129,7 @@
     </div>
   </div>
 
-  <div class="grid2" style="margin-bottom:20px">
+  <div class="grid2 mb-4">
     <div class="card">
       <div class="card-title"><i class="bi bi-person-badge"></i> Alcance de su autonomía</div>
       @php
@@ -139,7 +139,7 @@
           3 => 'Casos escalados desde la Jefatura de Recuperaciones y excepciones fuera de su autonomía.',
         ];
       @endphp
-      <p class="fs-13 text-gris" style="margin:0">{{ $autonomias[$user->nivel()] ?? '' }}</p>
+      <p class="fs-13 text-gris m-0">{{ $autonomias[$user->nivel()] ?? '' }}</p>
     </div>
     <div class="card">
       <div class="card-title"><i class="bi bi-calendar-event"></i> Plazos de la campaña</div>

@@ -15,7 +15,6 @@
 <div class="cc">
   <div class="page-head cc-head">
     <div>
-      <div class="page-eyebrow">Impulso MyPerú · Etapa 3</div>
       <h2>Revisión de expedientes</h2>
       <p>Solo los documentos exigidos por COFIDE (Anexo 13) determinan el estado. Los demás se piden, pero no lo afectan.</p>
     </div>
@@ -40,7 +39,7 @@
 
   <div class="rv-estados">
     @foreach($meta as $g => [$color, $ico, $desc, $estadoBandeja])
-      <a href="{{ route('gobierno.index', array_filter(['estado' => $g === 'INCOMPLETO' ? null : $estadoBandeja, 'zona_id' => $zonaId, 'lote_id' => request('lote_id')])) }}" class="rv-estado {{ $color }} cc-aparece" style="--i:{{ $loop->index }}">
+      <a href="{{ route('gobierno.index', array_filter(['estado' => $g === 'INCOMPLETO' ? null : $estadoBandeja, 'zona_id' => $zonaId, 'lote_id' => request('lote_id')])) }}" class="rv-estado {{ $color }}">
         <span class="rv-estado-ico"><i class="bi {{ $ico }}"></i></span>
         <span class="rv-estado-n" data-contar="{{ $grupos[$g] }}" data-formato="num">{{ $grupos[$g] }}</span>
         <span class="rv-estado-g">{{ $g }}</span>
@@ -51,7 +50,7 @@
   </div>
 
   <div class="cc-fila cc-fila-2-1">
-    <div class="card cc-card cc-aparece" style="--i:4">
+    <div class="card cc-card">
       <div class="card-title"><i class="bi bi-file-earmark-check"></i> Cumplimiento por documento obligatorio</div>
       <p class="card-sub">% de expedientes que presentan cada documento del Anexo 13, sobre los que lo exigen.</p>
       <div class="cc-metas">
@@ -68,7 +67,7 @@
       </div>
     </div>
 
-    <div class="card cc-card cc-aparece" style="--i:5">
+    <div class="card cc-card">
       <div class="card-title"><i class="bi bi-journal-check"></i> Regla del Anexo 13</div>
       <div class="rv-regla">
         <div><strong>Persona natural · {{ $natural->count() }} obligatorios</strong>
@@ -83,7 +82,7 @@
 
   <div class="cc-fila" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr)">
     @foreach(['Por lote' => [$porLote, 'bi-collection'], 'Por zona' => [$porZona, 'bi-geo-alt']] as $titulo => [$filas, $ico])
-      <div class="card cc-card card-flush cc-aparece" style="--i:6">
+      <div class="card cc-card card-flush">
         <div class="card-head"><div class="card-title"><i class="bi {{ $ico }}"></i> {{ $titulo }}</div></div>
         <div class="table-wrap">
           <table>
@@ -94,14 +93,13 @@
                   <td class="cell-main">{{ $nombre }}</td>
                   <td class="num">{{ $g['PENDIENTE'] }}</td><td class="num">{{ $g['INCOMPLETO'] }}</td>
                   <td class="num">{{ $g['INCOMPLETO DEFINITIVO'] }}</td><td class="num fw-600">{{ $g['COMPLETO'] }}</td>
-                  <td><div class="bar-row"><div class="cc-barra cc-barra-sm" style="flex:1"><div class="cc-barra-fill ok" style="--w:{{ $g['pct_completo'] }}%"></div></div>
+                  <td><div class="bar-row"><div class="cc-barra cc-barra-sm flex-grow-1"><div class="cc-barra-fill ok" style="--w:{{ $g['pct_completo'] }}%"></div></div>
                     <span class="fs-12 fw-600 num" style="min-width:44px;text-align:right">{{ number_format($g['pct_completo'], 1) }}%</span></div></td>
                 </tr>
               @endforeach
             </tbody>
           </table>
         </div>
-        <div style="height:8px"></div>
       </div>
     @endforeach
   </div>

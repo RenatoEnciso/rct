@@ -1203,8 +1203,9 @@ a.file-chip:hover { border-color: var(--borde-fuerte); background: var(--sutil);
 /* Base matriz */
 .mx-kpis { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 .mx-valor { font-size: clamp(16px, 11cqi, var(--t-24)); }
-.cc .card.mx-filtros { display: flex; flex-direction: row; flex-wrap: wrap; gap: var(--s-3) var(--s-4); align-items: flex-end; padding: var(--s-4) var(--s-5); margin-bottom: var(--s-5); }
-.mx-filtros .field { min-width: 170px; flex: 1 1 170px; }
+.cc .card.mx-filtros, .card.mx-filtros { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--s-3) var(--s-4); align-items: end; padding: var(--s-4) var(--s-5); margin-bottom: var(--s-5); }
+.mx-filtros .field { min-width: 0; }
+.mx-filtros > :last-child:not(.field) { display: flex; gap: var(--s-2); align-items: center; }
 .mx-check { display: flex; align-items: center; gap: 6px; font-size: var(--t-13); margin: 0 0 9px; }
 .mx-tabla .mx-grupos th { background: var(--superficie); color: var(--gris); font-size: var(--t-12); text-transform: uppercase; letter-spacing: .05em; text-align: center; border-bottom: 1px solid var(--borde); border-left: 1px solid var(--borde); }
 .mx-total td { font-weight: 700; background: var(--sutil); border-top: 1px solid var(--borde-fuerte); }
@@ -1393,3 +1394,46 @@ body.modo-presentacion .toasts { top: 18px; }
   .cc-kpis:has(> :nth-child(4):last-child), .mx-kpis:has(> :nth-child(4):last-child) { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .cc-kpis:has(> :nth-child(5):last-child), .mx-kpis:has(> :nth-child(5):last-child) { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 }
+
+/* Banda de analítica a todo el ancho del patio (sin marco dentro de marco) */
+.card > .cc-analitica { margin: 0 calc(-1 * var(--s-5)); border-width: 1px 0; border-radius: 0; }
+.card > .cc-analitica + .cc-acciones { border-top: 0; }
+/* Montos de la tarjeta de prioridad: valores alineados en una sola línea base */
+.pr-montos { align-items: end; }
+.pr-montos div { justify-content: flex-end; }
+
+/* Número de paso: módulo cuadrado en tinta */
+.paso-n { display: inline-grid; place-items: center; flex: none; width: 22px; height: 22px; border-radius: 2px; background: var(--tinta); color: #fff; font-size: var(--t-12); font-weight: 700; font-variant-numeric: tabular-nums; }
+.field-accion { justify-content: flex-end; }
+/* Tabla con desplazamiento propio y encabezado fijo */
+.tabla-scroll { margin-top: var(--s-4); max-height: 420px; overflow-y: auto; border: 1px solid var(--borde); border-radius: var(--r); }
+.tabla-scroll thead th { position: sticky; top: 0; z-index: 1; }
+/* Banda de decisión (tipo, autonomía, lineamiento) */
+.banda-decision { margin: var(--s-5) 0 0; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.banda-decision .kpi-card { padding: var(--s-3) var(--s-4); }
+@media (max-width: 767.98px) { .banda-decision { grid-template-columns: minmax(0, 1fr); } }
+/* Tabla dentro de un patio sin relleno: llega a los muros */
+.tabla-patio .table-tools { padding: 0 var(--s-5); }
+.tabla-patio table th:first-child, .tabla-patio table td:first-child { padding-left: var(--s-5) !important; }
+.tabla-patio table th:last-child, .tabla-patio table td:last-child { padding-right: var(--s-5) !important; }
+.tabla-patio .rct-pager { padding: var(--s-3) var(--s-5) var(--s-4); }
+/* Bloque interno: fondo sutil con muro, para agrupar datos dentro de un modal o patio */
+.bloque { padding: var(--s-3) var(--s-4); background: var(--sutil); border: 1px solid var(--borde); border-radius: var(--r); }
+
+/* Estado del expediente con su friso */
+.estado-expediente { display: flex; align-items: center; gap: var(--s-4); flex-wrap: wrap; padding: var(--s-3) var(--s-5); margin-bottom: var(--s-5);
+  background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--r-lg); font-size: var(--t-13); }
+.friso-m.paso { background: var(--tinta); border-color: var(--tinta); }
+.friso-m.ultimo { box-shadow: 0 0 0 2px var(--superficie), 0 0 0 4px var(--rojo); margin: 0 3px; }
+.mb-patio { margin-bottom: var(--s-5); }
+.grid-traza { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); }
+@media (max-width: 1499.98px) { .grid-traza { grid-template-columns: minmax(0, 1fr); } }
+.quote-decision.ok { background: var(--verde-soft); border-color: var(--verde-line); }
+.quote-decision.rech { background: var(--peligro-soft); border-color: var(--peligro-line); }
+.fila-archivo { display: flex; justify-content: space-between; align-items: center; gap: var(--s-2); padding: var(--s-2) 0; border-bottom: 1px solid var(--linea); }
+.fila-archivo:last-child { border-bottom: 0; }
+.min-w-0 { min-width: 0; }
+.empty-sm { padding: var(--s-5) var(--s-4); }
+.celda-texto { white-space: normal !important; min-width: 200px; }
+.fila-anterior td { color: var(--gris); }
+.cc-barra-fill.neutro { background: var(--gris-claro); }

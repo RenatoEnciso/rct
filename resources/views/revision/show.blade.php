@@ -36,7 +36,7 @@
     <div><div class="detail-label">Fecha de carga</div><div class="detail-value">{{ $sustento->fecha_carga?->format('d/m/Y') ?? '—' }}</div></div>
   </div>
   @if($sustento->comentario_revision)
-    <div class="quote" style="margin-top:16px">
+    <div class="quote mt-3">
       <div class="quote-label">Comentario de la revisión · {{ $sustento->revisador->name ?? '' }} {{ $sustento->fecha_revision?->format('d/m/Y H:i') }}</div>
       {{ $sustento->comentario_revision }}
     </div>
@@ -81,11 +81,11 @@
           @endforeach
         </ul>
       @elseif($doc->estado_validacion === 'conforme')
-        <div class="fs-12 text-verde" style="margin-top:6px"><i class="bi bi-check-circle"></i> {{ ResultadoValidacion::MENSAJE_CONFORME }}</div>
+        <div class="fs-12 text-verde mt-2"><i class="bi bi-check-circle"></i> {{ ResultadoValidacion::MENSAJE_CONFORME }}</div>
       @endif
 
       @if($sustento->puedeRevisarse())
-        <div class="d-flex gap-3 flex-wrap align-items-start" style="margin-top:12px">
+        <div class="d-flex gap-3 flex-wrap align-items-start mt-3">
           <div class="segmented" role="radiogroup" aria-label="Decisión sobre el documento">
             <label><input type="radio" name="docs[{{ $doc->id }}][estado_revision]" form="form-observar" value="aprobado" @checked($doc->estado_revision === 'aprobado')>
               <span class="opt-ok"><i class="bi bi-check-lg"></i> {{ $doc->tieneObservacionesCarga() ? 'Conforme manual' : 'Aprobar' }}</span></label>
@@ -99,7 +99,7 @@
           <input type="hidden" name="docs[{{ $doc->id }}][id]" value="{{ $doc->id }}" form="form-observar">
         </div>
       @elseif($doc->comentario_revisor)
-        <div class="quote" style="margin-top:10px"><div class="quote-label">{{ $doc->conforme_manual ? 'Motivo de la conformidad manual' : 'Comentario del revisor' }}</div>{{ $doc->comentario_revisor }}</div>
+        <div class="quote mt-2"><div class="quote-label">{{ $doc->conforme_manual ? 'Motivo de la conformidad manual' : 'Comentario del revisor' }}</div>{{ $doc->comentario_revisor }}</div>
       @endif
     </div>
   @empty
@@ -109,7 +109,7 @@
   @if($sustento->historial->count())
     <details style="margin-top:16px">
       <summary class="fs-13 text-gris" style="cursor:pointer">Historial de documentos reemplazados ({{ $sustento->historial->count() }})</summary>
-      <div class="table-wrap" style="margin-top:10px">
+      <div class="table-wrap mt-2">
         <table>
           <thead><tr><th>Documento</th><th>Archivo</th><th>Validación</th><th>Comentario</th><th>Cargado</th><th></th></tr></thead>
           <tbody>
@@ -134,7 +134,7 @@
   <div class="card">
     <div class="card-title"><i class="bi bi-check2-square"></i> Decisión de la revisión</div>
     <div class="grid3">
-      <form action="{{ route('revision.aprobar', $sustento->id) }}" method="POST" class="card-plain" style="margin:0"
+      <form action="{{ route('revision.aprobar', $sustento->id) }}" method="POST" class="card-plain m-0"
             data-confirm="¿Confirma la conformidad de todos los documentos de este sustento?">
         @csrf
         <div class="form-section-title text-verde"><i class="bi bi-check-circle"></i> Dar conformidad</div>
@@ -143,10 +143,10 @@
                     {{ $conHallazgos ? 'required' : '' }}></textarea>
           @if($conHallazgos)<span class="field-hint">Los documentos observados por la validación automática quedarán como conformidad manual.</span>@endif
         </div>
-        <button type="submit" class="btn btn-success btn-block" style="margin-top:12px">Aprobar sustento</button>
+        <button type="submit" class="btn btn-success btn-block mt-3">Aprobar sustento</button>
       </form>
 
-      <form id="form-observar" action="{{ route('revision.observar', $sustento->id) }}" method="POST" class="card-plain" style="margin:0"
+      <form id="form-observar" action="{{ route('revision.observar', $sustento->id) }}" method="POST" class="card-plain m-0"
             data-confirm="El sustento volverá al ejecutivo para que corrija los documentos observados. ¿Continuar?">
         @csrf
         <div class="form-section-title text-mostaza"><i class="bi bi-arrow-return-left"></i> Observar</div>
@@ -154,10 +154,10 @@
           <textarea name="comentario" rows="3" required placeholder="Indique qué debe corregir el ejecutivo">{{ old('comentario') }}</textarea>
           <span class="field-hint">Marque arriba los documentos a observar.</span>
         </div>
-        <button type="submit" class="btn btn-warning btn-block" style="margin-top:12px">Devolver para corrección</button>
+        <button type="submit" class="btn btn-warning btn-block mt-3">Devolver para corrección</button>
       </form>
 
-      <form action="{{ route('revision.rechazar', $sustento->id) }}" method="POST" class="card-plain" style="margin:0"
+      <form action="{{ route('revision.rechazar', $sustento->id) }}" method="POST" class="card-plain m-0"
             data-confirm="El rechazo es definitivo. ¿Desea rechazar este sustento?">
         @csrf
         <div class="form-section-title text-danger"><i class="bi bi-x-circle"></i> Rechazar</div>
@@ -165,7 +165,7 @@
           <textarea name="comentario" rows="3" required placeholder="Motivo del rechazo"></textarea>
           <span class="field-hint">El rechazo es definitivo.</span>
         </div>
-        <button type="submit" class="btn btn-danger btn-block" style="margin-top:12px">Rechazar sustento</button>
+        <button type="submit" class="btn btn-danger btn-block mt-3">Rechazar sustento</button>
       </form>
     </div>
   </div>

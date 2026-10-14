@@ -27,10 +27,10 @@
 <div class="notice"><i class="bi bi-info-circle"></i><span><strong>Alcance de su autonomía:</strong> {{ $alcance[auth()->user()->nivel()] ?? '' }}</span></div>
 
 <div class="card card-flush">
-  <div class="card-head" style="padding-bottom:4px">
+  <div class="card-head">
     <div class="card-title"><i class="bi bi-inbox"></i> Propuestas pendientes</div>
   </div>
-  <div style="padding:0 20px">
+  <div class="tabla-patio">
     <div class="table-wrap">
       <table data-rct-table data-search-placeholder="Buscar cliente, operación o ejecutivo">
         <thead>
@@ -43,7 +43,7 @@
               <td>{{ $p->enviador->name }}<div class="cell-sub">{{ $p->cliente->tienda->nombre ?? '' }}</div></td>
               <td><div class="cell-main">{{ $p->cliente->nombre_cliente }}</div><div class="cell-sub">Op. {{ $p->cliente->operacion }}</div></td>
               <td class="num">{{ $p->cliente->saldo_formateado }}</td>
-              <td><span class="badge badge-gray">{{ $p->cliente->calificacion_rcc }}</span></td>
+              <td><span class="badge badge-gray">{{ ucfirst(mb_strtolower($p->cliente->calificacion_rcc)) }}</span></td>
               <td>{{ $p->tipo_negociacion_desc }}</td>
               <td>
                 @if($p->veces_observado > 0)
@@ -63,7 +63,6 @@
       </table>
     </div>
   </div>
-  <div style="height:16px"></div>
 </div>
 
 @foreach($pendientes as $p)
@@ -84,7 +83,7 @@
             <span><strong>Corrección {{ $p->veces_observado }}.</strong> Observación anterior: {{ $p->padre->comentario_aprobador }}</span></div>
         @endif
 
-        <div class="detail-grid" style="margin-bottom:16px">
+        <div class="detail-grid mb-3">
           <div><div class="detail-label">Operación</div><div class="detail-value">{{ $cli->operacion }}</div></div>
           <div><div class="detail-label">Saldo capital</div><div class="detail-value">{{ $cli->saldo_formateado }}</div></div>
           <div><div class="detail-label">Días de atraso</div><div class="detail-value">{{ $cli->dias_atraso }}</div></div>
@@ -94,7 +93,7 @@
         </div>
 
         @if($det)
-          <div class="card-plain" style="padding:14px;margin-bottom:16px">
+          <div class="bloque mb-3">
             <div class="quote-label">Condiciones propuestas</div>
             <div class="detail-grid">
               @if($p->tipo_negociacion === 'cuotas')
@@ -117,11 +116,11 @@
         @endif
 
         <div class="quote-label">Sustento del ejecutivo</div>
-        <div class="quote" style="margin-bottom:16px">{{ $p->motivo }}</div>
+        <div class="quote mb-3">{{ $p->motivo }}</div>
 
         @if($p->adjuntos->count())
           <div class="quote-label">Archivos adjuntos</div>
-          <div class="file-list" style="margin-bottom:16px">
+          <div class="file-list mb-3">
             @foreach($p->adjuntos as $adj)
               <a href="{{ route('fud.download', $adj) }}" class="file-chip"><i class="bi bi-file-earmark-arrow-down"></i><span>{{ $adj->nombre_archivo }}</span></a>
             @endforeach
@@ -134,7 +133,7 @@
             <label for="comentario-{{ $p->id }}">Comentario <span class="field-hint">(obligatorio al observar o rechazar)</span></label>
             <textarea id="comentario-{{ $p->id }}" name="comentario" rows="3" placeholder="Condiciones, observaciones o documentos faltantes"></textarea>
           </div>
-          <div class="field" style="margin-top:12px">
+          <div class="field mt-3">
             <label for="adj-{{ $p->id }}">Adjuntar archivos (opcional)</label>
             <input id="adj-{{ $p->id }}" type="file" name="adjuntos_aprobador[]" multiple accept=".pdf,.jpg,.jpeg,.png,.xlsx,.docx" class="input-rct">
           </div>

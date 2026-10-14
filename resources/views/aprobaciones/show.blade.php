@@ -21,16 +21,21 @@
   </div>
 </div>
 
-<div class="notice notice-neutral">
-  <i class="bi bi-geo"></i>
-  <div style="flex:1"><strong>Estado actual:</strong> {{ $resumen['etapa'] }}</div>
+@php $modulo = ['ok' => 'hecho', 'warn' => 'obs', 'danger' => 'rech']; @endphp
+<div class="estado-expediente">
+  <div class="friso friso-lg" role="img" aria-label="Etapas del expediente: {{ count($eventos) }} registradas">
+    @foreach($eventos as $e)
+      <span class="friso-m {{ $modulo[$e['estado']] ?? 'paso' }} {{ $loop->last ? 'ultimo' : '' }}" title="{{ $e['titulo'] }}"></span>
+    @endforeach
+  </div>
+  <div class="flex-grow-1"><strong>Estado actual:</strong> {{ $resumen['etapa'] }}</div>
   <span class="badge {{ Estilo::badge($resumen['estado_fud']) }}">Propuesta: {{ $resumen['estado_fud'] }}</span>
   @if($resumen['estado_sustento'])
     <span class="badge {{ Estilo::badge($resumen['estado_sustento']) }}">Sustento: {{ $resumen['estado_sustento'] === 'Aprobado' ? 'Conforme' : $resumen['estado_sustento'] }}</span>
   @endif
 </div>
 
-<div class="grid2" style="margin-bottom:20px">
+<div class="grid2 mb-patio">
   <div class="card">
     <div class="card-title"><i class="bi bi-person-vcard"></i> Cliente y crédito</div>
     <div class="detail-grid">
@@ -62,7 +67,7 @@
   </div>
 </div>
 
-<div class="grid2" style="grid-template-columns:1fr 1.15fr;margin-bottom:20px">
+<div class="grid2 grid-traza mb-patio">
   <div class="card">
     <div class="card-title"><i class="bi bi-clock-history"></i> Línea de tiempo</div>
     <div class="timeline">
@@ -96,7 +101,7 @@
                     <span class="badge badge-info">En revisión</span>
                   @endif
                 </td>
-                <td class="cell-sub" style="white-space:normal;min-width:180px">{{ $v->comentario_aprobador ?? '—' }}</td>
+                <td class="cell-sub celda-texto">{{ $v->comentario_aprobador ?? '—' }}</td>
               </tr>
             @endforeach
           </tbody>
@@ -118,7 +123,7 @@
                 <td class="nowrap">{{ $a['fecha']?->format('d/m/Y H:i') }}<div class="cell-sub">{{ $a['por'] }}</div></td>
               </tr>
             @empty
-              <tr><td colspan="4" class="empty-state" style="padding:18px"><span>Sin archivos adjuntos.</span></td></tr>
+              <tr><td colspan="4" class="empty-state empty-sm"><span>Sin archivos adjuntos.</span></td></tr>
             @endforelse
           </tbody>
         </table>
@@ -139,15 +144,15 @@
       <thead><tr><th>Documento</th><th>Archivo</th><th>Cargado</th><th>Validación automática</th><th>Resultado de la revisión</th></tr></thead>
       <tbody>
         @forelse($documentos as $d)
-          <tr style="{{ $d['vigente'] ? '' : 'opacity:.6' }}">
+          <tr class="{{ $d['vigente'] ? '' : 'fila-anterior' }}">
             <td class="cell-main">{{ $d['tipo'] }}</td>
             <td><div>{{ $d['nombre'] }}</div><div class="cell-sub">{{ $d['tamano'] }}</div></td>
             <td class="nowrap">{{ $d['cargado_en']?->format('d/m/Y H:i') ?? '—' }}<div class="cell-sub">{{ $sustento->cargador->name ?? '' }}</div></td>
-            <td style="white-space:normal;min-width:200px">
+            <td class="celda-texto">
               <span class="badge {{ Estilo::badge($d['auto_estado']) }}">{{ $d['automatica'] }}</span>
-              @foreach($d['hallazgos'] as $h)<div class="cell-sub" style="margin-top:3px">{{ $h }}</div>@endforeach
+              @foreach($d['hallazgos'] as $h)<div class="cell-sub mt-1">{{ $h }}</div>@endforeach
             </td>
-            <td style="white-space:normal;min-width:200px">
+            <td class="celda-texto">
               <div class="fs-13">{{ $d['resultado'] }}</div>
               @if($d['comentario'])<div class="cell-sub">«{{ $d['comentario'] }}»</div>@endif
             </td>

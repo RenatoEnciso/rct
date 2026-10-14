@@ -19,7 +19,6 @@
 <div class="cc">
   <div class="page-head cc-head">
     <div>
-      <div class="page-eyebrow">Analítica · Detección de anomalías</div>
       <h2>Alertas de control</h2>
       <p>Patrones inusuales en propuestas, aprobaciones y sustentos, comparados con el promedio de su zona.</p>
     </div>
@@ -38,14 +37,14 @@
   {{-- Contador por severidad (filtra al hacer clic) --}}
   <div class="al-sev">
     @foreach(['Alta', 'Media', 'Baja'] as $i => $s)
-      <a href="{{ $f(['severidad' => $sevActual === $s ? null : $s]) }}" class="al-sev-card {{ strtolower($s) }} {{ $sevActual === $s ? 'active' : '' }} cc-aparece" style="--i:{{ $i }}">
+      <a href="{{ $f(['severidad' => $sevActual === $s ? null : $s]) }}" class="al-sev-card {{ strtolower($s) }} {{ $sevActual === $s ? 'active' : '' }}">
         <span class="al-sev-ico"><i class="bi {{ $iconoSev[$s] }}"></i></span>
         <span><span class="al-sev-n" data-contar="{{ $porSev[$s] ?? 0 }}" data-formato="num">{{ $porSev[$s] ?? 0 }}</span><span class="al-sev-label">Severidad {{ strtolower($s) }}</span></span>
       </a>
     @endforeach
   </div>
 
-  <div class="card cc-card card-flush cc-aparece" style="--i:3">
+  <div class="card cc-card card-flush">
     <div class="card-head">
       <div class="cc-segmento al-estados" role="group" aria-label="Estado">
         @foreach($estados as $e => $lbl)

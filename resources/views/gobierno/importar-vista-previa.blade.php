@@ -80,7 +80,6 @@
       </table>
     </div>
   </div>
-  <div style="height:12px"></div>
 </div>
 <p class="cell-sub">D1 a D10: documentos del Excel en su orden (D1 = DNI o Reporte tributario con Ficha RUC · D10 = Evidencia de ingresos). Pase el cursor sobre cada encabezado para ver el nombre.</p>
 @endsection

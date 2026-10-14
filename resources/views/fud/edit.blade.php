@@ -30,7 +30,7 @@
   <i class="bi bi-chat-left-text"></i>
   <div>
     <strong>Observación del aprobador:</strong> {{ $fud->comentario_aprobador }}
-    <div class="fs-12" style="margin-top:2px">{{ $apr->name ?? '—' }} · {{ $fud->fecha_decision?->format('d/m/Y') }}</div>
+    <div class="fs-12 mt-1">{{ $apr->name ?? '—' }} · {{ $fud->fecha_decision?->format('d/m/Y') }}</div>
   </div>
 </div>
 

@@ -13,7 +13,6 @@
 <div class="cc">
   <div class="page-head cc-head">
     <div>
-      <div class="page-eyebrow">Analítica · Análisis de recaída</div>
       <h2>¿El beneficio funcionó?</h2>
       <p>Comportamiento de los clientes a 30, 60 y 90 días del beneficio pagado{{ $zonaNombre ? ' · Zona '.$zonaNombre : ' · Todas las zonas' }}.</p>
     </div>
@@ -30,7 +29,7 @@
 
   <div class="cc-fila rc-fila-1-2">
     {{-- KPI principal --}}
-    <div class="card cc-card rc-hero cc-aparece" style="--i:0">
+    <div class="card cc-card rc-hero">
       <div class="rc-hero-label">Recuperación sostenida a 90 días</div>
       @if($kpi['sostenida'] !== null)
         <div class="rc-hero-valor" data-contar="{{ $kpi['sostenida'] }}" data-formato="pct">{{ number_format($kpi['sostenida'], 1) }}%</div>
@@ -49,11 +48,11 @@
     </div>
 
     {{-- Curva por mes --}}
-    <div class="card cc-card cc-aparece" style="--i:1">
+    <div class="card cc-card">
       <div class="card-head">
         <div>
           <div class="card-title"><i class="bi bi-graph-down"></i> Recuperación sostenida por mes del beneficio</div>
-          <p class="card-sub" style="margin:0">% de clientes al día a los 30, 60 y 90 días, según el mes en que pagaron su beneficio.</p>
+          <p class="card-sub m-0">% de clientes al día a los 30, 60 y 90 días, según el mes en que pagaron su beneficio.</p>
         </div>
         <button type="button" class="btn btn-ghost btn-sm" data-ver-tabla="tabla-curva"><i class="bi bi-table"></i> Ver tabla</button>
       </div>
@@ -75,7 +74,7 @@
 
   <div class="cc-fila rc-fila-1-2">
     {{-- Por tipo de beneficio --}}
-    <div class="card cc-card cc-aparece" style="--i:2">
+    <div class="card cc-card">
       <div class="card-title"><i class="bi bi-diagram-3"></i> Recaída a 90 días por tipo de beneficio</div>
       <p class="card-sub">% de clientes que volvieron a atrasarse.</p>
       <div class="rc-tipos">
@@ -100,7 +99,7 @@
     </div>
 
     {{-- Clientes en riesgo --}}
-    <div class="card cc-card card-flush cc-aparece" style="--i:3">
+    <div class="card cc-card card-flush">
       <div class="card-head">
         <div class="card-title"><i class="bi bi-person-exclamation"></i> Clientes en riesgo de recaer</div>
         <span class="cell-sub">Beneficios de los últimos 90 días con mayor riesgo</span>
@@ -125,7 +124,6 @@
           </tbody>
         </table>
       </div>
-      <div style="height:8px"></div>
     </div>
   </div>
 </div>

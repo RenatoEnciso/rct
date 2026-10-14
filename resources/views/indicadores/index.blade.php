@@ -44,7 +44,7 @@
   </div>
 </div>
 
-<div class="grid2" style="margin-bottom:20px">
+<div class="grid2 mb-4">
   <div class="card">
     <div class="card-title"><i class="bi bi-calendar3"></i> Evolución mensual</div>
     <p class="card-sub">Propuestas enviadas y aprobadas por mes.</p>
@@ -63,7 +63,7 @@
         <div class="empty-state"><span>Aún no hay propuestas enviadas.</span></div>
       @endforelse
     </div>
-    <div class="d-flex gap-3 fs-12 text-gris" style="margin-top:14px">
+    <div class="d-flex gap-3 fs-12 text-gris mt-3">
       <span class="d-inline-flex align-items-center gap-1"><span style="width:10px;height:10px;border-radius:2px;background:var(--rojo)"></span> Aprobadas</span>
       <span class="d-inline-flex align-items-center gap-1"><span style="width:10px;height:10px;border-radius:2px;background:var(--borde-fuerte)"></span> Enviadas</span>
     </div>

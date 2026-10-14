@@ -30,14 +30,14 @@
 @if($fud->estaObservado() && $fud->enviado_por === auth()->id())
   <div class="notice-warning">
     <i class="bi bi-exclamation-triangle"></i>
-    <div style="flex:1">
+    <div class="flex-grow-1">
       <strong>Propuesta observada.</strong> {{ $fud->comentario_aprobador }}
     </div>
     <a href="{{ route('fud.edit', $fud) }}" class="btn btn-warning btn-sm"><i class="bi bi-pencil-square"></i> Corregir y reenviar</a>
   </div>
 @endif
 
-<div class="grid2" style="margin-bottom:20px">
+<div class="grid2 mb-patio">
   <div class="card">
     <div class="card-title"><i class="bi bi-person-vcard"></i> Cliente y crédito</div>
     <div class="detail-grid">
@@ -97,26 +97,26 @@
   <div class="card-title"><i class="bi bi-chat-left-text"></i> Sustento de la propuesta</div>
   <div class="quote">{{ $fud->motivo }}</div>
   @if($fud->comentario_aprobador && !$fud->estaObservado())
-    <div class="quote" style="margin-top:12px;border-left-color:{{ $fud->estaAprobado() ? 'var(--verde)' : 'var(--peligro)' }}">
+    <div class="quote quote-decision {{ $fud->estaAprobado() ? 'ok' : 'rech' }} mt-3">
       <div class="quote-label">Decisión de {{ $fud->aprobadoPor->name ?? 'el aprobador' }} · {{ $fud->fecha_decision?->format('d/m/Y') }}</div>
       {{ $fud->comentario_aprobador }}
     </div>
   @endif
 </div>
 
-<div class="grid2" style="margin-bottom:20px">
+<div class="grid2 mb-patio">
   <div class="card">
     <div class="card-title"><i class="bi bi-paperclip"></i> Archivos adjuntos <span class="badge badge-gray">{{ $fud->adjuntos->count() }}</span></div>
     @forelse($fud->adjuntos as $adj)
-      <div class="d-flex justify-content-between align-items-center gap-2" style="padding:8px 0;border-bottom:1px solid #eef0f2">
-        <div style="min-width:0">
+      <div class="fila-archivo">
+        <div class="min-w-0">
           <div class="fs-13 fw-600 text-truncate">{{ $adj->nombre_archivo }}</div>
           <div class="cell-sub">{{ $adj->tipo_adjunto }} · {{ $adj->subidor->name }} · {{ \Carbon\Carbon::parse($adj->created_at)->format('d/m/Y') }} · {{ $adj->size_formateado }}</div>
         </div>
         <a href="{{ route('fud.download', $adj) }}" class="btn btn-secondary btn-sm btn-icon" title="Descargar"><i class="bi bi-download"></i></a>
       </div>
     @empty
-      <div class="empty-state" style="padding:20px"><i class="bi bi-paperclip"></i><span>Sin archivos adjuntos.</span></div>
+      <div class="empty-state empty-sm"><i class="bi bi-paperclip"></i><span>Sin archivos adjuntos.</span></div>
     @endforelse
   </div>
 
@@ -131,7 +131,7 @@
         <div class="timeline-item {{ $cls }}">
           <div class="timeline-title">
             {{ $loop->first ? 'Envío inicial' : 'Corrección '.($loop->iteration - 1) }}
-            <span class="badge {{ $version->badgeClass() }}" style="margin-left:6px">{{ $version->estadoVisible() }}</span>
+            <span class="badge {{ $version->badgeClass() }} ms-1">{{ $version->estadoVisible() }}</span>
             @if($actual)<span class="cell-sub">· versión vigente</span>@endif
           </div>
           <div class="timeline-meta">{{ $version->fecha_envio->format('d/m/Y') }} · {{ $version->enviador->name ?? '' }}</div>

@@ -62,11 +62,11 @@
 
 <div class="card lin-section" id="sec-elegibilidad">
   <div class="card-title"><span class="lin-num">1</span> Criterios de elegibilidad</div>
-  <div class="grid2" style="margin-bottom:14px">
+  <div class="grid2 mb-3">
     <div class="lin-box"><h4>Inclusión en base</h4><p>El cliente debe figurar en la base mensual remitida por Recuperaciones. Inclusiones extraordinarias requieren visto bueno de Jefatura.</p></div>
     <div class="lin-box"><h4>Límite de uso</h4><p>Máximo <strong>4 veces por cada 12 meses</strong> (incluye campañas anteriores). Aplica para calificaciones Normal, CPP, Deficiente, Dudoso y Pérdida.</p></div>
     <div class="lin-box"><h4>Calificaciones RCC permitidas</h4>
-      <div class="d-flex gap-2 flex-wrap" style="margin-top:8px">
+      <div class="d-flex gap-2 flex-wrap mt-2">
         <span class="calif" style="background:#3c6e47">NORMAL</span>
         <span class="calif" style="background:#1f4e8c">CPP</span>
         <span class="calif" style="background:#a15c07">DEFICIENTE</span>
@@ -76,7 +76,7 @@
     </div>
     <div class="lin-box"><h4>Múltiples créditos en mora</h4><p>Si el cliente posee más de un crédito en mora, se gestionará la negociación conjunta de <strong>todos los créditos</strong> afectados.</p></div>
   </div>
-  <div class="notice-warning" style="margin:0"><i class="bi bi-exclamation-triangle"></i>
+  <div class="notice-warning m-0"><i class="bi bi-exclamation-triangle"></i>
     <span><strong>Excepción al límite de 4 veces:</strong> la calificación CPP/Deficiente requiere aprobación del Jefe de Recuperaciones. Dudoso/Pérdida requiere autorización del Coordinador Zonal por correo con copia a Jefatura.</span></div>
 </div>
 
@@ -125,7 +125,7 @@
       <div><div class="detail-label">Saldo capital a exonerar</div><div class="detail-value lg" id="res_capital">—</div></div>
       <div><div class="detail-label">Interés moratorio</div><div class="detail-value lg">100%</div></div>
     </div>
-    <div class="fs-13" style="margin-top:12px"><span class="text-gris">Autoriza:</span> <strong id="res_funcionario">—</strong></div>
+    <div class="fs-13 mt-3"><span class="text-gris">Autoriza:</span> <strong id="res_funcionario">—</strong></div>
   </div>
   <div id="calc_vacio" class="empty-state" style="padding:20px"><i class="bi bi-calculator"></i><span>Ingrese los parámetros para ver el beneficio máximo.</span></div>
 </div>
@@ -180,7 +180,7 @@
       'Créditos registrados por fraude (excepto rechazados por la aseguradora)', 'Créditos en proceso masivo de venta',
       'Créditos con respaldo de programas de Gobierno vigentes',
     ] as $exc)
-      <div class="d-flex gap-2 fs-13"><i class="bi bi-slash-circle text-rojo" style="margin-top:2px"></i><span>{{ $exc }}</span></div>
+      <div class="d-flex gap-2 fs-13"><i class="bi bi-slash-circle text-rojo mt-1"></i><span>{{ $exc }}</span></div>
     @endforeach
   </div>
 </div>

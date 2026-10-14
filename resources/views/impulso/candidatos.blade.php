@@ -8,32 +8,31 @@
 <div class="cc">
   <div class="page-head cc-head">
     <div>
-      <div class="page-eyebrow">Impulso MyPerú · Etapa 1 · Solicitud</div>
       <h2>Candidatos a honramiento</h2>
       <p>Créditos del programa que llegaron a {{ $dias }} o más días de atraso según el core y aún no están en un lote.</p>
     </div>
   </div>
 
   <div class="cc-kpis pr-kpis">
-    <div class="cc-kpi cc-aparece" style="--i:0">
+    <div class="cc-kpi">
       <div class="cc-kpi-ico rojo"><i class="bi bi-hourglass-split"></i></div>
       <div class="cc-kpi-label">Candidatos a solicitar</div>
       <div class="cc-kpi-valor" data-contar="{{ $candidatos->count() }}" data-formato="num">{{ $candidatos->count() }}</div>
       <div class="cc-kpi-sub">Con {{ $dias }} o más días de atraso</div>
     </div>
-    <div class="cc-kpi cc-aparece" style="--i:1">
+    <div class="cc-kpi">
       <div class="cc-kpi-ico azul"><i class="bi bi-cash-stack"></i></div>
       <div class="cc-kpi-label">Saldo insoluto de los candidatos</div>
       <div class="cc-kpi-valor">{{ Estilo::solesPe(\App\Services\Impulso\Calculos::sumar($candidatos->pluck('saldo_capital'))) }}</div>
       <div class="cc-kpi-sub">Según el core</div>
     </div>
-    <div class="cc-kpi cc-aparece" style="--i:2">
+    <div class="cc-kpi">
       <div class="cc-kpi-ico ambar"><i class="bi bi-calendar-event"></i></div>
       <div class="cc-kpi-label">Llegan a {{ $dias }} días en las próximas 2 semanas</div>
       <div class="cc-kpi-valor" data-contar="{{ $proximos->count() }}" data-formato="num">{{ $proximos->count() }}</div>
       <div class="cc-kpi-sub">Se sumarán como candidatos</div>
     </div>
-    <div class="cc-kpi cc-aparece" style="--i:3">
+    <div class="cc-kpi">
       <div class="cc-kpi-ico verde"><i class="bi bi-building"></i></div>
       <div class="cc-kpi-label">Personas jurídicas</div>
       <div class="cc-kpi-valor">{{ $candidatos->where('tipo_persona', 'juridica')->count() }}</div>
@@ -41,7 +40,7 @@
     </div>
   </div>
 
-  <form method="POST" action="{{ route('impulso.lotes.armar') }}" class="card cc-card card-flush cc-aparece" style="--i:4;margin-bottom:18px" id="form-lote">
+  <form method="POST" action="{{ route('impulso.lotes.armar') }}" class="card cc-card card-flush mb-3" id="form-lote">
     @csrf
     <div class="card-head">
       <div class="card-title"><i class="bi bi-list-check"></i> Créditos candidatos</div>
@@ -76,11 +75,10 @@
         </tbody>
       </table>
     </div>
-    <div style="height:8px"></div>
   </form>
 
   @if($proximos->isNotEmpty())
-    <div class="card cc-card card-flush cc-aparece" style="--i:5">
+    <div class="card cc-card card-flush">
       <div class="card-head"><div class="card-title"><i class="bi bi-calendar-week"></i> Próximos a {{ $dias }} días</div><span class="cell-sub">Aún no son candidatos</span></div>
       <div class="table-wrap">
         <table>
@@ -97,7 +95,6 @@
           </tbody>
         </table>
       </div>
-      <div style="height:8px"></div>
     </div>
   @endif
 </div>

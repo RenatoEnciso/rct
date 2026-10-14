@@ -28,7 +28,8 @@
   function contar(el) {
     var destino = parseFloat(el.getAttribute('data-contar')) || 0;
     var f = formato[el.getAttribute('data-formato')] || formato.num;
-    if (reducido || destino === 0) { el.textContent = f(destino); return; }
+    // En el trabajo diario la cifra aparece de inmediato; el conteo queda para el modo presentación
+    if (reducido || destino === 0 || !document.body.classList.contains('modo-presentacion')) { el.textContent = f(destino); return; }
     var dur = 1400, t0 = null;
     function paso(t) {
       if (!t0) t0 = t;

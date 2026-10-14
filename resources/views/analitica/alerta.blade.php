@@ -26,7 +26,7 @@
       <p>
         <span class="badge al-badge-sev {{ strtolower($a->severidad) }}">Severidad {{ strtolower($a->severidad) }}</span>
         <span class="badge {{ $claseEstado[$a->estado] ?? 'badge-gray' }}">{{ $a->estado }}</span>
-        <span class="text-gris" style="margin-left:6px">{{ $a->entidad_nombre }}{{ $a->zona ? ' · Zona '.$a->zona->nombre : '' }} · Detectada el {{ $a->detectada_en->format('d/m/Y') }}</span>
+        <span class="text-gris ms-2">{{ $a->entidad_nombre }}{{ $a->zona ? ' · Zona '.$a->zona->nombre : '' }} · Detectada el {{ $a->detectada_en->format('d/m/Y') }}</span>
       </p>
     </div>
     <div class="page-head-actions">
@@ -35,7 +35,7 @@
   </div>
 
   <div class="cc-fila cc-fila-2-1">
-    <div class="card cc-card cc-aparece" style="--i:0">
+    <div class="card cc-card">
       <div class="card-title"><i class="bi {{ $a->iconoTipo() }}"></i> Qué se detectó</div>
       <p class="al-desc">{{ $a->descripcion }}</p>
 
@@ -43,12 +43,12 @@
         <div class="al-comp-item">
           <span class="al-comp-label">{{ $etiquetaObs }}</span>
           <span class="al-comp-valor rojo">{{ $a->formato((float) $a->valor_observado) }}</span>
-          <div class="cc-barra"><div class="cc-barra-fill" style="background:var(--rojo);--w:{{ round($a->valor_observado / $max * 100, 1) }}%"></div></div>
+          <div class="cc-barra"><div class="cc-barra-fill danger" style="--w:{{ round($a->valor_observado / $max * 100, 1) }}%"></div></div>
         </div>
         <div class="al-comp-item">
           <span class="al-comp-label">{{ $etiquetaRef }}</span>
           <span class="al-comp-valor">{{ $a->formato((float) $a->valor_referencia) }}</span>
-          <div class="cc-barra"><div class="cc-barra-fill" style="background:#8a94a3;--w:{{ round($a->valor_referencia / $max * 100, 1) }}%"></div></div>
+          <div class="cc-barra"><div class="cc-barra-fill neutro" style="--w:{{ round($a->valor_referencia / $max * 100, 1) }}%"></div></div>
         </div>
         @if($a->comparacion())
           <div class="al-comp-lectura"><i class="bi bi-arrow-up-right-circle"></i> {{ ucfirst($a->comparacion()) }} · {{ $a->metrica }}</div>
@@ -56,7 +56,7 @@
       </div>
 
       <div class="al-grafico">
-        <div class="card-title" style="margin-top:6px"><i class="bi bi-bar-chart"></i> {{ $tituloGrafico }}</div>
+        <div class="card-title mt-2"><i class="bi bi-bar-chart"></i> {{ $tituloGrafico }}</div>
         @if(in_array($tipoSerie, ['mensual', 'barras']))
           <div class="cc-chart" style="height:{{ $tipoSerie === 'barras' ? max(180, count($serie['items'] ?? []) * 44 + 40) : 280 }}px">
             <canvas id="chart-alerta" role="img" aria-label="{{ $tituloGrafico }}"></canvas>
@@ -76,7 +76,7 @@
     </div>
 
     {{-- Gestión --}}
-    <div class="card cc-card cc-aparece" style="--i:1">
+    <div class="card cc-card">
       <div class="card-title"><i class="bi bi-clipboard-check"></i> Gestión de la alerta</div>
       <form method="POST" action="{{ route('alertas.estado', $a) }}" class="al-form">
         @csrf
@@ -96,10 +96,10 @@
           <textarea id="comentario" name="comentario" rows="4" required minlength="10" placeholder="Acción realizada o sustento de la decisión">{{ old('comentario') }}</textarea>
           <span class="field-hint">Queda registrado en el historial de la alerta y en la bitácora.</span>
         </div>
-        <button type="submit" class="btn btn-primary" style="width:100%"><i class="bi bi-check2"></i> Guardar estado</button>
+        <button type="submit" class="btn btn-primary w-100"><i class="bi bi-check2"></i> Guardar estado</button>
       </form>
 
-      <div class="card-title" style="margin-top:24px"><i class="bi bi-clock-history"></i> Historial</div>
+      <div class="card-title mt-4"><i class="bi bi-clock-history"></i> Historial</div>
       <div class="timeline">
         @foreach($a->historial as $h)
           <div class="timeline-item {{ ['Confirmada' => 'danger', 'Descartada' => 'ok', 'En revisión' => 'warn'][$h->estado_nuevo] ?? '' }}">

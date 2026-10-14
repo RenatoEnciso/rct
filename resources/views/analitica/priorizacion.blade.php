@@ -12,7 +12,6 @@
 <div class="cc">
   <div class="page-head cc-head">
     <div>
-      <div class="page-eyebrow">Analítica · Modelo de priorización</div>
       <h2>Priorización de cartera</h2>
       <p>Cartera pendiente de gestión en la campaña{{ $zonaNombre ? ' · Zona '.$zonaNombre : ' · Todas las zonas' }}, por segmento de prioridad.</p>
     </div>
@@ -28,25 +27,25 @@
   </div>
 
   <div class="cc-kpis pr-kpis">
-    <div class="cc-kpi cc-aparece" style="--i:0">
+    <div class="cc-kpi">
       <div class="cc-kpi-ico rojo"><i class="bi bi-bullseye"></i></div>
       <div class="cc-kpi-label">Créditos pendientes de prioridad alta</div>
       <div class="cc-kpi-valor" data-contar="{{ $resumen['alta'] }}" data-formato="num">{{ $resumen['alta'] }}</div>
       <div class="cc-kpi-sub">De {{ number_format($resumen['pendientes'], 0, '.', ' ') }} créditos pendientes</div>
     </div>
-    <div class="cc-kpi cc-aparece" style="--i:1">
+    <div class="cc-kpi">
       <div class="cc-kpi-ico azul"><i class="bi bi-cash-stack"></i></div>
       <div class="cc-kpi-label">Recupero esperado de la cartera prioritaria</div>
       <div class="cc-kpi-valor" data-contar="{{ round($resumen['esperado']) }}" data-formato="soles">{{ Estilo::solesEntero($resumen['esperado']) }}</div>
       <div class="cc-kpi-sub">Prioridad alta y media pendientes</div>
     </div>
-    <div class="cc-kpi cc-aparece" style="--i:2">
+    <div class="cc-kpi">
       <div class="cc-kpi-ico verde"><i class="bi bi-shield-check"></i></div>
       <div class="cc-kpi-label">Provisión liberable</div>
       <div class="cc-kpi-valor" data-contar="{{ round($resumen['provision']) }}" data-formato="soles">{{ Estilo::solesEntero($resumen['provision']) }}</div>
       <div class="cc-kpi-sub">Si se normaliza la cartera prioritaria</div>
     </div>
-    <div class="cc-kpi cc-aparece" style="--i:3">
+    <div class="cc-kpi">
       <div class="cc-kpi-ico ambar"><i class="bi bi-check2-circle"></i></div>
       <div class="cc-kpi-label">Cartera prioritaria ya gestionada</div>
       <div class="cc-kpi-valor" data-contar="{{ $resumen['gestionada'] }}" data-formato="pct">{{ number_format($resumen['gestionada'], 1) }}%</div>
@@ -54,11 +53,11 @@
     </div>
   </div>
 
-  <div class="card cc-card cc-aparece" style="--i:4;margin-bottom:18px">
+  <div class="card cc-card mb-3">
     <div class="card-head">
       <div>
         <div class="card-title"><i class="bi bi-grid-3x3"></i> Mapa de calor: {{ $porZona ? 'zona' : 'tienda' }} × segmento</div>
-        <p class="card-sub" style="margin:0">Créditos pendientes y recupero esperado. Mayor intensidad = mayor recupero esperado.</p>
+        <p class="card-sub m-0">Créditos pendientes y recupero esperado. Mayor intensidad = mayor recupero esperado.</p>
       </div>
       <div class="pr-escala" aria-hidden="true"><span>Menor</span><i></i><span>Mayor</span></div>
     </div>
@@ -91,7 +90,7 @@
               <td class="num fw-600">{{ Estilo::solesEntero($f['esperado']) }}</td>
               <td>
                 <div class="bar-row">
-                  <div class="cc-barra cc-barra-sm" style="flex:1"><div class="cc-barra-fill azul" style="--w:{{ $f['gestionada'] }}%"></div></div>
+                  <div class="cc-barra cc-barra-sm flex-grow-1"><div class="cc-barra-fill azul" style="--w:{{ $f['gestionada'] }}%"></div></div>
                   <span class="fs-12 fw-600 num" style="min-width:48px;text-align:right">{{ number_format($f['gestionada'], 1) }}%</span>
                 </div>
               </td>
@@ -102,7 +101,7 @@
     </div>
   </div>
 
-  <div class="card cc-card card-flush cc-aparece" style="--i:5">
+  <div class="card cc-card card-flush">
     <div class="card-head">
       <div class="card-title"><i class="bi bi-list-ol"></i> Créditos de prioridad alta pendientes</div>
       <span class="cell-sub">Los 12 de mayor puntaje</span>
@@ -126,7 +125,6 @@
         </tbody>
       </table>
     </div>
-    <div style="height:8px"></div>
   </div>
 </div>
 @endsection

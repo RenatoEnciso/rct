@@ -12,7 +12,6 @@
 <div class="cc">
   <div class="page-head cc-head">
     <div>
-      <div class="page-eyebrow">Impulso MyPerú · Etapa 4</div>
       <h2>Base matriz IMPULSO MYPERÚ</h2>
       <p>Fuente única de cada crédito honrado: lote y fechas, montos, documentación y recuperos pari passu.</p>
     </div>
@@ -27,7 +26,7 @@
               ['Reversión acumulada', $totales['reversion'], 'pe', 'bi-arrow-left-right', 'rojo'],
               ['Reversión devuelta a COFIDE', $totales['devuelta'], 'pe', 'bi-check2-all', 'verde'],
               ['Reversión pendiente de devolver', $totales['pendiente'], 'pe', 'bi-hourglass-split', 'ambar']] as $i => [$lbl, $v, $fmt, $ico, $color])
-      <div class="cc-kpi cc-aparece" style="--i:{{ $i }}">
+      <div class="cc-kpi">
         <div class="cc-kpi-ico {{ $color }}"><i class="bi {{ $ico }}"></i></div>
         <div class="cc-kpi-label">{{ $lbl }}</div>
         <div class="cc-kpi-valor mx-valor">{{ $fmt === 'pe' ? Estilo::solesPe($v) : $v }}</div>

@@ -2,11 +2,11 @@
 @use('App\Support\Estilo')
 @if(in_array($lote->estado, ['Cargado en COFIDE', 'Honrado', 'Honrado parcial']))
   @php $zonas = app(\App\Services\Impulso\Avisos::class)->resumenZonas($lote); @endphp
-  <div class="card cc-card cc-aparece" style="--i:8;margin-top:18px">
+  <div class="card cc-card mt-3">
     <div class="card-head">
       <div>
         <div class="card-title"><span class="lt-num">4</span> Honramiento de COFIDE</div>
-        <p class="card-sub" style="margin:0">Reporte detallado por crédito: saldo insoluto, interés devengado, factor de cobertura y monto a honrar.</p>
+        <p class="card-sub m-0">Reporte detallado por crédito: saldo insoluto, interés devengado, factor de cobertura y monto a honrar.</p>
       </div>
       @if($lote->esHonrado())
         <span class="lt-ok"><i class="bi bi-check-circle"></i> Reporte importado el {{ $lote->reporte_importado_en?->format('d/m/Y H:i') }} · {{ $lote->reporte_archivo }}</span>
@@ -16,7 +16,7 @@
     @if(!$lote->esHonrado())
       <form method="POST" action="{{ route('impulso.honramiento.previsualizar', $lote) }}" enctype="multipart/form-data" class="lt-import">
         @csrf
-        <div class="field" style="flex:1">
+        <div class="field flex-grow-1">
           <label for="archivo">Reporte de honramiento de COFIDE (Excel)</label>
           <input id="archivo" name="archivo" type="file" accept=".xlsx,.xls" required>
           <span class="field-hint">Al confirmar, cada crédito pasa a Honrado con su fecha y se avisa a las agencias de cada zona.</span>
@@ -25,7 +25,7 @@
         <a href="{{ route('impulso.honramiento.ejemplo', $lote) }}" class="btn btn-ghost"><i class="bi bi-download"></i> Reporte de ejemplo</a>
       </form>
     @else
-      <div class="card-title" style="margin-top:4px"><i class="bi bi-megaphone"></i> Aviso a las agencias por zona</div>
+      <div class="card-title mt-1"><i class="bi bi-megaphone"></i> Aviso a las agencias por zona</div>
       <p class="card-sub">
         {{ $lote->aviso_agencias_en ? 'Enviado el '.$lote->aviso_agencias_en->format('d/m/Y H:i').' (campana y correo).' : 'Aún no se envía.' }}
         Formato de nombre de archivo: <code>{{ \App\Services\Impulso\Avisos::formatoArchivo() }}</code> · PDF, un documento por archivo.

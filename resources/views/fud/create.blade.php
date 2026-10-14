@@ -12,7 +12,7 @@
 {{-- Paso 1 --}}
 <div class="card">
   <div class="card-head">
-    <div class="card-title"><span class="badge badge-rojo">Paso 1</span> Búsqueda del cliente en la base de campaña</div>
+    <div class="card-title"><span class="paso-n" aria-label="Paso 1">1</span> Búsqueda del cliente en la base de campaña</div>
     <span class="cell-sub" id="match-count">Cargando…</span>
   </div>
   <div class="notice"><i class="bi bi-info-circle"></i>
@@ -59,21 +59,21 @@
       <label for="filtro-operacion">Operación</label>
       <input id="filtro-operacion" data-filtro inputmode="numeric" placeholder="Número de operación">
     </div>
-    <div class="field" style="justify-content:flex-end">
+    <div class="field field-accion">
       <button type="button" class="btn btn-ghost" onclick="limpiarFiltros()"><i class="bi bi-x-circle"></i> Limpiar filtros</button>
     </div>
   </div>
 
-  <div class="table-wrap" style="margin-top:16px;max-height:420px;overflow-y:auto;border:1px solid var(--borde);border-radius:var(--radius)">
+  <div class="table-wrap tabla-scroll">
     <table>
-      <thead style="position:sticky;top:0;z-index:1">
+      <thead>
         <tr>
           <th>Cliente</th><th>Cuenta / Operación</th><th>Tienda</th><th class="num">Saldo capital</th>
           <th class="center">Atraso</th><th>Calificación</th><th>Negociación</th><th>Autonomía</th><th></th>
         </tr>
       </thead>
       <tbody id="tabla-clientes">
-        <tr><td colspan="9" class="empty-state"><span class="spinner" style="display:inline-block"></span></td></tr>
+        <tr><td colspan="9" class="empty-state"><span class="spinner d-inline-block"></span></td></tr>
       </tbody>
     </table>
   </div>
@@ -82,7 +82,7 @@
 {{-- Paso 2 --}}
 <div class="card" id="card-cliente" hidden>
   <div class="card-head">
-    <div class="card-title"><span class="badge badge-rojo">Paso 2</span> Datos del cliente seleccionado</div>
+    <div class="card-title"><span class="paso-n" aria-label="Paso 2">2</span> Datos del cliente seleccionado</div>
     <span class="badge badge-gray"><i class="bi bi-lock"></i> Información del sistema</span>
   </div>
   <div class="notice-warning notice-recaida" id="aviso-recaida" role="alert" hidden></div>
@@ -101,16 +101,16 @@
     @endforeach
   </div>
 
-  <div class="grid3 form-section">
-    <div class="card-plain" style="margin:0;padding:14px">
+  <div class="kpi-grid banda-decision">
+    <div class="kpi-card">
       <div class="detail-label">Tipo de negociación</div>
       <div class="detail-value lg text-rojo" id="info-tipo-neg">—</div>
     </div>
-    <div class="card-plain" style="margin:0;padding:14px">
+    <div class="kpi-card">
       <div class="detail-label">Autonomía requerida</div>
       <div class="detail-value lg" id="info-autonomia">—</div>
     </div>
-    <div class="card-plain" style="margin:0;padding:14px">
+    <div class="kpi-card">
       <div class="detail-label">Lineamiento de campaña</div>
       <div class="detail-value" id="info-lineamiento">—</div>
     </div>
@@ -119,7 +119,7 @@
 
 {{-- Paso 3 --}}
 <div class="card" id="card-propuesta" hidden>
-  <div class="card-title"><span class="badge badge-rojo">Paso 3</span> Propuesta de conciliación</div>
+  <div class="card-title"><span class="paso-n" aria-label="Paso 3">3</span> Propuesta de conciliación</div>
 
   <form method="POST" action="{{ route('fud.store') }}" id="form-fud" enctype="multipart/form-data">
     @csrf
@@ -156,7 +156,7 @@
         <div class="field"><label>¿Cierra el mes en situación vigente?</label>
           <select name="cierra_mes_vigente"><option value="1">Sí</option><option value="0">No</option></select></div>
       </div>
-      <div class="notice-warning" style="margin:14px 0 0"><i class="bi bi-exclamation-triangle"></i>
+      <div class="notice-warning mt-3 mb-0"><i class="bi bi-exclamation-triangle"></i>
         <span>Lo conciliado de cuotas atrasadas no debe superar el 50% del valor de la cuota pactada.</span></div>
     </div>
 
@@ -173,7 +173,7 @@
         <div class="field"><label>Búsqueda registral (SUNARP)</label>
           <select name="sunarp_positivo"><option value="0">Negativa</option><option value="1">Positiva — requiere informe</option></select></div>
       </div>
-      <div class="notice" style="margin:14px 0 0"><i class="bi bi-info-circle"></i>
+      <div class="notice mt-3 mb-0"><i class="bi bi-info-circle"></i>
         <span>Pago fraccionado: máximo 90 días desde la primera amortización.</span></div>
     </div>
 
@@ -206,7 +206,7 @@
       <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('input-adjuntos').click()">
         <i class="bi bi-paperclip"></i> Adjuntar archivos
       </button>
-      <span class="field-hint" style="margin-left:8px">PDF, imagen, Excel o Word · máximo 10 MB por archivo.</span>
+      <span class="field-hint ms-2">PDF, imagen, Excel o Word · máximo 10 MB por archivo.</span>
     </div>
 
     <div class="actions">

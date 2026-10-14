@@ -24,7 +24,7 @@
   </div>
 
   {{-- Avance del lote --}}
-  <div class="lt-pasos cc-aparece" style="--i:0">
+  <div class="lt-pasos">
     @foreach($pasos as $i => $p)
       @php $estadoPaso = $i < $actual ? 'hecho' : ($i === $actual ? ($lote->estado === 'Observado' ? 'error' : 'actual') : ''); @endphp
       <div class="lt-paso {{ $estadoPaso }}">
@@ -35,16 +35,16 @@
   </div>
 
   <div class="cc-kpis pr-kpis">
-    <div class="cc-kpi cc-aparece" style="--i:1"><div class="cc-kpi-ico azul"><i class="bi bi-list-ol"></i></div>
+    <div class="cc-kpi"><div class="cc-kpi-ico azul"><i class="bi bi-list-ol"></i></div>
       <div class="cc-kpi-label">Registros (RCT)</div><div class="cc-kpi-valor">{{ $lote->registros_rct }}</div>
       <div class="cc-kpi-sub">{{ $nj }} {{ $nj === 1 ? 'persona jurídica' : 'personas jurídicas' }}</div></div>
-    <div class="cc-kpi cc-aparece" style="--i:2"><div class="cc-kpi-ico rojo"><i class="bi bi-cash-stack"></i></div>
+    <div class="cc-kpi"><div class="cc-kpi-ico rojo"><i class="bi bi-cash-stack"></i></div>
       <div class="cc-kpi-label">Saldo insoluto total (RCT)</div><div class="cc-kpi-valor">{{ Estilo::solesPe($lote->saldo_rct) }}</div>
       <div class="cc-kpi-sub">Σ saldo insoluto de los créditos</div></div>
-    <div class="cc-kpi cc-aparece" style="--i:3"><div class="cc-kpi-ico verde"><i class="bi bi-shield-check"></i></div>
+    <div class="cc-kpi"><div class="cc-kpi-ico verde"><i class="bi bi-shield-check"></i></div>
       <div class="cc-kpi-label">{{ $lote->esHonrado() ? 'Monto honrado' : 'Monto a honrar (estimado)' }}</div><div class="cc-kpi-valor">{{ Estilo::solesPe($montoHonrar) }}</div>
       <div class="cc-kpi-sub">{{ $lote->esHonrado() ? 'Según el reporte de COFIDE' : '(saldo + interés) × cobertura' }}</div></div>
-    <div class="cc-kpi cc-aparece" style="--i:4"><div class="cc-kpi-ico ambar"><i class="bi bi-calendar-check"></i></div>
+    <div class="cc-kpi"><div class="cc-kpi-ico ambar"><i class="bi bi-calendar-check"></i></div>
       <div class="cc-kpi-label">Plazo de documentación</div>
       <div class="cc-kpi-valor">{{ $lote->fechaLimite()?->format('d/m/Y') ?? '—' }}</div>
       <div class="cc-kpi-sub">{{ $lote->fechaLimite() ? ($lote->diasRestantes() >= 0 ? $lote->diasRestantes().' días restantes' : 'Vencido hace '.abs($lote->diasRestantes()).' días') : 'Inicia con la conformidad de COFIDE' }}</div></div>
@@ -52,12 +52,12 @@
 
   <div class="lt-etapas">
     {{-- 1. Documentos --}}
-    <div class="card cc-card cc-aparece" style="--i:5">
+    <div class="card cc-card">
       <div class="card-title"><span class="lt-num">1</span> Notificación y plantilla de honramiento</div>
       <p class="card-sub">Notificación a COFIDE (Word) y plantilla con el formato de carga (Excel).</p>
       @if($lote->documentos_generados_en)
         <div class="lt-ok"><i class="bi bi-check-circle"></i> Generados el {{ $lote->documentos_generados_en->format('d/m/Y H:i') }}</div>
-        <div class="d-flex gap-2 flex-wrap" style="margin-top:12px">
+        <div class="d-flex gap-2 flex-wrap mt-3">
           <a href="{{ route('impulso.lotes.descargar', [$lote, 'word']) }}" class="btn btn-secondary btn-sm"><i class="bi bi-file-earmark-word"></i> Notificación (.docx)</a>
           <a href="{{ route('impulso.lotes.descargar', [$lote, 'excel']) }}" class="btn btn-secondary btn-sm"><i class="bi bi-file-earmark-excel"></i> Plantilla (.xlsx)</a>
         </div>
@@ -69,7 +69,7 @@
     </div>
 
     {{-- 2. Firma digital --}}
-    <div class="card cc-card cc-aparece" style="--i:6">
+    <div class="card cc-card">
       <div class="card-title"><span class="lt-num">2</span> Firma digital de los representantes</div>
       <p class="card-sub">Autorización de los representantes ante COFIDE para usar su firma digital.</p>
       <div class="lt-firmas">
@@ -91,7 +91,7 @@
     </div>
 
     {{-- 3. Confirmación de COFIDE --}}
-    <div class="card cc-card cc-aparece" style="--i:7">
+    <div class="card cc-card">
       <div class="card-title"><span class="lt-num">3</span> Confirmación de COFIDE</div>
       <p class="card-sub">N° de registros y saldo insoluto total que confirma la plataforma de COFIDE.</p>
       @if($lote->registros_cofide !== null)
@@ -123,7 +123,7 @@
 
   @includeIf('impulso._honramiento')
 
-  <div class="card cc-card card-flush cc-aparece" style="--i:9;margin-top:18px">
+  <div class="card cc-card card-flush mt-3">
     <div class="card-head"><div class="card-title"><i class="bi bi-list-ul"></i> Créditos del lote</div><span class="cell-sub">{{ $expedientes->count() }} créditos</span></div>
     <div class="table-wrap">
       <table data-rct-table data-page-size="15" data-search-placeholder="Buscar cliente, documento o crédito">
@@ -147,7 +147,6 @@
         </tbody>
       </table>
     </div>
-    <div style="height:12px"></div>
   </div>
 </div>
 @endsection

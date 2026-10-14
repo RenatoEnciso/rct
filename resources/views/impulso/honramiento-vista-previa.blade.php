@@ -67,7 +67,6 @@
         </tbody>
       </table>
     </div>
-    <div style="height:12px"></div>
   </div>
 </div>
 @endsection

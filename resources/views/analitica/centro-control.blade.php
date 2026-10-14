@@ -14,7 +14,6 @@
 <div class="cc">
   <div class="page-head cc-head">
     <div>
-      <div class="page-eyebrow">Analítica</div>
       <h2>Centro de control</h2>
       <p>{{ $campana ? 'Campaña «'.$campana->nombre.'»' : 'Recuperaciones' }}{{ $zonaNombre ? ' · Zona '.$zonaNombre : ' · Todas las zonas' }} · Datos al {{ $hoy->format('d/m/Y') }}</p>
     </div>
@@ -37,7 +36,7 @@
 
   {{-- Indicadores principales --}}
   <div class="cc-kpis">
-    <div class="cc-kpi cc-aparece" style="--i:0">
+    <div class="cc-kpi">
       <div class="cc-kpi-ico azul"><i class="bi bi-cash-stack"></i></div>
       <div class="cc-kpi-label">Monto recuperado</div>
       <div class="cc-kpi-valor" data-contar="{{ round($kpis['recuperado']) }}" data-formato="soles">{{ Estilo::solesEntero($kpis['recuperado']) }}</div>
@@ -50,31 +49,31 @@
         @endif
       </div>
     </div>
-    <div class="cc-kpi cc-aparece" style="--i:1">
+    <div class="cc-kpi">
       <div class="cc-kpi-ico verde"><i class="bi bi-shield-check"></i></div>
       <div class="cc-kpi-label">Provisión liberada</div>
       <div class="cc-kpi-valor" data-contar="{{ round($kpis['provision']) }}" data-formato="soles">{{ Estilo::solesEntero($kpis['provision']) }}</div>
       <div class="cc-kpi-sub">Por créditos normalizados y cancelados</div>
     </div>
-    <div class="cc-kpi cc-aparece" style="--i:2">
+    <div class="cc-kpi">
       <div class="cc-kpi-ico ambar"><i class="bi bi-percent"></i></div>
       <div class="cc-kpi-label">Monto condonado</div>
       <div class="cc-kpi-valor" data-contar="{{ round($kpis['condonado']) }}" data-formato="soles">{{ Estilo::solesEntero($kpis['condonado']) }}</div>
       <div class="cc-kpi-sub">{{ number_format($kpis['pct_condonado'], 1) }}% de la deuda negociada</div>
     </div>
-    <div class="cc-kpi cc-aparece" style="--i:3">
+    <div class="cc-kpi">
       <div class="cc-kpi-ico rojo"><i class="bi bi-graph-up-arrow"></i></div>
       <div class="cc-kpi-label">Recuperado por cada S/ 1 condonado</div>
       <div class="cc-kpi-valor" data-contar="{{ $kpis['ratio'] }}" data-formato="ratio">S/ {{ number_format($kpis['ratio'], 2) }}</div>
       <div class="cc-kpi-sub">Eficiencia del beneficio otorgado</div>
     </div>
-    <div class="cc-kpi cc-aparece" style="--i:4">
+    <div class="cc-kpi">
       <div class="cc-kpi-ico azul"><i class="bi bi-person-check"></i></div>
       <div class="cc-kpi-label">Clientes normalizados</div>
       <div class="cc-kpi-valor" data-contar="{{ $kpis['normalizados'] }}" data-formato="num">{{ number_format($kpis['normalizados'], 0, '.', ' ') }}</div>
       <div class="cc-kpi-sub">De {{ $kpis['beneficios'] }} beneficios pagados</div>
     </div>
-    <div class="cc-kpi cc-aparece" style="--i:5">
+    <div class="cc-kpi">
       <div class="cc-kpi-ico verde"><i class="bi bi-bank"></i></div>
       <div class="cc-kpi-label">Expedientes de programa completos</div>
       <div class="cc-kpi-valor" data-contar="{{ $gobPct }}" data-formato="pct">{{ number_format($gobPct, 1) }}%</div>
@@ -84,11 +83,11 @@
 
   <div class="cc-fila cc-fila-2-1">
     {{-- Tendencia --}}
-    <div class="card cc-card cc-aparece" style="--i:6">
+    <div class="card cc-card">
       <div class="card-head">
         <div>
           <div class="card-title"><i class="bi bi-bar-chart-line"></i> Recuperado y condonado por mes</div>
-          <p class="card-sub" style="margin:0">Frente a la meta mensual de las zonas{{ collect($tendencia)->last()['parcial'] ?? false ? ' · '.collect($tendencia)->last()['mes'].' al '.$hoy->format('d/m') : '' }}</p>
+          <p class="card-sub m-0">Frente a la meta mensual de las zonas{{ collect($tendencia)->last()['parcial'] ?? false ? ' · '.collect($tendencia)->last()['mes'].' al '.$hoy->format('d/m') : '' }}</p>
         </div>
         <button type="button" class="btn btn-ghost btn-sm" data-ver-tabla="tabla-tendencia"><i class="bi bi-table"></i> Ver tabla</button>
       </div>
@@ -106,7 +105,7 @@
     </div>
 
     {{-- Avance vs meta --}}
-    <div class="card cc-card cc-aparece" style="--i:7">
+    <div class="card cc-card">
       <div class="card-title"><i class="bi bi-flag"></i> Avance de la campaña frente a la meta</div>
       <p class="card-sub">
         @if($zonaId) Zona {{ $zonaNombre }} · recuperado y meta de cada mes de campaña.
@@ -135,7 +134,7 @@
   </div>
 
   {{-- Simulador de impacto --}}
-  <div class="card cc-card cc-sim cc-aparece" style="--i:8">
+  <div class="card cc-card cc-sim">
     <div class="cc-sim-grid">
       <div class="cc-sim-panel">
         <div class="card-title"><i class="bi bi-sliders"></i> Simulador de impacto</div>
@@ -166,7 +165,7 @@
 
   <div class="cc-fila cc-fila-2-1">
     {{-- Analítica --}}
-    <div class="card cc-card cc-aparece" style="--i:9">
+    <div class="card cc-card">
       <div class="card-title"><i class="bi bi-cpu"></i> Analítica de cartera</div>
       <div class="cc-analitica">
         <div class="cc-tile">
@@ -223,7 +222,7 @@
     </div>
 
     {{-- Top tiendas --}}
-    <div class="card cc-card cc-aparece" style="--i:10">
+    <div class="card cc-card">
       <div class="card-title"><i class="bi bi-trophy"></i> Tiendas con mayor recupero</div>
       @php $maxT = $tiendas->max('recuperado') ?: 1; @endphp
       <div class="cc-ranking">

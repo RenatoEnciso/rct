@@ -34,7 +34,7 @@
     <div style="position:relative;height:190px">
       <canvas id="chartDonut" role="img" aria-label="Distribución de sustentos por estado"></canvas>
     </div>
-    <div class="d-flex flex-wrap gap-2" style="margin-top:12px">
+    <div class="d-flex flex-wrap gap-2 mt-3">
       @foreach($distribucion['labels'] as $i => $lbl)
         <span class="d-inline-flex align-items-center gap-1 fs-12 text-gris">
           <span style="width:9px;height:9px;border-radius:2px;background:{{ $distribucion['colors'][$i] }};display:inline-block"></span>

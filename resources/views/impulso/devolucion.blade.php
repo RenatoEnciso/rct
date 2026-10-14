@@ -33,18 +33,18 @@
 
   {{-- Resultado del cruce --}}
   <div class="dv-hero" id="dv-hero" data-animar="{{ $animar && $cruzado ? 1 : 0 }}">
-    <div class="dv-cifra cc-aparece" style="--i:0">
+    <div class="dv-cifra">
       <span class="dv-cifra-lbl"><i class="bi bi-calculator"></i> Calculado por RCT</span>
       <span class="dv-cifra-val">{{ Estilo::solesPe($dev->monto_calculado) }}</span>
       <span class="dv-cifra-sub">{{ $dev->creditos }} créditos · {{ $dev->pagos }} pagos · capital × cobertura</span>
     </div>
     <div class="dv-igual" aria-hidden="true"><i class="bi bi-arrow-left-right"></i></div>
-    <div class="dv-cifra cc-aparece" style="--i:1">
+    <div class="dv-cifra">
       <span class="dv-cifra-lbl"><i class="bi bi-file-earmark-text"></i> Notificado por COFIDE (TXT)</span>
       <span class="dv-cifra-val">{{ $cruzado ? Estilo::solesPe($dev->monto_notificado) : '—' }}</span>
       <span class="dv-cifra-sub">{{ $cruzado ? $dev->txt_archivo.' · '.$dev->txt_importado_en->format('d/m/Y H:i') : 'Importe la notificación TXT para cruzar' }}</span>
     </div>
-    <div class="dv-diferencia {{ $cruzado ? ($cuadra ? 'cuadra' : 'error') : 'pendiente' }} cc-aparece" style="--i:2" id="dv-diferencia">
+    <div class="dv-diferencia {{ $cruzado ? ($cuadra ? 'cuadra' : 'error') : 'pendiente' }}" id="dv-diferencia">
       <span class="dv-dif-lbl">Diferencia</span>
       <span class="dv-dif-val" id="dv-dif-val" data-final="{{ $cruzado ? (string) $dev->diferencia : '' }}" data-inicio="{{ (string) $dev->monto_calculado }}">
         {{ $cruzado ? Estilo::solesPe($dev->diferencia) : '—' }}</span>
@@ -60,7 +60,7 @@
 
   <div class="cc-fila dv-cuerpo">
     {{-- Cruce crédito por crédito --}}
-    <div class="card cc-card card-flush cc-aparece" style="--i:3">
+    <div class="card cc-card card-flush">
       <div class="card-head">
         <div class="card-title"><i class="bi bi-list-check"></i> Cruce crédito por crédito</div>
         <span class="cell-sub">{{ $detalles->count() }} créditos · {{ $detalles->where('resultado', 'ok')->count() }} cuadran</span>
@@ -88,20 +88,19 @@
           </tbody>
         </table>
       </div>
-      <div style="height:8px"></div>
     </div>
 
     {{-- Acciones --}}
     <div class="dv-lado">
       @if($dev->cerrada())
-        <div class="card cc-card dv-cerrada cc-aparece" style="--i:4">
+        <div class="card cc-card dv-cerrada">
           <i class="bi bi-patch-check-fill"></i>
           <div><strong>Devuelta a COFIDE</strong>
             <span>{{ $dev->cerrado_en->format('d/m/Y H:i') }} · {{ $dev->cerrador->name ?? '' }}</span>
             @if($dev->justificacion)<span class="dv-justif">Cerrada con justificación: {{ $dev->justificacion }}</span>@endif</div>
         </div>
       @else
-        <div class="card cc-card cc-aparece" style="--i:4">
+        <div class="card cc-card">
           <div class="card-title"><span class="lt-num">1</span> Notificación TXT de COFIDE</div>
           <form method="POST" action="{{ route('impulso.devoluciones.cruzar', $dev) }}" enctype="multipart/form-data" class="dv-form">@csrf
             <input type="file" name="txt" accept=".txt" required aria-label="Archivo TXT de COFIDE">
@@ -112,12 +111,12 @@
             @if($cruzado)<a href="{{ route('impulso.devoluciones.txt', $dev) }}"><i class="bi bi-file-earmark-text"></i> TXT importado</a>@endif
           </div>
         </div>
-        <div class="card cc-card cc-aparece" style="--i:5">
+        <div class="card cc-card">
           <div class="card-title"><span class="lt-num">2</span> Cerrar la devolución</div>
           @if($cuadra)
             <p class="card-sub">Lo calculado por RCT cuadra al 100 % con COFIDE.</p>
             <form method="POST" action="{{ route('impulso.devoluciones.cerrar', $dev) }}">@csrf
-              <button class="btn btn-primary" style="width:100%"><i class="bi bi-check2-all"></i> Cerrar devolución por {{ Estilo::solesPe($dev->monto_calculado) }}</button>
+              <button class="btn btn-primary w-100"><i class="bi bi-check2-all"></i> Cerrar devolución por {{ Estilo::solesPe($dev->monto_calculado) }}</button>
             </form>
           @elseif($cruzado && $esJefe)
             <p class="card-sub">Hay diferencias. Solo se cierra con diferencia S/ 0,00 o con la justificación del Jefe de Recuperaciones.</p>
@@ -130,7 +129,7 @@
           @endif
         </div>
       @endif
-      <div class="card cc-card dv-regla cc-aparece" style="--i:6">
+      <div class="card cc-card dv-regla">
         <div class="card-title"><i class="bi bi-info-circle"></i> Cómo se calcula</div>
         <ul>
           <li>Reversión por pago = capital × factor de cobertura, solo si el crédito estaba honrado a la fecha del pago.</li>

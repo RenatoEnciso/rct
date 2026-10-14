@@ -41,7 +41,7 @@
         <div class="nom">«{{ $campana->nombre }}»</div>
         <div class="hero-progress"><span style="width:{{ $vigencia['pct'] }}%"></span></div>
         <div class="meta"><span>{{ $campana->fecha_inicio->format('d/m/Y') }}</span><span>{{ $campana->fecha_fin->format('d/m/Y') }}</span></div>
-        <div class="meta" style="margin-top:2px"><span><strong>{{ $vigencia['pct'] }}%</strong> transcurrido</span><span><strong>{{ $vigencia['restantes'] }}</strong> días restantes</span></div>
+        <div class="meta mt-1"><span><strong>{{ $vigencia['pct'] }}%</strong> transcurrido</span><span><strong>{{ $vigencia['restantes'] }}</strong> días restantes</span></div>
       </div>
     @endif
   </div>
@@ -148,7 +148,7 @@
           <div>
             <div class="agenda-tit">{{ $f['titulo'] }}</div>
             <div class="agenda-txt">{{ $f['detalle'] }}</div>
-            <div class="cell-sub" style="margin-top:2px">{{ $f['dias'] === 0 ? 'Hoy' : ($f['dias'] === 1 ? 'Mañana' : "En {$f['dias']} días") }}</div>
+            <div class="cell-sub mt-1">{{ $f['dias'] === 0 ? 'Hoy' : ($f['dias'] === 1 ? 'Mañana' : "En {$f['dias']} días") }}</div>
           </div>
         </div>
       @endforeach
@@ -200,7 +200,7 @@
 </div>
 
 {{-- Hoja de ruta --}}
-<div class="card" style="margin-top:20px">
+<div class="card mt-4">
   <div class="card-head">
     <div class="card-title"><i class="bi bi-signpost-2"></i> Hoja de ruta de RCT</div>
     <span class="cell-sub">Evolución planificada del sistema de recuperaciones</span>
@@ -211,7 +211,7 @@
         <div class="roadmap-fase">Fase {{ $i + 1 }}</div>
         <div class="roadmap-tit">{{ $tit }}</div>
         <div class="roadmap-txt">{{ $txt }}</div>
-        <span class="badge {{ ['Disponible' => 'badge-ok', 'En desarrollo' => 'badge-info', 'Piloto' => 'badge-info'][$estado] ?? 'badge-gray' }}" style="margin-top:8px">{{ $estado }}</span>
+        <span class="badge {{ ['Disponible' => 'badge-ok', 'En desarrollo' => 'badge-info', 'Piloto' => 'badge-info'][$estado] ?? 'badge-gray' }} mt-2">{{ $estado }}</span>
       </div>
     @endforeach
   </div>
@@ -226,7 +226,7 @@
     </div>
     <div class="rct-modal-body">
       <p class="fs-13" id="futuro-desc" style="margin:0 0 12px"></p>
-      <div class="notice" style="margin:0"><i class="bi bi-info-circle"></i>
+      <div class="notice m-0"><i class="bi bi-info-circle"></i>
         <span>Este módulo forma parte de la hoja de ruta de RCT (<strong id="futuro-fase"></strong>) y estará disponible en una próxima versión del sistema.</span></div>
     </div>
     <div class="rct-modal-foot actions" style="margin-top:0"><button type="button" class="btn btn-primary" data-modal-close>Entendido</button></div>
