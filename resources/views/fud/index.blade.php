@@ -50,7 +50,10 @@
             <td class="num">{{ $p->cliente->saldo_formateado }}</td>
             <td>{{ $vig->aprobador->name ?? '—' }}</td>
             <td>
-              <span class="badge {{ Estilo::badge($vig->estado_fud) }}">{{ $vig->estado_fud }}</span>
+              <div class="estado-celda">
+                <x-friso-expediente :estado-fud="$vig->estado_fud" :estado-sustento="$vig->sustentos->first()?->estado" :etiquetas="false" />
+                <span class="badge {{ Estilo::badge($vig->estado_fud) }}">{{ $vig->estado_fud }}</span>
+              </div>
               @if($vig->veces_observado > 0)<div class="cell-sub">Corrección {{ $vig->veces_observado }}</div>@endif
             </td>
             <td class="num nowrap">

@@ -554,7 +554,7 @@ td.empty-state { border-bottom: 0 !important; }
 .friso-m.obs   { background: var(--ambar-barra); border-color: var(--ambar-barra); }
 .friso-m.rech  { background: var(--peligro); border-color: var(--peligro); }
 .friso-m.info  { background: var(--azul); border-color: var(--azul); }
-.friso-m.actual { border: 2px solid var(--rojo); background: var(--rojo-soft); }
+.friso-m.actual { background: var(--rojo); border-color: var(--rojo); }
 .friso-lg .friso-m { width: 16px; height: 16px; }
 
 /* Pasos: el friso con rótulos */
@@ -804,7 +804,6 @@ a.file-chip:hover { border-color: var(--borde-fuerte); background: var(--sutil);
 
 /* ── 20. Portal de inicio ───────────────────────────────────── */
 .portal-hero { position: relative; border: 1px solid var(--borde); border-radius: var(--r-lg); padding: var(--s-6); margin-bottom: var(--s-5); background: var(--superficie); color: var(--tinta); }
-.portal-hero .eyebrow { font-size: var(--t-12); color: var(--gris); }
 .portal-hero h1 { color: var(--tinta); font-size: var(--t-24); margin: 2px 0 var(--s-1); font-weight: 600; letter-spacing: -.015em; }
 .portal-hero p { margin: 0; color: var(--gris); font-size: var(--t-14); }
 .portal-hero p strong { color: var(--tinta); }
@@ -983,7 +982,7 @@ a.file-chip:hover { border-color: var(--borde-fuerte); background: var(--sutil);
 .cc-acciones { margin-top: var(--s-5); padding-top: var(--s-4); border-top: 1px solid var(--borde); }
 .cc-acciones-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-3) var(--s-8); margin-top: var(--s-3); }
 .cc-accion { display: flex; gap: var(--s-3); align-items: center; }
-.cc-accion > .bi { flex: none; width: 32px; height: 32px; border-radius: var(--r); display: grid; place-items: center; background: var(--azul-soft); color: var(--azul); font-size: 15px; }
+.cc-accion > .bi { flex: none; width: 20px; display: grid; place-items: center; color: var(--gris-claro); font-size: 16px; }
 .cc-accion-body { flex: 1; min-width: 0; }
 .cc .card.cc-card.card-flush { padding: 0; }
 .cc .card.cc-card.card-flush > .card-head { padding: var(--s-5) var(--s-5) var(--s-1); margin: 0; }
@@ -998,7 +997,7 @@ a.file-chip:hover { border-color: var(--borde-fuerte); background: var(--sutil);
 .pr-dato-label { font-size: var(--t-12); color: var(--gris); }
 .pr-segbar { display: flex; gap: 3px; height: 28px; }
 .pr-segbar-item { display: flex; align-items: center; justify-content: center; min-width: 64px; font-size: var(--t-12); font-weight: 600; white-space: nowrap; border-radius: 2px; font-variant-numeric: tabular-nums; }
-.pr-segbar-item.alta  { background: var(--rojo); color: #fff; }
+.pr-segbar-item.alta  { background: var(--tinta); color: #fff; }
 .pr-segbar-item.media { background: var(--ambar-line); color: var(--ambar); }
 .pr-segbar-item.baja  { background: var(--borde); color: var(--gris); }
 
@@ -1013,7 +1012,7 @@ a.file-chip:hover { border-color: var(--borde-fuerte); background: var(--sutil);
 .pr-anillo-fondo { stroke: var(--borde); }
 .pr-anillo-valor { stroke-linecap: butt; stroke-dasharray: var(--valor) var(--total); }
 .cc-listo .pr-anillo-valor { stroke-dasharray: var(--valor) var(--total); }
-.pr-anillo.alta  .pr-anillo-valor { stroke: var(--rojo); }
+.pr-anillo.alta  .pr-anillo-valor { stroke: var(--tinta); }
 .pr-anillo.media .pr-anillo-valor { stroke: var(--ambar-barra); }
 .pr-anillo.baja  .pr-anillo-valor { stroke: var(--gris-claro); }
 .pr-anillo span { position: absolute; inset: 0; display: grid; place-items: center; font-size: var(--t-16); font-weight: 700; font-variant-numeric: tabular-nums; }
@@ -1031,7 +1030,7 @@ a.file-chip:hover { border-color: var(--borde-fuerte); background: var(--sutil);
 .pr-chips.compactos .pr-chip { padding: 1px 6px; white-space: nowrap; }
 .pr-card-pie { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .pr-accion { display: flex; gap: 10px; align-items: center; min-width: 0; }
-.pr-accion > .bi { flex: none; width: 32px; height: 32px; border-radius: var(--r); display: grid; place-items: center; background: var(--rojo-soft); color: var(--rojo); font-size: 15px; }
+.pr-accion > .bi { flex: none; width: 20px; display: grid; place-items: center; color: var(--gris-claro); font-size: 17px; }
 .pr-accion strong { display: block; font-size: var(--t-13); }
 .pr-accion span { display: block; font-size: var(--t-12); color: var(--gris); }
 
@@ -1145,16 +1144,16 @@ a.file-chip:hover { border-color: var(--borde-fuerte); background: var(--sutil);
 .lt-pasos { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 3px; margin-bottom: var(--s-5); padding: 0;
   background: none; border: 0; border-radius: 0; }
 .lt-paso { display: flex; align-items: center; gap: 10px; position: relative; color: var(--gris); font-size: var(--t-13);
-  padding: 12px 14px; background: var(--superficie); border: 1px solid var(--borde); border-top: 4px solid var(--borde); border-radius: 2px; }
+  padding: 12px 14px; background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--r-sm); }
 .lt-paso:not(:last-child)::after { display: none; }
 .lt-paso-n { flex: none; width: 24px; height: 24px; border-radius: 2px; display: grid; place-items: center; font-weight: 700;
   border: 1px solid var(--borde-fuerte); background: var(--superficie); font-size: var(--t-12); font-variant-numeric: tabular-nums; }
 .lt-paso-t { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.lt-paso.hecho { color: var(--tinta); border-top-color: var(--verde); }
+.lt-paso.hecho { color: var(--tinta); }
 .lt-paso.hecho .lt-paso-n { background: var(--verde); border-color: var(--verde); color: #fff; }
-.lt-paso.actual { color: var(--rojo); border-top-color: var(--rojo); background: var(--rojo-soft); border-color: var(--rojo-line); border-top-color: var(--rojo); }
+.lt-paso.actual { color: var(--rojo); background: var(--rojo-soft); border-color: var(--rojo-line); }
 .lt-paso.actual .lt-paso-n { border: 2px solid var(--rojo); color: var(--rojo); }
-.lt-paso.error { color: var(--peligro); border-top-color: var(--peligro); }
+.lt-paso.error { color: var(--peligro); background: var(--peligro-soft); border-color: var(--peligro-line); }
 .lt-paso.error .lt-paso-n { background: var(--peligro); border-color: var(--peligro); color: #fff; }
 .lt-etapas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-5); }
 .lt-num { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 2px; background: var(--tinta); color: #fff; font-size: var(--t-12); font-weight: 700; }
@@ -1242,7 +1241,7 @@ a.file-chip:hover { border-color: var(--borde-fuerte); background: var(--sutil);
 .dv-igual { display: grid; place-items: center; padding: 0 var(--s-2); color: var(--gris-claro); font-size: 22px; border-left: 1px solid var(--linea); border-right: 1px solid var(--linea); }
 .dv-diferencia { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 4px; padding: var(--s-5) var(--s-6);
   border-left: 1px solid var(--borde); background: var(--sutil); transition: background-color .4s, color .4s; min-width: 0; container-type: inline-size; }
-.dv-dif-lbl { font-size: var(--t-12); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--gris); }
+.dv-dif-lbl { font-size: var(--t-14); font-weight: 600; color: var(--gris); }
 .dv-dif-val { font-size: clamp(32px, 16cqi, var(--t-56)); font-weight: 700; letter-spacing: -.03em; line-height: 1.05; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .dv-dif-estado { font-size: var(--t-14); font-weight: 600; display: flex; align-items: center; gap: 6px; }
 .dv-diferencia.cuadra { background: var(--verde-soft); }
@@ -1424,7 +1423,6 @@ body.modo-presentacion .toasts { top: 18px; }
 .estado-expediente { display: flex; align-items: center; gap: var(--s-4); flex-wrap: wrap; padding: var(--s-3) var(--s-5); margin-bottom: var(--s-5);
   background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--r-lg); font-size: var(--t-13); }
 .friso-m.paso { background: var(--tinta); border-color: var(--tinta); }
-.friso-m.ultimo { box-shadow: 0 0 0 2px var(--superficie), 0 0 0 4px var(--rojo); margin: 0 3px; }
 .mb-patio { margin-bottom: var(--s-5); }
 .grid-traza { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); }
 @media (max-width: 1499.98px) { .grid-traza { grid-template-columns: minmax(0, 1fr); } }
@@ -1488,4 +1486,61 @@ body.modo-presentacion .toasts { top: 18px; }
 }
 @media (min-width: 1600px) {
   .kpi-grid:has(> :nth-child(6):last-child) { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+
+/* ── Pulido final ──────────────────────────────────────────── */
+/* Botón nativo de archivos con el vocabulario del sistema */
+::file-selector-button {
+  font: inherit; font-size: var(--t-12); font-weight: 600; margin-right: 10px; padding: 5px 10px; cursor: pointer;
+  border: 1px solid var(--borde-fuerte); border-radius: var(--r-sm); background: var(--sutil); color: var(--tinta);
+  transition: background-color var(--dur), border-color var(--dur);
+}
+::file-selector-button:hover { background: var(--borde); border-color: var(--gris-claro); }
+/* La marca del riel muestra el foco dentro de su caja (es fija y recortaría el anillo) */
+.riel-marca:focus-visible { box-shadow: inset 0 0 0 2px #fff; border-radius: 0; }
+/* Un patio sin relleno no lo recupera en pantallas angostas */
+.card.card-flush { padding: 0; }
+.im-core { flex-wrap: wrap; min-width: 0; }
+@media (max-width: 767.98px) {
+  .im-core-chip { white-space: normal; }
+  .im-nav { gap: 0; }
+  .im-tabs a { padding: 8px 10px; }
+}
+
+/* ── Correcciones de la revisión final ──────────────────────── */
+/* Friso del expediente con su etapa actual */
+.friso-exp { display: inline-flex; align-items: center; gap: var(--s-2); vertical-align: middle; }
+.friso-etiqueta { font-size: var(--t-12); color: var(--gris); white-space: nowrap; }
+.estado-celda { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+/* Tarjeta de prioridad: filas alineadas entre tarjetas vecinas */
+.pr-card-head { align-items: flex-start; }
+.pr-cliente { min-height: calc(2 * 1.3em); }
+.pr-montos { grid-template-columns: auto auto auto; justify-content: space-between; }
+.pr-lbl { white-space: nowrap; }
+.pr-card-pie { margin-top: auto; }
+/* Bandeja en celular: cada propuesta es un registro apilado */
+@media (max-width: 767.98px) {
+  .tabla-registros thead { display: none; }
+  .tabla-registros, .tabla-registros tbody { display: block; }
+  .tabla-registros tbody tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px var(--s-3); padding: var(--s-3) var(--s-4); border-bottom: 1px solid var(--linea); }
+  .tabla-registros tbody td { display: block; padding: 0 !important; border: 0 !important; white-space: normal !important; }
+  .tabla-registros tbody td:nth-child(3) { order: -2; grid-column: 1; }
+  .tabla-registros tbody td:nth-child(8) { order: -1; grid-column: 2; grid-row: 1 / span 2; align-self: center; }
+  .rct-main table.tabla-registros tbody td:nth-child(4) { text-align: left; font-weight: 600; }
+  .tabla-registros tbody td:nth-child(1), .tabla-registros tbody td:nth-child(6) { display: none; }
+  .tabla-registros tbody td[colspan] { grid-column: 1 / -1; }
+}
+/* Friso con rótulos visibles (trazabilidad y detalle) */
+.friso-rotulado { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-5); }
+.friso-paso { display: inline-flex; align-items: center; gap: 6px; font-size: var(--t-12); color: var(--gris); }
+.friso-paso.hecho { color: var(--tinta); }
+.friso-paso.actual { color: var(--rojo); font-weight: 600; }
+.friso-paso.obs { color: var(--ambar); font-weight: 600; }
+.friso-paso.rech { color: var(--peligro); font-weight: 600; }
+/* Registro móvil de la Bandeja: un solo bloque a todo el ancho */
+@media (max-width: 767.98px) {
+  .rct-main table.tabla-registros tbody tr:hover td, .rct-main table.tabla-registros tbody td { background: transparent !important; }
+  .rct-main table.tabla-registros tbody tr:hover { background: var(--sutil); }
+  .tabla-registros tbody td:nth-child(5), .tabla-registros tbody td:nth-child(7) { grid-column: 1; display: inline-block; }
+  .tabla-registros tbody td:nth-child(8) { grid-row: 1 / span 3; }
 }

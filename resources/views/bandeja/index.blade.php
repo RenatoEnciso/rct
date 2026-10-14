@@ -20,7 +20,7 @@
   </div>
   <div class="page-head-actions">
     <span class="badge badge-gray"><i class="bi bi-person-badge"></i> Nivel {{ auth()->user()->nivel() }} · {{ auth()->user()->rol->nombre }}</span>
-    <span class="badge {{ $pendientes->count() ? 'badge-rojo' : 'badge-ok' }}">{{ $pendientes->count() }} pendiente(s)</span>
+    <span class="badge {{ $pendientes->count() ? 'badge-rojo' : 'badge-ok' }}">{{ $pendientes->count() }} {{ $pendientes->count() === 1 ? 'pendiente' : 'pendientes' }}</span>
   </div>
 </div>
 
@@ -32,7 +32,7 @@
   </div>
   <div class="tabla-patio">
     <div class="table-wrap">
-      <table data-rct-table data-search-placeholder="Buscar cliente, operación o ejecutivo">
+      <table class="tabla-registros" data-rct-table data-search-placeholder="Buscar cliente, operación o ejecutivo">
         <thead>
           <tr><th>Enviado</th><th>Ejecutivo</th><th>Cliente</th><th class="num">Saldo capital</th><th>Calificación</th><th>Tipo</th><th>Envío</th><th></th></tr>
         </thead>
@@ -43,7 +43,7 @@
               <td>{{ $p->enviador->name }}<div class="cell-sub">{{ $p->cliente->tienda->nombre ?? '' }}</div></td>
               <td><div class="cell-main">{{ $p->cliente->nombre_cliente }}</div><div class="cell-sub">Op. {{ $p->cliente->operacion }}</div></td>
               <td class="num">{{ $p->cliente->saldo_formateado }}</td>
-              <td><span class="badge badge-gray">{{ ucfirst(mb_strtolower($p->cliente->calificacion_rcc)) }}</span></td>
+              <td><span class="badge badge-gray">{{ $p->cliente->calificacion_rcc === 'CPP' ? 'CPP' : ucfirst(mb_strtolower($p->cliente->calificacion_rcc)) }}</span></td>
               <td>{{ $p->tipo_negociacion_desc }}</td>
               <td>
                 @if($p->veces_observado > 0)
@@ -52,7 +52,7 @@
                   <span class="badge badge-gray">Primer envío</span>
                 @endif
               </td>
-              <td class="num"><button type="button" class="btn btn-primary btn-sm" data-modal-open="modal-{{ $p->id }}">Revisar</button></td>
+              <td class="num"><button type="button" class="btn btn-secondary btn-sm" data-modal-open="modal-{{ $p->id }}">Revisar</button></td>
             </tr>
           @empty
             <tr data-empty><td colspan="8" class="empty-state">

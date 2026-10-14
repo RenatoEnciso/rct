@@ -27,6 +27,10 @@
   </div>
 </div>
 
+<div class="estado-expediente">
+  <x-friso-expediente :estado-fud="$fud->estado_fud" :estado-sustento="$sustento?->estado" :etiquetas="false" :leyenda="true" />
+</div>
+
 @if($fud->estaObservado() && $fud->enviado_por === auth()->id())
   <div class="notice-warning">
     <i class="bi bi-exclamation-triangle"></i>

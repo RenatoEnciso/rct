@@ -1,0 +1,663 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-14T12:00:00-05:00",
+  "title": "Design System: RCT · Sistema de Recuperaciones",
+  "extensions": {
+    "colorMeta": {
+      "rojo": {
+        "role": "primary",
+        "displayName": "Rojo Caja Trujillo",
+        "tonalRamp": [
+          "#1f0002",
+          "#48050e",
+          "#7a061b",
+          "#a52834",
+          "#ce5056",
+          "#f97679",
+          "#feb4b2",
+          "#fee9e8"
+        ],
+        "canonical": "oklch(46.3% 0.171 20.8)"
+      },
+      "rojo-dark": {
+        "role": "primary",
+        "displayName": "Rojo profundo",
+        "tonalRamp": [
+          "#1f0002",
+          "#48050e",
+          "#7a061b",
+          "#a52834",
+          "#ce5056",
+          "#f97679",
+          "#feb4b2",
+          "#fee9e8"
+        ],
+        "canonical": "oklch(38.3% 0.140 20.5)"
+      },
+      "rojo-soft": {
+        "role": "primary",
+        "displayName": "Rojo suave",
+        "tonalRamp": [
+          "#1f0002",
+          "#48050e",
+          "#7a061b",
+          "#a52834",
+          "#ce5056",
+          "#f97679",
+          "#feb4b2",
+          "#fee9e8"
+        ],
+        "canonical": "oklch(96.4% 0.012 11.0)"
+      },
+      "rojo-line": {
+        "role": "primary",
+        "displayName": "Muro rojo",
+        "tonalRamp": [
+          "#1f0002",
+          "#48050e",
+          "#7a061b",
+          "#a52834",
+          "#ce5056",
+          "#f97679",
+          "#feb4b2",
+          "#fee9e8"
+        ],
+        "canonical": "oklch(88.9% 0.033 8.3)"
+      },
+      "tinta": {
+        "role": "secondary",
+        "displayName": "Tinta",
+        "tonalRamp": [
+          "#070b12",
+          "#20242c",
+          "#38404d",
+          "#555e6c",
+          "#778190",
+          "#9ba5b5",
+          "#c1cbdc",
+          "#e8eff9"
+        ],
+        "canonical": "oklch(25.8% 0.025 258.3)"
+      },
+      "verde": {
+        "role": "tertiary",
+        "displayName": "Verde conforme",
+        "tonalRamp": [
+          "#000f06",
+          "#022c18",
+          "#064d2d",
+          "#0d6f43",
+          "#3e9465",
+          "#65b988",
+          "#8be0ad",
+          "#cbfddd"
+        ],
+        "canonical": "oklch(51.5% 0.110 156.8)"
+      },
+      "verde-soft": {
+        "role": "tertiary",
+        "displayName": "Verde suave",
+        "tonalRamp": [
+          "#000f06",
+          "#022c18",
+          "#064d2d",
+          "#0d6f43",
+          "#3e9465",
+          "#65b988",
+          "#8be0ad",
+          "#cbfddd"
+        ],
+        "canonical": "oklch(96.4% 0.013 159.9)"
+      },
+      "verde-line": {
+        "role": "tertiary",
+        "displayName": "Muro verde",
+        "tonalRamp": [
+          "#000f06",
+          "#022c18",
+          "#064d2d",
+          "#0d6f43",
+          "#3e9465",
+          "#65b988",
+          "#8be0ad",
+          "#cbfddd"
+        ],
+        "canonical": "oklch(89.0% 0.038 159.8)"
+      },
+      "ambar": {
+        "role": "tertiary",
+        "displayName": "Ámbar observado",
+        "tonalRamp": [
+          "#160700",
+          "#381c00",
+          "#5e3405",
+          "#894c00",
+          "#b46d24",
+          "#db924d",
+          "#ffba7d",
+          "#feeada"
+        ],
+        "canonical": "oklch(54.3% 0.123 61.8)"
+      },
+      "ambar-soft": {
+        "role": "tertiary",
+        "displayName": "Ámbar suave",
+        "tonalRamp": [
+          "#160700",
+          "#381c00",
+          "#5e3405",
+          "#894c00",
+          "#b46d24",
+          "#db924d",
+          "#ffba7d",
+          "#feeada"
+        ],
+        "canonical": "oklch(97.3% 0.020 81.8)"
+      },
+      "ambar-line": {
+        "role": "tertiary",
+        "displayName": "Muro ámbar",
+        "tonalRamp": [
+          "#160700",
+          "#381c00",
+          "#5e3405",
+          "#894c00",
+          "#b46d24",
+          "#db924d",
+          "#ffba7d",
+          "#feeada"
+        ],
+        "canonical": "oklch(89.9% 0.060 83.5)"
+      },
+      "ambar-barra": {
+        "role": "tertiary",
+        "displayName": "Ámbar de barra",
+        "tonalRamp": [
+          "#160700",
+          "#381c00",
+          "#5e3405",
+          "#894c00",
+          "#b46d24",
+          "#db924d",
+          "#ffba7d",
+          "#feeada"
+        ],
+        "canonical": "oklch(68.9% 0.140 71.2)"
+      },
+      "azul": {
+        "role": "tertiary",
+        "displayName": "Azul informativo",
+        "tonalRamp": [
+          "#000a21",
+          "#0b2444",
+          "#0d3e7b",
+          "#2f5e9d",
+          "#5181c4",
+          "#74a7ec",
+          "#a9cdff",
+          "#e5f0ff"
+        ],
+        "canonical": "oklch(42.6% 0.115 256.6)"
+      },
+      "azul-soft": {
+        "role": "tertiary",
+        "displayName": "Azul suave",
+        "tonalRamp": [
+          "#000a21",
+          "#0b2444",
+          "#0d3e7b",
+          "#2f5e9d",
+          "#5181c4",
+          "#74a7ec",
+          "#a9cdff",
+          "#e5f0ff"
+        ],
+        "canonical": "oklch(95.9% 0.011 256.7)"
+      },
+      "azul-line": {
+        "role": "tertiary",
+        "displayName": "Muro azul",
+        "tonalRamp": [
+          "#000a21",
+          "#0b2444",
+          "#0d3e7b",
+          "#2f5e9d",
+          "#5181c4",
+          "#74a7ec",
+          "#a9cdff",
+          "#e5f0ff"
+        ],
+        "canonical": "oklch(87.5% 0.033 258.4)"
+      },
+      "peligro": {
+        "role": "tertiary",
+        "displayName": "Peligro",
+        "tonalRamp": [
+          "#1f0000",
+          "#480704",
+          "#7a0a05",
+          "#a52b20",
+          "#ce5344",
+          "#f87967",
+          "#feb6aa",
+          "#fee9e5"
+        ],
+        "canonical": "oklch(50.0% 0.182 29.5)"
+      },
+      "peligro-soft": {
+        "role": "tertiary",
+        "displayName": "Peligro suave",
+        "tonalRamp": [
+          "#1f0000",
+          "#480704",
+          "#7a0a05",
+          "#a52b20",
+          "#ce5344",
+          "#f87967",
+          "#feb6aa",
+          "#fee9e5"
+        ],
+        "canonical": "oklch(96.5% 0.014 22.8)"
+      },
+      "peligro-line": {
+        "role": "tertiary",
+        "displayName": "Muro de peligro",
+        "tonalRamp": [
+          "#1f0000",
+          "#480704",
+          "#7a0a05",
+          "#a52b20",
+          "#ce5344",
+          "#f87967",
+          "#feb6aa",
+          "#fee9e5"
+        ],
+        "canonical": "oklch(88.0% 0.043 25.1)"
+      },
+      "gris": {
+        "role": "neutral",
+        "displayName": "Gris de texto",
+        "tonalRamp": [
+          "#070b12",
+          "#20242c",
+          "#38404d",
+          "#555e6c",
+          "#778190",
+          "#9ba5b5",
+          "#c1cbdc",
+          "#e8eff9"
+        ],
+        "canonical": "oklch(52.3% 0.028 254.1)"
+      },
+      "gris-claro": {
+        "role": "neutral",
+        "displayName": "Gris claro",
+        "tonalRamp": [
+          "#070b12",
+          "#20242c",
+          "#38404d",
+          "#555e6c",
+          "#778190",
+          "#9ba5b5",
+          "#c1cbdc",
+          "#e8eff9"
+        ],
+        "canonical": "oklch(66.3% 0.025 258.4)"
+      },
+      "riel-texto": {
+        "role": "neutral",
+        "displayName": "Texto del riel",
+        "tonalRamp": [
+          "#070b12",
+          "#20242c",
+          "#38404d",
+          "#555e6c",
+          "#778190",
+          "#9ba5b5",
+          "#c1cbdc",
+          "#e8eff9"
+        ],
+        "canonical": "oklch(86.8% 0.010 252.8)"
+      },
+      "borde-fuerte": {
+        "role": "neutral",
+        "displayName": "Borde fuerte",
+        "tonalRamp": [
+          "#070b12",
+          "#20242c",
+          "#38404d",
+          "#555e6c",
+          "#778190",
+          "#9ba5b5",
+          "#c1cbdc",
+          "#e8eff9"
+        ],
+        "canonical": "oklch(86.8% 0.010 252.8)"
+      },
+      "borde": {
+        "role": "neutral",
+        "displayName": "Muro",
+        "tonalRamp": [
+          "#070b12",
+          "#20242c",
+          "#38404d",
+          "#555e6c",
+          "#778190",
+          "#9ba5b5",
+          "#c1cbdc",
+          "#e8eff9"
+        ],
+        "canonical": "oklch(92.4% 0.006 255.5)"
+      },
+      "linea": {
+        "role": "neutral",
+        "displayName": "Línea de fila",
+        "tonalRamp": [
+          "#070b12",
+          "#20242c",
+          "#38404d",
+          "#555e6c",
+          "#778190",
+          "#9ba5b5",
+          "#c1cbdc",
+          "#e8eff9"
+        ],
+        "canonical": "color-mix(in srgb, var(--borde) 55%, #fff)"
+      },
+      "fondo": {
+        "role": "neutral",
+        "displayName": "Plano",
+        "tonalRamp": [
+          "#070b12",
+          "#20242c",
+          "#38404d",
+          "#555e6c",
+          "#778190",
+          "#9ba5b5",
+          "#c1cbdc",
+          "#e8eff9"
+        ],
+        "canonical": "oklch(97.0% 0.003 264.5)"
+      },
+      "sutil": {
+        "role": "neutral",
+        "displayName": "Sutil",
+        "tonalRamp": [
+          "#070b12",
+          "#20242c",
+          "#38404d",
+          "#555e6c",
+          "#778190",
+          "#9ba5b5",
+          "#c1cbdc",
+          "#e8eff9"
+        ],
+        "canonical": "oklch(98.2% 0.002 247.8)"
+      },
+      "superficie": {
+        "role": "neutral",
+        "displayName": "Superficie (patio)",
+        "tonalRamp": [
+          "#070b12",
+          "#20242c",
+          "#38404d",
+          "#555e6c",
+          "#778190",
+          "#9ba5b5",
+          "#c1cbdc",
+          "#e8eff9"
+        ],
+        "canonical": "oklch(100.0% 0.000 89.9)"
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Una sola cifra héroe por pantalla (Recaída, cruce TXT); se ajusta al contenedor."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Título de página y del acceso."
+      },
+      "figure": {
+        "displayName": "Cifra",
+        "purpose": "Valor de KPI y montos protagonistas, tabular."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Título de patio, sección de formulario y estado vacío."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Texto base."
+      },
+      "ui": {
+        "displayName": "UI",
+        "purpose": "Celdas, botones, etiquetas de campo y de KPI, ítems del riel."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Encabezados de tabla, ayudas, metadatos, sellos. Mínimo legible."
+      },
+      "group-label": {
+        "displayName": "Rótulo de grupo",
+        "purpose": "Mayúsculas espaciadas solo para grupos del riel y títulos de sección con contenido propio; nunca encima de un título."
+      }
+    },
+    "shadows": [
+      {
+        "name": "sombra-flota",
+        "value": "0 2px 4px rgba(16, 24, 40, .06), 0 12px 32px rgba(16, 24, 40, .14)",
+        "purpose": "Notificaciones, avisos emergentes, asistente."
+      },
+      {
+        "name": "sombra-modal",
+        "value": "0 4px 8px rgba(16, 24, 40, .08), 0 24px 64px rgba(16, 24, 40, .24)",
+        "purpose": "Modales y riel abierto en móvil."
+      },
+      {
+        "name": "foco",
+        "value": "0 0 0 2px var(--superficie), 0 0 0 4px var(--rojo)",
+        "purpose": "Anillo único de foco con teclado."
+      },
+      {
+        "name": "foco-campo",
+        "value": "0 0 0 3px color-mix(in srgb, var(--rojo) 16%, transparent)",
+        "purpose": "Halo de campos enfocados."
+      },
+      {
+        "name": "muro-interno",
+        "value": "1px 0 0 var(--borde), 0 1px 0 var(--borde)",
+        "purpose": "Muros internos entre celdas de una banda; no es elevación."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease",
+        "value": "cubic-bezier(.2, .7, .2, 1)",
+        "purpose": "Curva única para cambios de estado."
+      },
+      {
+        "name": "dur",
+        "value": "160ms",
+        "purpose": "Hover y foco."
+      },
+      {
+        "name": "relleno-barra",
+        "value": ".4s–.6s var(--ease)",
+        "purpose": "Relleno de barras como confirmación de dato."
+      },
+      {
+        "name": "toast-in",
+        "value": ".25s var(--ease)",
+        "purpose": "Entrada del aviso emergente; barra de tiempo de 8 s."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "movil",
+        "value": "767.98px"
+      },
+      {
+        "name": "tableta",
+        "value": "991.98px"
+      },
+      {
+        "name": "laptop",
+        "value": "1199.98px"
+      },
+      {
+        "name": "escritorio",
+        "value": "1399.98px"
+      },
+      {
+        "name": "ancho",
+        "value": "1599.98px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botón principal",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Única acción principal de cada vista.",
+      "html": "<button class=\"ds-btn ds-btn-primary\">Nueva propuesta FUD</button>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:36px;padding:7px 14px;border:1px solid transparent;border-radius:6px;font-family:'Inter',system-ui,sans-serif;font-size:13px;font-weight:600;line-height:1.2;cursor:pointer;transition:background-color 160ms,border-color 160ms,color 160ms}.ds-btn:focus-visible{outline:none;box-shadow:0 0 0 2px #fff,0 0 0 4px #a3182c}.ds-btn-primary{background:#a3182c;border-color:#a3182c;color:#fff}.ds-btn-primary:hover,.ds-btn-primary:active{background:#7d1221;border-color:#7d1221}"
+    },
+    {
+      "name": "Botón secundario",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Acciones secundarias y acciones repetidas por fila.",
+      "html": "<button class=\"ds-btn-sec\">Exportar</button>",
+      "css": ".ds-btn-sec{display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:7px 14px;border:1px solid #cfd4da;border-radius:6px;background:#fff;color:#1c2430;font-family:'Inter',system-ui,sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:background-color 160ms,border-color 160ms}.ds-btn-sec:hover{background:#f8f9fa;border-color:#8a94a3}.ds-btn-sec:focus-visible{outline:none;box-shadow:0 0 0 2px #fff,0 0 0 4px #a3182c}"
+    },
+    {
+      "name": "Botones de decisión",
+      "kind": "button",
+      "refersTo": "button-success",
+      "description": "Aprobar (verde lleno); Observar y Rechazar en contorno de su color.",
+      "html": "<div class=\"ds-dec\"><button class=\"ds-d ds-ok\">Aprobar</button><button class=\"ds-d ds-warn\">Observar</button><button class=\"ds-d ds-no\">Rechazar</button></div>",
+      "css": ".ds-dec{display:flex;gap:8px}.ds-d{min-height:36px;padding:7px 14px;border:1px solid;border-radius:6px;font-family:'Inter',system-ui,sans-serif;font-size:13px;font-weight:600;cursor:pointer;background:#fff;transition:background-color 160ms}.ds-d:focus-visible{outline:none;box-shadow:0 0 0 2px #fff,0 0 0 4px #a3182c}.ds-ok{background:#1f7a4d;border-color:#1f7a4d;color:#fff}.ds-ok:hover{background:color-mix(in srgb,#000 18%,#1f7a4d)}.ds-warn{border-color:#f1dbb1;color:#a15c07}.ds-warn:hover{background:#fdf5e7}.ds-no{border-color:#f3cdc9;color:#b42318}.ds-no:hover{background:#fdf0ef}"
+    },
+    {
+      "name": "Campo",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Etiqueta de 13 px sobre control de 36 px con foco rojo.",
+      "html": "<label class=\"ds-field\"><span>Monto propuesto <b>*</b></span><input placeholder=\"S/ 0.00\"><small>Monto que el cliente pagará.</small></label>",
+      "css": ".ds-field{display:flex;flex-direction:column;gap:6px;font-family:'Inter',system-ui,sans-serif;max-width:280px}.ds-field span{font-size:13px;font-weight:500;color:#1c2430}.ds-field b{color:#a3182c}.ds-field input{min-height:36px;padding:7px 11px;border:1px solid #cfd4da;border-radius:6px;background:#fff;color:#1c2430;font:inherit;font-size:13px;transition:border-color 160ms,box-shadow 160ms}.ds-field input:hover:not(:focus){border-color:#8a94a3}.ds-field input:focus{outline:0;border-color:#a3182c;box-shadow:0 0 0 3px color-mix(in srgb,#a3182c 16%,transparent)}.ds-field small{font-size:12px;color:#5f6b7a}"
+    },
+    {
+      "name": "Riel de navegación",
+      "kind": "nav",
+      "refersTo": "nav-item",
+      "description": "Riel tinta con rótulos de grupo e ítem activo en rojo.",
+      "html": "<nav class=\"ds-riel\"><div class=\"ds-grupo\">Aprobación y control</div><a class=\"ds-nav ds-activo\" href=\"#\">Bandeja de aprobación <span class=\"ds-cnt\">4</span></a><a class=\"ds-nav\" href=\"#\">Mis aprobaciones</a><a class=\"ds-nav\" href=\"#\">Revisión de sustentos</a></nav>",
+      "css": ".ds-riel{width:256px;padding:12px;background:#1c2430;font-family:'Inter',system-ui,sans-serif}.ds-grupo{margin:8px 10px 6px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#8a94a3}.ds-nav{display:flex;align-items:center;gap:10px;min-height:34px;padding:6px 10px;margin-bottom:2px;border-radius:6px;color:#cfd4da;font-size:13px;font-weight:500;text-decoration:none;transition:background-color 160ms,color 160ms}.ds-nav:hover{background:color-mix(in srgb,#fff 7%,#1c2430);color:#fff}.ds-nav:focus-visible{outline:none;box-shadow:0 0 0 2px #1c2430,0 0 0 4px #fff}.ds-activo{background:#a3182c;color:#fff;font-weight:600}.ds-activo:hover{background:#a3182c}.ds-cnt{margin-left:auto;min-width:20px;padding:0 6px;border-radius:4px;background:#a3182c;color:#fff;font-size:12px;font-weight:600;line-height:18px;text-align:center}.ds-activo .ds-cnt{background:#fff;color:#a3182c}"
+    },
+    {
+      "name": "Sellos de estado",
+      "kind": "chip",
+      "refersTo": "badge-ok",
+      "description": "Estado nombrado en texto, con fondo, texto y muro de su familia.",
+      "html": "<div class=\"ds-sellos\"><span class=\"ds-b ds-b-ok\">Aprobado</span><span class=\"ds-b ds-b-pend\">Observado</span><span class=\"ds-b ds-b-no\">Rechazado</span><span class=\"ds-b ds-b-info\">En curso</span><span class=\"ds-b\">Borrador</span></div>",
+      "css": ".ds-sellos{display:flex;gap:6px;flex-wrap:wrap;font-family:'Inter',system-ui,sans-serif}.ds-b{display:inline-flex;align-items:center;padding:2px 8px;border:1px solid #e3e6ea;border-radius:4px;background:#f8f9fa;color:#5f6b7a;font-size:12px;font-weight:500;line-height:18px}.ds-b-ok{background:#ecf6f0;color:#1f7a4d;border-color:#c6e3d2}.ds-b-pend{background:#fdf5e7;color:#a15c07;border-color:#f1dbb1}.ds-b-no{background:#fdf0ef;color:#b42318;border-color:#f3cdc9}.ds-b-info{background:#edf2f9;color:#1f4e8c;border-color:#c9d7ec}"
+    },
+    {
+      "name": "Patio",
+      "kind": "card",
+      "refersTo": "patio",
+      "description": "Superficie blanca con muro de 1 px, sin sombra.",
+      "html": "<section class=\"ds-patio\"><h3>Propuestas por zona</h3><p>Últimos 30 días · todas las tiendas</p></section>",
+      "css": ".ds-patio{max-width:360px;padding:20px;background:#fff;border:1px solid #e3e6ea;border-radius:8px;font-family:'Inter',system-ui,sans-serif}.ds-patio h3{margin:0 0 4px;font-size:14px;font-weight:600;color:#1c2430}.ds-patio p{margin:0;font-size:13px;color:#5f6b7a}"
+    },
+    {
+      "name": "Banda de indicadores",
+      "kind": "custom",
+      "refersTo": "kpi-celda",
+      "description": "Un patio dividido en celdas por muros internos; único componente de KPI.",
+      "html": "<div class=\"ds-kpis\"><div class=\"ds-kpi\"><span class=\"ds-kl\">Monto recuperado</span><strong>S/ 7 276 344</strong><small>promedio mensual</small></div><div class=\"ds-kpi\"><span class=\"ds-kl ds-ok\">Aprobadas</span><strong>296</strong><small>de 361 propuestas</small></div><div class=\"ds-kpi\"><span class=\"ds-kl ds-warn\">Observadas</span><strong>18</strong><small>esperan corrección</small></div></div>",
+      "css": ".ds-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:#fff;border:1px solid #e3e6ea;border-radius:8px;overflow:hidden;font-family:'Inter',system-ui,sans-serif}.ds-kpi{padding:16px 20px;box-shadow:1px 0 0 #e3e6ea,0 1px 0 #e3e6ea}.ds-kl{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:#5f6b7a}.ds-kl.ds-ok::before,.ds-kl.ds-warn::before{content:'';width:8px;height:8px;border-radius:2px;background:#1f7a4d}.ds-kl.ds-warn::before{background:#d08a1e}.ds-kpi strong{display:block;margin:6px 0 2px;font-size:24px;font-weight:700;letter-spacing:-.02em;line-height:1.15;color:#1c2430;font-variant-numeric:tabular-nums;white-space:nowrap}.ds-kpi small{font-size:12px;color:#5f6b7a}"
+    },
+    {
+      "name": "Friso de etapas",
+      "kind": "custom",
+      "refersTo": "friso-modulo",
+      "description": "Sello del sistema: cinco módulos cuadrados, uno por etapa del expediente.",
+      "html": "<span class=\"ds-friso-exp\"><span class=\"ds-friso\" role=\"img\" aria-label=\"Etapas: propuesta enviada completa, decisión completa, sustento cargado en curso, revisión pendiente, cierre pendiente\"><i class=\"ds-m ds-hecho\"></i><i class=\"ds-m ds-hecho\"></i><i class=\"ds-m ds-actual\"></i><i class=\"ds-m\"></i><i class=\"ds-m\"></i></span><span class=\"ds-et\">Sustento cargado</span></span>",
+      "css": ".ds-friso-exp{display:inline-flex;align-items:center;gap:8px;font-family:'Inter',system-ui,sans-serif}.ds-friso{display:inline-flex;gap:3px}.ds-m{width:12px;height:12px;border-radius:2px;background:#fff;border:1px solid #cfd4da}.ds-hecho{background:#1c2430;border-color:#1c2430}.ds-actual{background:#a3182c;border-color:#a3182c}.ds-et{font-size:12px;color:#5f6b7a}"
+    }
+  ],
+  "narrative": {
+    "northStar": "La Ciudadela",
+    "overview": "RCT se construye como una ciudadela administrativa inspirada en Chan Chan: cada sección es un **patio** blanco delimitado por **muros de 1 px** sobre un único **plano** gris claro. No hay tarjetas flotando: la profundidad se declara una vez, con el muro. A la izquierda, el **riel** en tinta recorre la pantalla a alto completo con la marca CT; arriba, una barra blanca de 56 px con la fecha, el asistente, la campana y el usuario. El estado de cada expediente se lee en el **friso**, una banda de módulos cuadrados, uno por etapa: es el sello del sistema.\n\nEs una herramienta de trabajo diario para asesores, CZR, Jefatura y Gerencia, en escritorio (1920 y 1366 px). La densidad es alta pero ordenada: el usuario ve primero lo que debe decidir hoy, lee cada cifra de un vistazo (tabular, a la derecha, nunca truncada) y puede seguir un expediente hasta su cierre. El rojo institucional es escaso a propósito: marca la acción principal, la selección y el foco; los colores de estado aparecen solo donde significan algo.\n\nRechaza explícitamente la grilla gris de tarjetas blancas redondeadas con sombra, los KPIs con ícono dentro de un recuadro de color, las franjas laterales gruesas como acento y las coreografías de entrada.",
+    "keyCharacteristics": [
+      "Un solo plano (`fondo`) con patios blancos y muros de 1 px; sin sombras en reposo.",
+      "Riel de navegación en tinta a alto completo; ítem activo en rojo.",
+      "Un solo acento: el rojo, para acción, selección y foco.",
+      "Bandas de indicadores: un patio dividido en celdas por muros internos.",
+      "Cifras tabulares alineadas a la derecha, nunca cortadas con «…».",
+      "Geometría cuadrada: módulos de 2 px de radio, conectores rectos, hitos cuadrados.",
+      "Movimiento solo para comunicar estado (160 ms)."
+    ],
+    "rules": [
+      {
+        "name": "The One Voice Rule",
+        "body": "El rojo marca una sola acción principal por vista, la selección y el foco. Las acciones repetidas por fila son secundarias y la prioridad alta se pinta en tinta, no en rojo.",
+        "section": "colors"
+      },
+      {
+        "name": "The Meaningful Color Rule",
+        "body": "Verde, ámbar, azul y peligro aparecen solo cuando nombran un estado, y siempre acompañados de texto: el estado nunca depende solo del color.",
+        "section": "colors"
+      },
+      {
+        "name": "The Ink-Only Light Gray Rule",
+        "body": "`gris-claro` nunca es texto sobre fondo claro; sobre blanco el texto secundario es `gris`.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Figures Rule",
+        "body": "Toda cifra usa `tabular-nums`, se alinea a la derecha en tablas y no salta de línea. Una cifra nunca se corta con «…»: se ajusta al contenedor.",
+        "section": "typography"
+      },
+      {
+        "name": "The 12-Pixel Floor Rule",
+        "body": "Ningún texto baja de 12 px.",
+        "section": "typography"
+      },
+      {
+        "name": "The Wall-Not-Shadow Rule",
+        "body": "Un patio se separa del plano con su muro de 1 px, no con sombra. Si algo necesita sombra, es porque flota (capa, aviso, modal).",
+        "section": "elevation"
+      },
+      {
+        "name": "The No Nesting Rule",
+        "body": "Un patio no contiene otros patios. Para dividirlo se usan muros internos: bandas, filas, `form-section`, bloques `sutil`.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** separar cada sección con un patio blanco y muro de 1 px `#e3e6ea` sobre el plano `#f4f5f7`.",
+      "**Do** usar un único botón rojo `#a3182c` por vista para la acción principal; el resto, secundario o fantasma.",
+      "**Do** mostrar indicadores en una sola banda dividida por muros internos, con valores de 24 px 700 tabulares.",
+      "**Do** alinear las cifras a la derecha con `tabular-nums` y ajustarlas al contenedor en vez de truncarlas.",
+      "**Do** mostrar el estado del expediente con el friso de módulos cuadrados y nombrarlo también en texto.",
+      "**Do** reservar la sombra para lo que flota (notificaciones, avisos emergentes, asistente, modales).",
+      "**Do** usar 160 ms con `cubic-bezier(.2, .7, .2, 1)` para hover y foco, y respetar `prefers-reduced-motion`."
+    ],
+    "donts": [
+      "**Don't** anidar tarjetas dentro de tarjetas.",
+      "**Don't** usar franjas laterales o superiores gruesas como acento de color.",
+      "**Don't** poner íconos dentro de recuadros de color sobre cada cifra de KPI.",
+      "**Don't** usar degradados decorativos (los únicos degradados son funcionales: relleno del control deslizante y leyenda del mapa de calor).",
+      "**Don't** poner rótulos decorativos encima del título de página; arriba solo van migas con jerarquía real.",
+      "**Don't** animar entradas en cascada o con rebote; el movimiento solo comunica estado.",
+      "**Don't** escribir texto en `gris-claro` sobre fondo claro ni usar tamaños menores a 12 px.",
+      "**Don't** escribir colores a mano fuera de los tokens.",
+      "**Don't** cortar una cifra con «…»."
+    ]
+  }
+}

@@ -21,14 +21,9 @@
   </div>
 </div>
 
-@php $modulo = ['ok' => 'hecho', 'warn' => 'obs', 'danger' => 'rech']; @endphp
 <div class="estado-expediente">
-  <div class="friso friso-lg" role="img" aria-label="Etapas del expediente: {{ count($eventos) }} registradas">
-    @foreach($eventos as $e)
-      <span class="friso-m {{ $modulo[$e['estado']] ?? 'paso' }} {{ $loop->last ? 'ultimo' : '' }}" title="{{ $e['titulo'] }}"></span>
-    @endforeach
-  </div>
-  <div class="flex-grow-1"><strong>Estado actual:</strong> {{ $resumen['etapa'] }}</div>
+  <div class="flex-grow-1"><strong>Estado actual:</strong> {{ $resumen['etapa'] }}
+    <x-friso-expediente class="mt-2 d-flex" :estado-fud="$resumen['estado_fud']" :estado-sustento="$resumen['estado_sustento']" :etiquetas="false" :leyenda="true" /></div>
   <span class="badge {{ Estilo::badge($resumen['estado_fud']) }}">Propuesta: {{ $resumen['estado_fud'] }}</span>
   @if($resumen['estado_sustento'])
     <span class="badge {{ Estilo::badge($resumen['estado_sustento']) }}">Sustento: {{ $resumen['estado_sustento'] === 'Aprobado' ? 'Conforme' : $resumen['estado_sustento'] }}</span>

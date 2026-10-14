@@ -9,7 +9,7 @@ RCT funciona como una ciudadela administrativa. Las secciones son **patios** bla
 
 Reglas de fondo:
 
-- **Un solo acento.** El rojo institucional marca la acción principal, la selección y el foco. Nunca se usa como adorno.
+- **Un solo acento.** El rojo institucional marca la acción principal de cada pantalla (un botón), la selección y el foco. Nunca se usa como adorno. Las acciones repetidas por fila son secundarias, y la prioridad alta se pinta en tinta, no en rojo.
 - **Color con significado.** Los colores de estado aparecen solo cuando significan algo.
 - **Números alineados.** Cifras tabulares, alineadas a la derecha y sin salto de línea.
 - **Movimiento solo para el estado.** Nada de coreografías de entrada.
@@ -58,7 +58,7 @@ Inter (local, `public/vendor/inter`), con escala fija de razón ≈1,2 y sin tam
 | `--t-20` | 20 px | Cifras secundarias |
 | `--t-24` | 24 px | Título de página, valor de KPI |
 | `--t-32` | 32 px | Cifra protagonista de un patio |
-| `--t-44` · `--t-56` | 44 / 56 px | Una sola cifra héroe por pantalla (recaída, diferencia del cruce) |
+| `--t-44` · `--t-56` | 44 / 56 px | **Excepción de display**: una sola cifra héroe por pantalla (recuperación sostenida en Recaída, diferencia del cruce TXT) |
 
 - **Pesos:** 400 texto, 500 etiquetas, 600 títulos y botones, 700 cifras.
 - **Cifras:** siempre `font-variant-numeric: tabular-nums`.
@@ -103,7 +103,7 @@ Los patios no llevan sombra: la elevación se declara una sola vez, con el muro.
 
 ## Estructura
 
-- **Riel** (`.rct-sidebar`, 248 px). Agrupa la navegación por tarea. Cada grupo lleva un rótulo de sección (`.nav-section-label`) y el ítem activo se marca con `.nav-btn.active`. Los contadores (`.nav-count`) son sellos rojos cuadrados.
+- **Riel** (`.rct-sidebar`, 256 px). Agrupa la navegación por tarea. Cada grupo lleva un rótulo de sección (`.nav-section-label`) y el ítem activo se marca con `.nav-btn.active`. Los contadores (`.nav-count`) son sellos rojos cuadrados.
 - **Barra superior** (`.rct-header`, 56 px). Contiene la marca, las notificaciones y el usuario.
 - **Plano de trabajo** (`.rct-main`). Arriba va el encabezado de página (`.page-head`): título 24 px, descripción y acciones a la derecha. La acción principal es un único botón rojo.
 - **Migas de pan** (`.page-eyebrow`). Se usan solo con jerarquía real («Lotes de honramiento / 010 Lote»). Están prohibidos los rótulos decorativos encima del título.
@@ -128,25 +128,29 @@ Un solo patio dividido en celdas por muros internos. Es el **único** componente
 
 Las variantes por módulo (`.cc-kpis`, `.mx-kpis`, `.rv-estados`, `.al-sev`, `.tareas`) usan la misma banda. Con 4 o 5 indicadores la banda ajusta sus columnas para no dejar celdas vacías.
 
-### Friso de etapas · `.friso` > `.friso-m`
+### Friso de etapas · `<x-friso-expediente>`
 
-Sello del sistema: una banda de módulos cuadrados de 12 px (16 px con `.friso-lg`), uno por etapa.
+Es el sello del sistema: cinco módulos cuadrados, uno por etapa fija del expediente: propuesta enviada, decisión, sustento cargado, revisión del sustento y expediente cerrado.
 
-| Clase | Significado | Aspecto |
-| --- | --- | --- |
-| `.hecho` | Etapa completa | Verde |
-| `.obs` | Observada | Ámbar |
-| `.rech` | Rechazada o con diferencia | Rojo de peligro |
-| `.info` | En curso | Azul |
-| `.actual` | Etapa actual | Contorno rojo |
-| *(sin clase)* | Pendiente | Solo muro |
+| Estado de la etapa | Relleno |
+| --- | --- |
+| Completa | Tinta |
+| Actual | Rojo |
+| Observada | Ámbar |
+| Rechazada | Peligro |
+| Pendiente | Vacía (solo el borde) |
 
-Versiones con rótulos:
-
-- `.steps > .step`: genérico.
-- `.lt-pasos > .lt-paso`: lote de honramiento.
-
-La línea de tiempo (`.timeline`) usa el mismo vocabulario: hitos cuadrados y un conector recto de 1 px.
+- **Datos que usa:** el componente Blade (`resources/views/components/friso-expediente.blade.php`) recibe el estado del FUD y el del sustento y no ejecuta lógica de negocio. Cada módulo lleva su nombre en `title` y el conjunto tiene `aria-label`.
+- **Dónde va:**
+  - Trazabilidad.
+  - Detalle de la propuesta.
+  - Mis propuestas: siempre acompañado del sello con el estado en texto.
+- **Variantes:** con `.friso-lg` los módulos pasan de 12 a 16 px. Con `etiquetas` se muestra el nombre de la etapa actual.
+- **Versiones con rótulos:**
+  - `.steps > .step`: genérica.
+  - `.lt-pasos > .lt-paso`: lote de honramiento. El número cuadrado se rellena según el estado.
+- **Línea de tiempo** (`.timeline`): usa el mismo vocabulario, con hitos cuadrados y un conector recto de 1 px.
+- **No va en la Bandeja:** todas sus filas están en la misma etapa.
 
 ### Sellos de estado · `.badge`
 

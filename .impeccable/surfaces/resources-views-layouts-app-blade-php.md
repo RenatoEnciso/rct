@@ -9,6 +9,8 @@ related_targets: ["public/assets/css/rct.css"]
 
 Modo: Operate. Audiencia: asesores, CZR, Jefatura y Gerencia de Recuperaciones de Caja Trujillo, todo el día en escritorio (1920 y 1366). Tarea: priorizar, proponer, aprobar, sustentar, controlar programas de gobierno y leer la analítica. Restricciones: paleta actual fija; solo cambios visuales; recursos locales.
 
+Adaptaciones citadas tras la revisión final: (1) la barra superior muestra la fecha del día en lugar de migas; las migas viven en el encabezado de cada pantalla de detalle, junto al título. (2) El friso va en trazabilidad, detalle del expediente, Mis propuestas y lote (pasos rotulados); no en la Bandeja, porque todas sus filas están en la misma etapa (decisión pendiente) y el friso no aportaría información. (3) Formato de moneda: viene de accesores del modelo y helpers PHP fuera del alcance visual; queda como deuda.
+
 Decisión de dirección: el usuario pidió trabajar sin rondas de decisión; se construye la dirección asignada por la tirada (candidata 7 de la lista propia, ordenada por resonancia).
 
 Lista propia ordenada: 1 expediente foliado con sellos de recepción · 2 tarjeta de control de pagos con casilleros sellados · 3 libreta de ahorros y voucher de ventanilla · 4 reporte crediticio de la SBS · 5 ticket de turno y señalética de agencia · 6 billetes del BCRP · 7 ciudadela de Chan Chan (patios, muros y depósitos administrados).

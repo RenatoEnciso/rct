@@ -64,7 +64,7 @@
             <div class="pr-card-titulo">
               <div class="pr-rank">#{{ $i + 1 }} · Prioridad {{ strtolower($p->segmento) }}</div>
               <div class="pr-cliente">{{ $c->nombre_cliente }}</div>
-              <div class="pr-sub">{{ $c->credito_sicmact }} · {{ $c->dias_atraso }} días · {{ ucfirst(mb_strtolower($c->calificacion_rcc)) }}</div>
+              <div class="pr-sub">{{ $c->credito_sicmact }} · {{ $c->dias_atraso }} días · {{ $c->calificacion_rcc === 'CPP' ? 'CPP' : ucfirst(mb_strtolower($c->calificacion_rcc)) }}</div>
             </div>
           </header>
 
@@ -83,7 +83,7 @@
               <i class="bi {{ PriorizacionCartera::iconoAccion($p->accion_sugerida) }}"></i>
               <div><strong>{{ $p->accion_sugerida }}</strong><span>Mejor horario: {{ $p->mejor_horario }}</span></div>
             </div>
-            <a href="{{ route('fud.create', ['cliente' => $c->id]) }}" class="btn btn-primary btn-sm">Gestionar <i class="bi bi-arrow-right"></i></a>
+            <a href="{{ route('fud.create', ['cliente' => $c->id]) }}" class="btn btn-secondary btn-sm">Gestionar <i class="bi bi-arrow-right"></i></a>
           </footer>
         </article>
       @endforeach
