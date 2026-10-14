@@ -5,7 +5,6 @@
 @php
   $h = (int) now()->format('G');
   $saludo = $h < 12 ? 'Buenos días' : ($h < 19 ? 'Buenas tardes' : 'Buenas noches');
-  $fecha = ucfirst(now()->locale('es')->translatedFormat('l, j \d\e F \d\e Y'));
   $pendientesHoy = collect($tareas)->filter(fn($t) => in_array($t[5], ['danger', 'warn']))->sum(fn($t) => $t[1]);
   $noLeidas = app(\App\Services\Notificaciones::class)->noLeidas($user);
   $inicial = fn($n) => collect(explode(' ', $n))->filter()->take(2)->map(fn($p) => mb_strtoupper(mb_substr($p, 0, 1)))->implode('');
@@ -15,9 +14,8 @@
 <section class="portal-hero">
   <div class="hero-grid">
     <div>
-      <div class="eyebrow">{{ $fecha }}@if($user->tienda) · {{ $user->tienda->nombre }} · Zona {{ $user->tienda->zona->nombre ?? '' }}@endif</div>
       <h1>{{ $saludo }}, {{ $user->name }}</h1>
-      <p>{{ $user->rol->nombre }} ·
+      <p>{{ $user->rol->nombre }}@if($user->tienda) · {{ $user->tienda->nombre }}, zona {{ $user->tienda->zona->nombre ?? '' }}@endif ·
         @if($pendientesHoy)
           tiene <strong>{{ $pendientesHoy }}</strong> tarea(s) que requieren su atención hoy.
         @else
@@ -119,7 +117,7 @@
         @foreach($indicadores as [$lbl, $val, $sub])
           <div class="d-flex justify-content-between align-items-baseline">
             <div><div class="fs-13">{{ $lbl }}</div><div class="cell-sub">{{ $sub }}</div></div>
-            <div class="fw-600 num" style="font-size:20px">{{ $val }}</div>
+            <div class="fw-600 num dato-20">{{ $val }}</div>
           </div>
         @endforeach
       </div>
@@ -133,7 +131,7 @@
         </div>
         @foreach($ranking['tabla'] as $i => $r)
           <div class="ranking-row {{ $r['id'] === $user->id ? 'yo' : '' }}">
-            <span class="ranking-pos">{{ $i + 1 }}</span><span style="flex:1">{{ $r['nombre'] }}</span>
+            <span class="ranking-pos">{{ $i + 1 }}</span><span class="flex-grow-1">{{ $r['nombre'] }}</span>
             <span class="num">{{ $r['aprobadas'] }} aprobadas</span>
           </div>
         @endforeach
@@ -160,7 +158,7 @@
         <a href="{{ route('notificaciones.index') }}" class="btn btn-ghost btn-sm">Ver todo</a>
       </div>
       @forelse($actividad as $n)
-        <a href="{{ $n['url'] }}" class="notif-item" data-clave="{{ $n['clave'] }}" style="padding:10px 0;border-bottom:1px solid #f0f1f3;background:none">
+        <a href="{{ $n['url'] }}" class="notif-item notif-item-plano" data-clave="{{ $n['clave'] }}">
           <span class="notif-ico {{ $n['color'] }}"><i class="bi {{ $n['icono'] }}"></i></span>
           <span class="notif-body"><span class="notif-title">{{ $n['titulo'] }}</span>
             <span class="notif-msg">{{ \Illuminate\Support\Str::limit($n['mensaje'], 90) }}</span>

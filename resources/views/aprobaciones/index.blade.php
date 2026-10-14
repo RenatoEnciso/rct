@@ -12,15 +12,15 @@
 </div>
 
 <div class="kpi-grid">
-  <a href="{{ route('aprobaciones.index', ['decision' => 'Aprobado']) }}" class="kpi-card verde" style="color:inherit">
+  <a href="{{ route('aprobaciones.index', ['decision' => 'Aprobado']) }}" class="kpi-card verde">
     <div class="kpi-label"><i class="bi bi-check2-circle"></i> Aprobadas</div>
     <div class="kpi-value">{{ $kpis['aprobados'] }}</div><div class="kpi-sub">Ver aprobadas</div>
   </a>
-  <a href="{{ route('aprobaciones.index', ['decision' => 'Observado']) }}" class="kpi-card mostaza" style="color:inherit">
+  <a href="{{ route('aprobaciones.index', ['decision' => 'Observado']) }}" class="kpi-card mostaza">
     <div class="kpi-label"><i class="bi bi-arrow-return-left"></i> Observadas</div>
     <div class="kpi-value">{{ $kpis['observados'] }}</div><div class="kpi-sub">Devueltas para corrección</div>
   </a>
-  <a href="{{ route('aprobaciones.index', ['decision' => 'Rechazado']) }}" class="kpi-card rojo" style="color:inherit">
+  <a href="{{ route('aprobaciones.index', ['decision' => 'Rechazado']) }}" class="kpi-card rojo">
     <div class="kpi-label"><i class="bi bi-x-circle"></i> Rechazadas</div>
     <div class="kpi-value">{{ $kpis['rechazados'] }}</div><div class="kpi-sub">Decisión definitiva</div>
   </a>
@@ -31,7 +31,7 @@
 </div>
 
 <div class="card card-flush">
-  <form method="GET" class="grid4" style="padding:16px 20px;align-items:end;border-bottom:1px solid var(--borde)">
+  <form method="GET" class="grid4 filtros-patio">
     <div class="field">
       <label for="q">Cliente, DNI u operación</label>
       <input id="q" type="search" name="q" value="{{ request('q') }}" placeholder="Buscar">
@@ -45,9 +45,9 @@
         @endforeach
       </select>
     </div>
-    <div class="field">
+    <div class="field span-2">
       <label>Fecha de decisión</label>
-      <div class="d-flex gap-2">
+      <div class="rango-fechas">
         <input type="date" name="desde" value="{{ request('desde') }}" aria-label="Desde">
         <input type="date" name="hasta" value="{{ request('hasta') }}" aria-label="Hasta">
       </div>

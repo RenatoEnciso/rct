@@ -9,7 +9,7 @@
     <div class="notice-success"><i class="bi bi-check-circle"></i><span>Se envió un nuevo enlace de verificación a su correo.</span></div>
   @endif
 
-  <div class="actions" style="justify-content:space-between">
+  <div class="actions justify-content-between">
     <form method="POST" action="{{ route('logout') }}">
       @csrf
       <button type="submit" class="btn btn-ghost">Cerrar sesión</button>

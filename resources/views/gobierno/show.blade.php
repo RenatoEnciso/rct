@@ -26,7 +26,7 @@
   </div>
 </div>
 
-<div class="grid2" style="grid-template-columns:1.4fr 1fr;margin-bottom:20px">
+<div class="grid2 grid-14-1 mb-patio">
   <div class="card">
     <div class="card-title"><i class="bi bi-person-vcard"></i> Datos del crédito honrado</div>
     <div class="detail-grid">
@@ -57,7 +57,7 @@
   <div class="notice {{ $e->faltantes ? 'notice-warning' : 'notice-neutral' }}">
     <i class="bi bi-chat-left-text"></i>
     <div>@if($observacionesAuto)<div><strong>Observaciones:</strong> {{ $observacionesAuto }}</div>@endif
-      @if($e->observaciones)<div style="margin-top:2px"><strong>Comentario:</strong> {{ $e->observaciones }}</div>@endif</div>
+      @if($e->observaciones)<div class="mt-1"><strong>Comentario:</strong> {{ $e->observaciones }}</div>@endif</div>
   </div>
 @endif
 
@@ -99,7 +99,7 @@
               <div class="quote mt-2"><div class="quote-label">Motivo de la tienda</div>{{ $d->motivo_no_disponible }}</div>
             @endif
             @if($d->comentario_revisor)
-              <div class="quote" style="margin-top:6px;border-left-color:{{ $est === 'observado' ? '#d08a1e' : 'var(--verde)' }}">
+              <div class="quote quote-decision {{ $est === 'observado' ? 'obs' : 'ok' }} mt-2">
                 <div class="quote-label">Revisión · {{ $d->revisor->name ?? '' }} {{ $d->revisado_en?->format('d/m/Y H:i') }}</div>{{ $d->comentario_revisor }}</div>
             @endif
           @endif
@@ -119,7 +119,7 @@
           @endif
 
           @if($puedeSubir)
-            <form method="POST" action="{{ route('gobierno.documento', $e) }}" enctype="multipart/form-data" style="margin-top:10px">
+            <form method="POST" action="{{ route('gobierno.documento', $e) }}" enctype="multipart/form-data" class="mt-2">
               @csrf
               <input type="hidden" name="tipo_documento_id" value="{{ $t->id }}">
               <label class="doc-drop"><i class="bi bi-cloud-arrow-up"></i>
@@ -127,7 +127,7 @@
                 <input type="file" name="archivo" accept=".pdf,application/pdf">
               </label>
               <div class="val-result"></div>
-              <button type="submit" class="btn btn-primary btn-sm" style="margin-top:8px;display:none" data-guardar><i class="bi bi-save"></i> Guardar documento</button>
+              <button type="submit" class="btn btn-primary btn-sm mt-2" style="display:none" data-guardar><i class="bi bi-save"></i> Guardar documento</button>
             </form>
           @endif
           @if($puedeCargar && $item['exigido'] && $est === 'falta')
@@ -143,7 +143,7 @@
 
 @if($nivelRevision)
   @php $hayObservados = $exigidos->contains('estado', 'observado') || $complementarios->contains('estado', 'observado'); @endphp
-  <div class="card" style="border-color:var(--rojo-line)">
+  <div class="card card-revision">
     <div class="card-head">
       <div class="card-title"><i class="bi bi-clipboard-check"></i> Revisión {{ $nivelRevision === 'zona' ? 'por zona' : 'central' }}</div>
       <span class="cell-sub">{{ $nivelRevision === 'zona' ? 'Coordinador Zonal de Recuperaciones' : 'Jefatura de Recuperaciones' }}</span>
@@ -152,7 +152,7 @@
       <div class="notice-warning"><i class="bi bi-exclamation-triangle"></i>
         <span>Hay documentos observados. Registre la observación para que la tienda los corrija; la conformidad estará disponible cuando se carguen de nuevo.</span></div>
     @else
-      <p class="fs-13 text-gris" style="margin-top:0">Revise los documentos exigidos por COFIDE. Al dar conformidad, los documentos presentados quedan conformes
+      <p class="fs-13 text-gris mt-0">Revise los documentos exigidos por COFIDE. Al dar conformidad, los documentos presentados quedan conformes
         {{ $nivelRevision === 'zona' ? 'y el expediente pasa a revisión central.' : 'y el expediente queda conforme.' }}
         Para observar, marque primero como «Observado» los documentos que debe corregir la tienda.</p>
     @endif
@@ -188,19 +188,19 @@
         @endforeach
       </div>
     @else
-      <div class="empty-state" style="padding:18px"><span>Aún no tiene revisiones.</span></div>
+      <div class="empty-state empty-sm"><span>Aún no tiene revisiones.</span></div>
     @endif
   </div>
   <div class="card">
     <div class="card-title"><i class="bi bi-archive"></i> Documentos reemplazados</div>
     @forelse($e->historialDocumentos as $h)
-      <div class="d-flex justify-content-between align-items-center gap-2" style="padding:7px 0;border-bottom:1px solid #eef0f2">
-        <div style="min-width:0"><div class="fs-13 fw-600">{{ $h->tipo->nombre_corto ?? $h->tipo_doc }}</div>
+      <div class="fila-archivo">
+        <div class="min-w-0"><div class="fs-13 fw-600">{{ $h->tipo->nombre_corto ?? $h->tipo_doc }}</div>
           <div class="cell-sub">{{ $origenes[$h->origen] ?? '' }} · {{ \App\Services\Honramiento\Checklist::ETIQUETAS[$h->estado] ?? $h->estado }} · {{ $h->cargado_en?->format('d/m/Y') }}</div></div>
         @if($h->tieneArchivo())<a href="{{ route('gobierno.documento.descargar', $h) }}" class="btn btn-ghost btn-sm btn-icon" title="Descargar"><i class="bi bi-download"></i></a>@endif
       </div>
     @empty
-      <div class="empty-state" style="padding:18px"><span>Sin documentos reemplazados.</span></div>
+      <div class="empty-state empty-sm"><span>Sin documentos reemplazados.</span></div>
     @endforelse
   </div>
 </div>
@@ -211,20 +211,20 @@
 
 {{-- Observar documento --}}
 <div class="rct-modal" id="modal-obs" role="dialog" aria-labelledby="obs-titulo">
-  <div class="rct-modal-box" style="width:min(520px,100%)">
+  <div class="rct-modal-box rct-modal-sm">
     <form method="POST" id="form-obs">
       @csrf
       <input type="hidden" name="resultado" value="observado">
       <div class="rct-modal-head"><h3 class="rct-modal-title" id="obs-titulo">Observar documento</h3>
         <button type="button" class="rct-modal-close" data-modal-close aria-label="Cerrar"><i class="bi bi-x-lg"></i></button></div>
       <div class="rct-modal-body">
-        <p class="fs-13" style="margin-top:0">Documento: <strong id="obs-nombre"></strong></p>
+        <p class="fs-13 mt-0">Documento: <strong id="obs-nombre"></strong></p>
         <div class="field">
           <label for="obs-comentario">Qué debe corregir la tienda <span class="req">*</span></label>
           <textarea id="obs-comentario" name="comentario" rows="3" required placeholder="Ej.: el pagaré no está firmado por el titular."></textarea>
         </div>
       </div>
-      <div class="rct-modal-foot actions" style="margin-top:0">
+      <div class="rct-modal-foot actions mt-0">
         <button type="button" class="btn btn-secondary" data-modal-close>Cancelar</button>
         <button type="submit" class="btn btn-warning"><i class="bi bi-exclamation-lg"></i> Observar documento</button>
       </div>
@@ -234,21 +234,21 @@
 
 {{-- Declarar documento no disponible --}}
 <div class="rct-modal" id="modal-nd" role="dialog" aria-labelledby="nd-titulo">
-  <div class="rct-modal-box" style="width:min(520px,100%)">
+  <div class="rct-modal-box rct-modal-sm">
     <form method="POST" action="{{ route('gobierno.no-disponible', $e) }}">
       @csrf
       <input type="hidden" name="tipo_documento_id" id="nd-tipo">
       <div class="rct-modal-head"><h3 class="rct-modal-title" id="nd-titulo">Documento no disponible</h3>
         <button type="button" class="rct-modal-close" data-modal-close aria-label="Cerrar"><i class="bi bi-x-lg"></i></button></div>
       <div class="rct-modal-body">
-        <p class="fs-13" style="margin-top:0">Declara que la tienda no cuenta con <strong id="nd-nombre"></strong> después de realizar las búsquedas.
+        <p class="fs-13 mt-0">Declara que la tienda no cuenta con <strong id="nd-nombre"></strong> después de realizar las búsquedas.
           El expediente quedará como <strong>Incompleto definitivo</strong> si no tiene otros faltantes.</p>
         <div class="field">
           <label for="nd-motivo">Búsquedas realizadas y motivo <span class="req">*</span></label>
           <textarea id="nd-motivo" name="motivo" rows="3" required minlength="10" placeholder="Ej.: se revisó el file físico y el archivo de la tienda; el documento no fue firmado en el desembolso."></textarea>
         </div>
       </div>
-      <div class="rct-modal-foot actions" style="margin-top:0">
+      <div class="rct-modal-foot actions mt-0">
         <button type="button" class="btn btn-secondary" data-modal-close>Cancelar</button>
         <button type="submit" class="btn btn-danger"><i class="bi bi-slash-circle"></i> Declarar no disponible</button>
       </div>

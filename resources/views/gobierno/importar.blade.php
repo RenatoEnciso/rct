@@ -13,13 +13,13 @@
   </div>
 </div>
 
-<div class="grid2" style="grid-template-columns:1.2fr 1fr;margin-bottom:20px">
+<div class="grid2 grid-12-1 mb-patio">
   <div class="card">
     <div class="card-title"><i class="bi bi-upload"></i> Archivo</div>
     <form method="POST" action="{{ route('gobierno.importar.previsualizar') }}" enctype="multipart/form-data" id="form-importar">
       @csrf
-      <label class="doc-drop" style="padding:22px 16px">
-        <i class="bi bi-file-earmark-spreadsheet" style="font-size:26px"></i>
+      <label class="doc-drop doc-drop-lg">
+        <i class="bi bi-file-earmark-spreadsheet"></i>
         <span><span class="doc-file-name" id="nombre-archivo">Seleccionar archivo Excel (.xlsx, .xls o .csv)</span><br>
           <span class="field-hint">Máximo 20 MB · formato de la plantilla</span></span>
         <input type="file" name="archivo" accept=".xlsx,.xls,.csv" required

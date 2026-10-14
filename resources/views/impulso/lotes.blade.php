@@ -16,7 +16,7 @@
       <p>Cada carga en la plataforma de COFIDE es un lote: corte, documentos, firma digital, confirmación y honramiento.</p>
     </div>
     <div class="page-head-actions">
-      <a href="{{ route('impulso.candidatos') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Armar lote <span class="badge badge-lg" style="background:rgba(255,255,255,.2);color:#fff;margin-left:4px">{{ $candidatos }} candidatos</span></a>
+      <a href="{{ route('impulso.candidatos') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Armar lote <span class="btn-contador">{{ $candidatos }} candidatos</span></a>
     </div>
   </div>
 

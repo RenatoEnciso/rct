@@ -46,7 +46,7 @@
           </tbody>
         </table>
       </div>
-      <form method="POST" action="{{ route('impulso.honramiento.avisar', $lote) }}" style="margin-top:12px">@csrf
+      <form method="POST" action="{{ route('impulso.honramiento.avisar', $lote) }}" class="mt-3">@csrf
         <button class="btn btn-secondary btn-sm"><i class="bi bi-send"></i> Reenviar aviso a las agencias</button>
       </form>
     @endif

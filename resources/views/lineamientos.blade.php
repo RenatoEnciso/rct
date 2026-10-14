@@ -4,18 +4,18 @@
 @push('styles')
 <style>
   .lin-nav { position: sticky; top: calc(var(--header-h) + 8px); z-index: 10; display: flex; gap: 4px; overflow-x: auto;
-             padding: 6px; margin-bottom: 20px; background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); }
-  .lin-nav a { padding: 6px 12px; border-radius: var(--radius); color: var(--gris); font-size: 13px; font-weight: 500; white-space: nowrap; }
+             padding: 6px; margin-bottom: 20px; background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--r-lg); }
+  .lin-nav a { padding: 6px 12px; border-radius: var(--r); color: var(--gris); font-size: var(--t-13); font-weight: 500; white-space: nowrap; }
   .lin-nav a:hover { background: var(--sutil); color: var(--tinta); }
   .lin-section { scroll-margin-top: calc(var(--header-h) + 70px); }
-  .lin-num { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--rojo-soft); color: var(--rojo); font-size: 11.5px; font-weight: 700; }
+  .lin-num { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 2px; background: var(--tinta); color: #fff; font-size: var(--t-12); font-weight: 700; }
   .lin-box { padding: 14px; border: 1px solid var(--borde); border-radius: var(--radius); background: var(--sutil); height: 100%; }
   .lin-box h4 { font-size: 13px; margin: 0 0 4px; }
   .lin-box p { font-size: 13px; color: var(--gris); margin: 0; }
   .check-list { list-style: none; padding: 0; margin: 0; font-size: 13px; }
   .check-list li { display: flex; gap: 8px; padding: 3px 0; }
   .check-list .bi-check2 { color: var(--verde); } .check-list .no { color: var(--gris-claro); text-decoration: line-through; }
-  .calif { display: inline-block; padding: 3px 9px; border-radius: 4px; font-size: 11.5px; font-weight: 600; color: #fff; }
+  .calif { display: inline-block; padding: 2px 8px; border-radius: var(--r-sm); font-size: var(--t-12); font-weight: 600; color: #fff; }
 </style>
 @endpush
 
@@ -67,11 +67,11 @@
     <div class="lin-box"><h4>Límite de uso</h4><p>Máximo <strong>4 veces por cada 12 meses</strong> (incluye campañas anteriores). Aplica para calificaciones Normal, CPP, Deficiente, Dudoso y Pérdida.</p></div>
     <div class="lin-box"><h4>Calificaciones RCC permitidas</h4>
       <div class="d-flex gap-2 flex-wrap mt-2">
-        <span class="calif" style="background:#3c6e47">NORMAL</span>
-        <span class="calif" style="background:#1f4e8c">CPP</span>
-        <span class="calif" style="background:#a15c07">DEFICIENTE</span>
-        <span class="calif" style="background:#9a3412">DUDOSO</span>
-        <span class="calif" style="background:#7d1221">PÉRDIDA</span>
+        <span class="calif" style="background:var(--verde)">NORMAL</span>
+        <span class="calif" style="background:var(--azul)">CPP</span>
+        <span class="calif" style="background:var(--ambar)">DEFICIENTE</span>
+        <span class="calif" style="background:var(--peligro)">DUDOSO</span>
+        <span class="calif" style="background:var(--rojo-dark)">PÉRDIDA</span>
       </div>
     </div>
     <div class="lin-box"><h4>Múltiples créditos en mora</h4><p>Si el cliente posee más de un crédito en mora, se gestionará la negociación conjunta de <strong>todos los créditos</strong> afectados.</p></div>
@@ -118,7 +118,7 @@
       </select></div>
   </div>
 
-  <div id="calc_resultado" class="card-plain form-section" hidden style="margin:16px 0 0">
+  <div id="calc_resultado" class="card-plain form-section mt-3 mb-0" hidden>
     <div class="quote-label">Resultado</div>
     <div class="grid3">
       <div><div class="detail-label">Intereses a exonerar</div><div class="detail-value lg" id="res_intereses">—</div></div>
@@ -127,7 +127,7 @@
     </div>
     <div class="fs-13 mt-3"><span class="text-gris">Autoriza:</span> <strong id="res_funcionario">—</strong></div>
   </div>
-  <div id="calc_vacio" class="empty-state" style="padding:20px"><i class="bi bi-calculator"></i><span>Ingrese los parámetros para ver el beneficio máximo.</span></div>
+  <div id="calc_vacio" class="empty-state empty-sm"><i class="bi bi-calculator"></i><span>Ingrese los parámetros para ver el beneficio máximo.</span></div>
 </div>
 
 <div class="card card-flush lin-section" id="sec-autonomia">
@@ -173,7 +173,7 @@
 <div class="card lin-section" id="sec-exclusiones">
   <div class="card-title"><span class="lin-num">5</span> Créditos excluidos de la campaña</div>
   <p class="card-sub">Las siguientes operaciones no participan bajo ninguna modalidad de descuento o exoneración.</p>
-  <div class="grid2" style="gap:8px 16px">
+  <div class="grid2 grid-compacta">
     @foreach([
       'Créditos pignoraticios', 'Operaciones de leasing', 'Créditos con garantía de depósito en efectivo', 'Cartera Multigas',
       'Créditos administrativos (ex trabajadores requieren revisión)', 'Carteras adquiridas de terceros',

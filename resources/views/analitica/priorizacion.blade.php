@@ -91,7 +91,7 @@
               <td>
                 <div class="bar-row">
                   <div class="cc-barra cc-barra-sm flex-grow-1"><div class="cc-barra-fill azul" style="--w:{{ $f['gestionada'] }}%"></div></div>
-                  <span class="fs-12 fw-600 num" style="min-width:48px;text-align:right">{{ number_format($f['gestionada'], 1) }}%</span>
+                  <span class="fs-12 fw-600 num pct-fila">{{ number_format($f['gestionada'], 1) }}%</span>
                 </div>
               </td>
             </tr>

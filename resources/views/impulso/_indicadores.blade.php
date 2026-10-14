@@ -35,7 +35,7 @@
       <div><div class="card-title"><i class="bi bi-calendar3"></i> Pagos por día del mes</div>
         <p class="card-sub m-0">Capital pagado por los créditos del programa según el día del mes en que pagan (todos los meses).</p></div>
     </div>
-    <div style="position:relative;height:250px"><canvas id="chart-dias" role="img" aria-label="Capital pagado por día del mes"></canvas></div>
+    <div class="cc-chart cc-chart-sm"><canvas id="chart-dias" role="img" aria-label="Capital pagado por día del mes"></canvas></div>
   </div>
   <div class="card cc-card">
     <div class="card-title"><i class="bi bi-geo-alt"></i> Pendientes de documentación por zona</div>

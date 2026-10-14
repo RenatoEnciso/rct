@@ -21,8 +21,8 @@
   </div>
 </div>
 
-<form method="GET" class="card" style="padding:16px 20px">
-  <div class="grid4" style="align-items:end">
+<form method="GET" class="card filtros-card">
+  <div class="grid4 align-items-end">
     <div class="field"><label for="lote_id">Lote</label>
       <select id="lote_id" name="lote_id" onchange="this.form.submit()"><option value="">Todos</option>
         @foreach($lotes as $l)<option value="{{ $l->id }}" @selected(request('lote_id') == $l->id)>{{ $l->codigo }}{{ $l->programa ? ' · '.$l->programa : '' }}</option>@endforeach</select></div>
@@ -62,7 +62,7 @@
 <div class="grid2 mb-4">
   <div class="card">
     <div class="card-title"><i class="bi bi-graph-up"></i> Avance de revisiones · últimas 12 semanas</div>
-    <div style="position:relative;height:240px"><canvas id="chart-avance" role="img" aria-label="Conformidades por semana"></canvas></div>
+    <div class="cc-chart cc-chart-sm"><canvas id="chart-avance" role="img" aria-label="Conformidades por semana"></canvas></div>
   </div>
   <div class="card">
     <div class="card-title"><i class="bi bi-file-earmark-x"></i> Documentos que más faltan</div>

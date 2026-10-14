@@ -27,9 +27,9 @@
               <td colspan="3">
                 <form method="POST" action="{{ route('gobierno.lotes.actualizar', $l) }}" class="d-flex gap-2 align-items-center flex-wrap" id="lote-{{ $l->id }}">
                   @csrf @method('PUT')
-                  <input class="input-rct" name="programa" value="{{ $l->programa }}" placeholder="Programa" style="max-width:170px;min-height:32px">
-                  <input class="input-rct" type="date" name="fecha_solicitud" value="{{ $l->fecha_solicitud?->format('Y-m-d') }}" title="Solicitud formal" style="max-width:150px;min-height:32px">
-                  <input class="input-rct" type="date" name="fecha_conformidad" value="{{ $l->fecha_conformidad?->format('Y-m-d') }}" title="Conformidad" style="max-width:150px;min-height:32px">
+                  <input class="input-rct" name="programa" value="{{ $l->programa }}" placeholder="Programa" class="input-compacto">
+                  <input class="input-rct" type="date" name="fecha_solicitud" value="{{ $l->fecha_solicitud?->format('Y-m-d') }}" title="Solicitud formal">
+                  <input class="input-rct" type="date" name="fecha_conformidad" value="{{ $l->fecha_conformidad?->format('Y-m-d') }}" title="Conformidad">
                 </form>
               </td>
             @else

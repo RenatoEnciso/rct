@@ -15,7 +15,7 @@
 </div>
 
 <div class="card card-flush">
-  <form method="GET" class="grid4" style="padding:16px 20px;align-items:end;border-bottom:1px solid var(--borde)">
+  <form method="GET" class="grid4 filtros-patio">
     <div class="field span-2">
       <label for="q">Cliente u operación</label>
       <input id="q" type="search" name="q" value="{{ request('q') }}" placeholder="Buscar por nombre o número de operación">

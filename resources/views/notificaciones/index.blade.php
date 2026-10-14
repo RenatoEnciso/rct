@@ -23,13 +23,12 @@
 </div>
 
 <div class="card card-flush">
-  <div class="card-head" style="padding-bottom:12px;border-bottom:1px solid var(--borde)">
-    <div class="notif-tabs" style="padding:0;border:0">
+  <div class="card-head card-head-filtros">
+    <div class="filtro-pestanas">
       @foreach($categorias as $cat => $lbl)
         @if(!$cat || ($conteo[$cat] ?? 0))
           <a href="{{ route('notificaciones.index', array_filter(['categoria' => $cat, 'estado' => request('estado')])) }}"
-             class="{{ request('categoria', '') === $cat ? 'active' : '' }}"
-             style="padding:5px 11px;border-radius:999px;font-size:13px;{{ request('categoria', '') === $cat ? 'background:var(--rojo-soft);color:var(--rojo);font-weight:600' : 'color:var(--gris)' }}">
+             class="{{ request('categoria', '') === $cat ? 'active' : '' }}">
             {{ $lbl }} <span class="cell-sub">{{ $cat ? ($conteo[$cat] ?? 0) : $todas->count() }}</span>
           </a>
         @endif
@@ -40,13 +39,13 @@
   </div>
 
   @forelse($notificaciones as $n)
-    <a href="{{ $n['url'] }}" class="notif-item {{ $n['leida'] ? '' : 'unread' }}" data-clave="{{ $n['clave'] }}" style="padding:14px 20px">
+    <a href="{{ $n['url'] }}" class="notif-item {{ $n['leida'] ? '' : 'unread' }}" data-clave="{{ $n['clave'] }}">
       <span class="notif-ico {{ $n['color'] }}"><i class="bi {{ $n['icono'] }}"></i></span>
       <span class="notif-body flex-grow-1">
         <span class="notif-title">{{ $n['titulo'] }}</span>
         <span class="notif-msg">{{ $n['mensaje'] }}</span>
       </span>
-      <span class="notif-time nowrap" style="margin:0 18px 0 0">
+      <span class="notif-time nowrap notif-time-fila">
         {{ $n['categoria'] === 'recordatorio' ? 'Recordatorio' : $n['fecha']->format('d/m/Y H:i') }}
       </span>
     </a>

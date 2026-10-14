@@ -80,7 +80,7 @@
     </div>
   </div>
 
-  <div class="cc-fila" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr)">
+  <div class="cc-fila cc-fila-2">
     @foreach(['Por lote' => [$porLote, 'bi-collection'], 'Por zona' => [$porZona, 'bi-geo-alt']] as $titulo => [$filas, $ico])
       <div class="card cc-card card-flush">
         <div class="card-head"><div class="card-title"><i class="bi {{ $ico }}"></i> {{ $titulo }}</div></div>
@@ -94,7 +94,7 @@
                   <td class="num">{{ $g['PENDIENTE'] }}</td><td class="num">{{ $g['INCOMPLETO'] }}</td>
                   <td class="num">{{ $g['INCOMPLETO DEFINITIVO'] }}</td><td class="num fw-600">{{ $g['COMPLETO'] }}</td>
                   <td><div class="bar-row"><div class="cc-barra cc-barra-sm flex-grow-1"><div class="cc-barra-fill ok" style="--w:{{ $g['pct_completo'] }}%"></div></div>
-                    <span class="fs-12 fw-600 num" style="min-width:44px;text-align:right">{{ number_format($g['pct_completo'], 1) }}%</span></div></td>
+                    <span class="fs-12 fw-600 num pct-fila">{{ number_format($g['pct_completo'], 1) }}%</span></div></td>
                 </tr>
               @endforeach
             </tbody>

@@ -1437,3 +1437,55 @@ body.modo-presentacion .toasts { top: 18px; }
 .celda-texto { white-space: normal !important; min-width: 200px; }
 .fila-anterior td { color: var(--gris); }
 .cc-barra-fill.neutro { background: var(--gris-claro); }
+
+/* ── Pantallas secundarias ─────────────────────────────────── */
+.filtros-patio { padding: var(--s-4) var(--s-5); border-bottom: 1px solid var(--borde); align-items: end; }
+.filtros-card { padding: var(--s-4) var(--s-5); }
+.rango-fechas { display: flex; gap: var(--s-2); }
+.rango-fechas > input { flex: 1 1 0; min-width: 0; }
+.grid-12-1 { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); }
+.grid-14-1 { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); }
+.grid-compacta { gap: var(--s-2) var(--s-4); }
+.cc-fila-2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.cc-chart-sm { height: 240px; }
+.doc-drop-lg { padding: 22px var(--s-4); }
+.doc-drop-lg > .bi { font-size: 26px; }
+.input-compacto { max-width: 170px; min-height: 32px !important; }
+.filtros-patio input[type=date], td .input-rct[type=date] { max-width: 160px; min-height: 32px; }
+.quote-decision.obs { background: var(--ambar-soft); border-color: var(--ambar-line); }
+.card-revision { border-color: var(--rojo-line); }
+.rct-modal-sm { width: min(520px, 100%); }
+.btn-contador { display: inline-flex; align-items: center; margin-left: 4px; padding: 0 7px; border-radius: var(--r-sm); background: rgba(255, 255, 255, .2); color: #fff; font-size: var(--t-12); font-weight: 600; line-height: 20px; font-variant-numeric: tabular-nums; }
+.pct-fila { min-width: 48px; text-align: right; }
+.bar-track-md { height: 8px; }
+.leyenda-m { display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: var(--borde-fuerte); }
+.leyenda-m.rojo { background: var(--rojo); }
+.dato-20 { font-size: var(--t-20); }
+.chip-quitar { border: 0; background: none; color: var(--gris); cursor: pointer; padding: 0 0 0 4px; border-radius: var(--r-sm); }
+.chip-quitar:hover { color: var(--peligro); }
+.card-head-filtros { padding: var(--s-4) var(--s-5) var(--s-3) !important; margin: 0; border-bottom: 1px solid var(--borde); }
+.filtro-pestanas { display: flex; gap: var(--s-1); flex-wrap: wrap; }
+.filtro-pestanas a { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: var(--r); font-size: var(--t-13); color: var(--gris); }
+.filtro-pestanas a:hover { background: var(--sutil); color: var(--tinta); }
+.filtro-pestanas a.active { background: var(--rojo-soft); color: var(--rojo); font-weight: 600; }
+.card .notif-item { padding: 14px var(--s-5); }
+.notif-time-fila { margin: 0 18px 0 0; }
+.card .notif-item.notif-item-plano { padding: 10px 0; border-bottom: 1px solid var(--linea); background: none; }
+@media (max-width: 1199.98px) { .grid-12-1, .grid-14-1, .cc-fila-2 { grid-template-columns: minmax(0, 1fr); } }
+/* Botones deshabilitados: conservan su color (Bootstrap los pintaba de azul) */
+.btn-primary:disabled, .btn-primary.disabled { background: var(--rojo); border-color: var(--rojo); color: #fff; }
+.btn-success:disabled, .btn-success.disabled { background: var(--verde); border-color: var(--verde); color: #fff; }
+.btn-secondary:disabled, .btn-secondary.disabled, .btn-outline:disabled { background: var(--superficie); border-color: var(--borde-fuerte); color: var(--tinta); }
+.btn-warning:disabled, .btn-warning.disabled { background: var(--superficie); border-color: var(--ambar-line); color: var(--ambar); }
+.btn-danger:disabled, .btn-danger.disabled { background: var(--superficie); border-color: var(--peligro-line); color: var(--peligro); }
+.btn-ghost:disabled, .btn-ghost.disabled { background: transparent; border-color: transparent; color: var(--gris); }
+/* Banda genérica de KPIs: columnas según la cantidad de indicadores */
+@media (min-width: 1200px) {
+  .kpi-grid:has(> :nth-child(3):last-child) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .kpi-grid:has(> :nth-child(4):last-child) { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .kpi-grid:has(> :nth-child(5):last-child) { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .kpi-grid:has(> :nth-child(6):last-child) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (min-width: 1600px) {
+  .kpi-grid:has(> :nth-child(6):last-child) { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}

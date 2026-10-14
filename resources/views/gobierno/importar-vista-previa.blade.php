@@ -43,7 +43,7 @@
       @endforeach
     </div>
   </div>
-  <div style="padding:0 20px">
+  <div class="tabla-patio">
     <div class="table-wrap">
       <table data-rct-table data-page-size="15" data-search-placeholder="Buscar ID, DNI o cliente" id="tabla-previa">
         <thead>
@@ -68,7 +68,7 @@
               <td>{{ $f['estado_texto'] ?: '—' }}</td>
               <td>@isset($f['estado_calculado'])<span class="badge {{ \App\Support\Estilo::badgeHonramiento($f['estado_calculado']) }}">{{ $f['estado_calculado'] }}</span>@else — @endisset</td>
               <td class="num nowrap">{{ $f['faltantes_excel'] ?? '—' }} / {{ $f['faltantes_calculado'] ?? '—' }}</td>
-              <td style="white-space:normal">
+              <td class="celda-texto">
                 @foreach($f['errores'] as $m)<div class="fs-12 text-danger"><i class="bi bi-x-circle"></i> {{ $m }}</div>@endforeach
                 @foreach($f['diferencias'] as $m)<div class="fs-12 text-mostaza"><i class="bi bi-exclamation-triangle"></i> {{ $m }}</div>@endforeach
                 @foreach($f['avisos'] as $m)<div class="fs-12 text-gris"><i class="bi bi-info-circle"></i> {{ $m }}</div>@endforeach

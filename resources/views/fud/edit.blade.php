@@ -149,7 +149,7 @@
               <td class="num"><button type="button" class="btn btn-ghost btn-sm" onclick="alternarAdjunto({{ $adj->id }}, this)">Quitar</button></td>
             </tr>
           @empty
-            <tr data-empty><td colspan="6" class="empty-state" style="padding:20px"><span>La versión anterior no tiene adjuntos.</span></td></tr>
+            <tr data-empty><td colspan="6" class="empty-state empty-sm"><span>La versión anterior no tiene adjuntos.</span></td></tr>
           @endforelse
         </tbody>
       </table>

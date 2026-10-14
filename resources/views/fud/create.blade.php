@@ -201,7 +201,7 @@
 
     <div class="form-section">
       <div class="form-section-title">Documentos de la negociación</div>
-      <div class="file-list" id="lista-adjuntos" style="margin-bottom:10px"></div>
+      <div class="file-list mb-2" id="lista-adjuntos"></div>
       <input type="file" id="input-adjuntos" name="adjuntos[]" multiple accept=".pdf,.jpg,.jpeg,.png,.xlsx,.docx" hidden>
       <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('input-adjuntos').click()">
         <i class="bi bi-paperclip"></i> Adjuntar archivos
@@ -248,8 +248,8 @@
   function pintarAdjuntos() {
     document.getElementById('lista-adjuntos').innerHTML = [...seleccion.files].map((f, i) =>
       `<span class="file-chip"><i class="bi bi-file-earmark"></i><span>${rctEsc(f.name)}</span>
-        <button type="button" class="btn-ghost" style="border:0;background:none;color:var(--gris);cursor:pointer;padding:0 0 0 4px"
-          onclick="quitarAdjunto(${i})" aria-label="Quitar"><i class="bi bi-x-lg" style="color:inherit"></i></button></span>`).join('');
+        <button type="button" class="chip-quitar"
+          onclick="quitarAdjunto(${i})" aria-label="Quitar"><i class="bi bi-x-lg"></i></button></span>`).join('');
   }
 
   // ── Búsqueda ───────────────────────────────────────────────

@@ -24,9 +24,9 @@
         @foreach($tipos as $t)<option value="{{ $t }}" @selected(request('tipo') === $t)>{{ $t }}</option>@endforeach
       </select>
     </div>
-    <div class="field">
+    <div class="field span-2">
       <label>Fecha</label>
-      <div class="d-flex gap-2">
+      <div class="rango-fechas">
         <input type="date" name="desde" value="{{ request('desde') }}" aria-label="Desde">
         <input type="date" name="hasta" value="{{ request('hasta') }}" aria-label="Hasta">
       </div>

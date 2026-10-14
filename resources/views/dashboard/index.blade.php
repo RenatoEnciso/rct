@@ -112,15 +112,15 @@
       <div class="kpi-value">{{ $kpis['pendientes'] }}</div>
       <div class="kpi-sub">FUD pendientes de decisión</div>
     </div>
-    <a href="{{ route('aprobaciones.index', ['decision' => 'Aprobado']) }}" class="kpi-card verde" style="color:inherit">
+    <a href="{{ route('aprobaciones.index', ['decision' => 'Aprobado']) }}" class="kpi-card verde">
       <div class="kpi-label"><i class="bi bi-check2-circle"></i> Aprobados por mí</div>
       <div class="kpi-value">{{ $kpis['aprobadas'] }}</div>
-      <div class="kpi-sub">{{ $kpis['mes'] }} decisiones en el mes · ver detalle <i class="bi bi-chevron-right"></i></div>
+      <div class="kpi-sub">{{ $kpis['mes'] }} decisiones en el mes · <span class="nowrap">ver detalle <i class="bi bi-chevron-right"></i></span></div>
     </a>
-    <a href="{{ route('aprobaciones.index', ['decision' => 'Observado']) }}" class="kpi-card mostaza" style="color:inherit">
+    <a href="{{ route('aprobaciones.index', ['decision' => 'Observado']) }}" class="kpi-card mostaza">
       <div class="kpi-label"><i class="bi bi-arrow-return-left"></i> Observados por mí</div>
       <div class="kpi-value">{{ $kpis['observadas'] }}</div>
-      <div class="kpi-sub">Esperando corrección · ver detalle <i class="bi bi-chevron-right"></i></div>
+      <div class="kpi-sub">Esperando corrección · <span class="nowrap">ver detalle <i class="bi bi-chevron-right"></i></span></div>
     </a>
     <div class="kpi-card info">
       <div class="kpi-label"><i class="bi bi-diagram-3"></i> Nivel de autonomía</div>

@@ -6,14 +6,14 @@
 
 @push('styles')
 <style>
-  .tabla-gob td, .tabla-gob th { padding: 8px 9px !important; font-size: 12.5px !important; }
+  .tabla-gob td, .tabla-gob th { padding: 8px 9px !important; font-size: var(--t-12) !important; }
   .tabla-gob .doc-ico { font-size: 14px; display: inline-block; width: 18px; text-align: center; }
   .tabla-gob th.doc-col { text-align: center; min-width: 30px; }
   .tabla-gob th.doc-col.exigido { color: var(--rojo); }
-  .estado-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
-  .estado-chip { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--borde); border-radius: var(--radius-lg); background: var(--superficie); color: var(--tinta); font-size: 13px; }
+  .estado-chips { display: flex; gap: var(--s-2); flex-wrap: wrap; margin-bottom: var(--s-4); }
+  .estado-chip { display: flex; align-items: center; gap: var(--s-2); padding: 7px 12px; border: 1px solid var(--borde); border-radius: var(--r); background: var(--superficie); color: var(--tinta); font-size: var(--t-13); transition: border-color var(--dur), background-color var(--dur); }
   .estado-chip:hover { border-color: var(--borde-fuerte); color: var(--tinta); }
-  .estado-chip.active { border-color: var(--rojo); box-shadow: 0 0 0 2px var(--rojo-soft); }
+  .estado-chip.active { border-color: var(--rojo); background: var(--rojo-soft); }
   .estado-chip strong { font-size: 16px; font-variant-numeric: tabular-nums; }
 </style>
 @endpush
@@ -52,9 +52,9 @@
 </div>
 
 <div class="card card-flush">
-  <form method="GET" style="padding:16px 20px;border-bottom:1px solid var(--borde)">
+  <form method="GET" class="filtros-patio">
     <input type="hidden" name="estado" value="{{ request('estado') }}">
-    <div class="grid4" style="align-items:end">
+    <div class="grid4 align-items-end">
       <div class="field span-2">
         <label for="q">DNI, cliente, crédito, operación o ID</label>
         <input id="q" type="search" name="q" value="{{ request('q') }}" placeholder="Buscar">
@@ -106,9 +106,9 @@
           @endforeach
         </select>
       </div>
-      <div class="field">
+      <div class="field span-2">
         <label>Fecha de revisión</label>
-        <div class="d-flex gap-2"><input type="date" name="desde" value="{{ request('desde') }}" aria-label="Desde"><input type="date" name="hasta" value="{{ request('hasta') }}" aria-label="Hasta"></div>
+        <div class="rango-fechas"><input type="date" name="desde" value="{{ request('desde') }}" aria-label="Desde"><input type="date" name="hasta" value="{{ request('hasta') }}" aria-label="Hasta"></div>
       </div>
       <div class="d-flex gap-2">
         <button class="btn btn-primary"><i class="bi bi-funnel"></i> Filtrar</button>
@@ -154,7 +154,7 @@
               <td class="center"><i class="bi {{ $ico }} {{ $color }} doc-ico" title="{{ $c['nombre'] }}: {{ $lbl }}{{ $c['exigido'] ? ' · exigido por COFIDE' : '' }}"></i></td>
             @endforeach
             <td class="center fw-600 {{ $e->faltantes ? 'text-rojo' : 'text-verde' }}">{{ $e->faltantes }}</td>
-            <td class="cell-sub" style="white-space:normal">{{ \Illuminate\Support\Str::limit(trim($e->observacionesAutomaticas().($e->observaciones ? ' | '.$e->observaciones : ''), ' |'), 120) ?: '—' }}</td>
+            <td class="cell-sub celda-texto">{{ \Illuminate\Support\Str::limit(trim($e->observacionesAutomaticas().($e->observaciones ? ' | '.$e->observaciones : ''), ' |'), 120) ?: '—' }}</td>
             <td class="num"><a href="{{ route('gobierno.show', $e) }}" class="btn btn-secondary btn-sm">Abrir</a></td>
           </tr>
         @empty

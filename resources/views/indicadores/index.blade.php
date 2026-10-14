@@ -54,7 +54,7 @@
         @php $fecha = \Carbon\Carbon::createFromFormat('Y-m', $m->mes)->locale('es'); @endphp
         <div>
           <div class="metric-item-head"><span>{{ ucfirst($fecha->translatedFormat('F Y')) }}</span><span>{{ $m->aprobados }} aprobadas de {{ $m->enviados }}</span></div>
-          <div class="bar-track" style="height:8px">
+          <div class="bar-track bar-track-md">
             <div class="bar-fill muted" style="position:absolute;inset:0 auto 0 0;width:{{ round($m->enviados / $maxEv * 100) }}%"></div>
             <div class="bar-fill" style="position:absolute;inset:0 auto 0 0;width:{{ round($m->aprobados / $maxEv * 100) }}%"></div>
           </div>
@@ -64,8 +64,8 @@
       @endforelse
     </div>
     <div class="d-flex gap-3 fs-12 text-gris mt-3">
-      <span class="d-inline-flex align-items-center gap-1"><span style="width:10px;height:10px;border-radius:2px;background:var(--rojo)"></span> Aprobadas</span>
-      <span class="d-inline-flex align-items-center gap-1"><span style="width:10px;height:10px;border-radius:2px;background:var(--borde-fuerte)"></span> Enviadas</span>
+      <span class="d-inline-flex align-items-center gap-1"><span class="leyenda-m rojo"></span> Aprobadas</span>
+      <span class="d-inline-flex align-items-center gap-1"><span class="leyenda-m"></span> Enviadas</span>
     </div>
   </div>
 
@@ -122,7 +122,7 @@
             'Cartera FOCMAC'                             => '90% de SK y 100% de intereses y moratorio',
             'Reporte de conciliaciones'                  => 'Primeros 2 días hábiles del mes',
           ] as $label => $val)
-            <tr><td class="text-gris">{{ $label }}</td><td class="fw-600" style="text-align:right">{{ $val }}</td></tr>
+            <tr><td class="text-gris">{{ $label }}</td><td class="fw-600 num">{{ $val }}</td></tr>
           @endforeach
         </tbody>
       </table>
