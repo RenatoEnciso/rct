@@ -20,14 +20,16 @@
       </div>
     </div>
 
-    <div>
-      <h1>Sistema de Recuperaciones RCT</h1>
-      <p>Gestión de campañas de conciliación y expedientes de programas de gobierno, con trazabilidad de cada decisión.</p>
-      <ul class="auth-points">
-        <li><i class="bi bi-diagram-3"></i><span>Aprobación según el nivel de autonomía de cada operación.</span></li>
-        <li><i class="bi bi-shield-check"></i><span>Validación automática de sustentos y documentos.</span></li>
-        <li><i class="bi bi-graph-up"></i><span>Indicadores de la campaña por zona y tienda.</span></li>
-      </ul>
+    <div class="auth-centro">
+      <h1>Sistema de Recuperaciones</h1>
+      <p>Cada expediente avanza etapa por etapa, con el aprobador que le corresponde y la trazabilidad de cada decisión.</p>
+      <ol class="auth-circuito">
+        <li><span class="friso-m hecho"></span><span><strong>Priorizar</strong> la cartera del día</span></li>
+        <li><span class="friso-m hecho"></span><span><strong>Proponer</strong> la conciliación</span></li>
+        <li><span class="friso-m hecho"></span><span><strong>Aprobar</strong> según el nivel de autonomía</span></li>
+        <li><span class="friso-m actual"></span><span><strong>Sustentar</strong> con validación automática</span></li>
+        <li><span class="friso-m"></span><span><strong>Trazar</strong> y reportar a la Gerencia y a COFIDE</span></li>
+      </ol>
     </div>
 
     <div class="auth-legal">Uso exclusivo del personal autorizado de Caja Municipal de Ahorro y Crédito de Trujillo.</div>

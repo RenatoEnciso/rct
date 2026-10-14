@@ -30,22 +30,23 @@
   $avisos = session()->pull('mostrar_avisos') ? $notifNoLeidas->take(4) : collect();
 @endphp
 
-{{-- Encabezado --}}
+{{-- Barra superior --}}
 <header class="rct-header">
-  <div class="d-flex align-items-center gap-3">
-    <button class="navbar-toggler-rct d-lg-none" id="sidebarToggle" type="button" aria-label="Abrir menú">
+  <div class="header-left">
+    <button class="navbar-toggler-rct d-lg-none" id="sidebarToggle" type="button" aria-label="Abrir menú" aria-controls="sidebar">
       <i class="bi bi-list"></i>
     </button>
-    <a href="{{ route('inicio') }}" class="brand">
-      <div class="brand-logo-mark">CT</div>
-      <div>
-        <div class="brand-name">Caja Trujillo</div>
-        <div class="brand-sub">RCT · Sistema de Recuperaciones</div>
-      </div>
+    <a href="{{ route('inicio') }}" class="brand brand-movil d-lg-none" aria-label="Inicio">
+      <span class="brand-logo-mark">CT</span>
     </a>
+    <span class="header-fecha">{{ \Illuminate\Support\Str::ucfirst(now()->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY')) }}</span>
   </div>
 
   <div class="header-right">
+    <button type="button" class="header-btn" onclick="toggleAsistente()" aria-label="Abrir asistente" title="Asistente RCT">
+      <i class="bi bi-chat-square-text"></i><span class="d-none d-xl-inline">Asistente</span>
+    </button>
+
     {{-- Notificaciones --}}
     <div class="notif" id="notif">
       <button type="button" class="notif-btn" id="notif-btn" aria-label="Notificaciones" aria-expanded="false">
@@ -89,7 +90,7 @@
       <div class="user-avatar" aria-hidden="true">{{ $iniciales }}</div>
       <div class="d-none d-sm-block">
         <div class="user-name">{{ $user->name }}</div>
-        <div class="user-rol">{{ $user->rol->nombre }}</div>
+        @if($user->rol->nombre !== $user->name)<div class="user-rol">{{ $user->rol->nombre }}</div>@endif
       </div>
     </div>
     <form method="POST" action="{{ route('logout') }}">
@@ -107,6 +108,13 @@
 
   {{-- Menú lateral --}}
   <aside class="rct-sidebar" id="sidebar">
+    <a href="{{ route('inicio') }}" class="riel-marca">
+      <span class="brand-logo-mark">CT</span>
+      <span>
+        <span class="brand-name">Caja Trujillo</span>
+        <span class="brand-sub">RCT · Recuperaciones</span>
+      </span>
+    </a>
     <nav aria-label="Menú principal">
       <div class="nav-section-label">General</div>
       <a class="nav-btn {{ request()->routeIs('inicio') ? 'active' : '' }}" href="{{ route('inicio') }}">
@@ -276,9 +284,6 @@
       <button type="button" class="send" onclick="enviarMensaje()" title="Enviar" aria-label="Enviar"><i class="bi bi-send"></i></button>
     </div>
   </div>
-  <button type="button" class="asistente-fab" onclick="toggleAsistente()" aria-label="Abrir asistente">
-    <i class="bi bi-chat-square-text"></i><span class="d-none d-sm-inline">Asistente</span>
-  </button>
 </div>
 
 <script src="{{ asset('assets/js/rct.js') }}?v={{ filemtime(public_path('assets/js/rct.js')) }}"></script>
